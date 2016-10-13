@@ -2,6 +2,9 @@ package br.com.bcunha.heavygear.model.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+
+import java.io.IOException;
 
 import br.com.bcunha.heavygear.model.pojo.Query;
 import retrofit2.Call;
@@ -15,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class Api {
     private static Api ourInstance = new Api();
-    public static final String BASE_URL = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22GGBR3.SA%22)&env=store://datatables.org/alltableswithkeys&format=json"
+    public static final String BASE_URL = "http://query.yahooapis.com/v1/public/";
 
     public static Api getInstance() {
         return ourInstance;
@@ -24,12 +27,9 @@ public class Api {
     private Api() {
     }
 
-    public void getCotacao() {
+    public Call getCotacao(String codigo) {
 
-        Gson gson = new GsonBuilder()
-        .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-        .create();
-
+        Gson gson = new GsonBuilder().create();
 
         Retrofit retrofit = new Retrofit.Builder()
         .baseUrl(BASE_URL)
@@ -37,18 +37,10 @@ public class Api {
         .build();
 
         IApi apiService = retrofit.create(IApi.class);
-        Call<Query> call = apiService.getQuery();
-        call.enqueue(new Callback<Query> (){
-            @Override
-            public void onResponse(Call<Query> call, Response<Query> response) {
-                int statusCode = response.code();
-                Query user = response.body();
-            }
+        String query  = "select * from yahoo.finance.quotes where symbol in (\"" + codigo + "\")";
+        String env    = "store://datatables.org/alltableswithkeys";
+        String format = "json";
 
-            @Override
-            public void onFailure(Call<Query> call, Throwable t) {
-                // Log error here since request failed
-            }
-        });
+        return apiService.getQuery(query, env, format);
     }
 }
