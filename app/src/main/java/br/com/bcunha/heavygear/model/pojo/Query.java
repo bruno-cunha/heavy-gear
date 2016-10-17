@@ -1,62 +1,49 @@
 package br.com.bcunha.heavygear.model.pojo;
 
 /**
- * Created by BRUNO on 09/10/2016.
+ * Created by BRUNO on 16/10/2016.
  */
+
+import com.google.gson.annotations.SerializedName;
+
+import java.util.Date;
 
 public class Query
 {
-    private Results results;
-
-    private int count;
-
-    private String created;
-
-    private String lang;
-
-    public Results getResults ()
-    {
-        return results;
+    @SerializedName("count")
+    public int getCount() {
+        return this.count;
     }
-
-    public void setResults (Results results)
-    {
-        this.results = results;
-    }
-
-    public int getCount ()
-    {
-        return count;
-    }
-
-    public void setCount (int count)
-    {
+    public void setCount(int count) {
         this.count = count;
     }
+    int count;
 
-    public String getCreated ()
-    {
-        return created;
+    @SerializedName("created")
+    public Date getCreated() {
+        return this.created;
     }
-
-    public void setCreated (String created)
-    {
+    public void setCreated(Date created) {
         this.created = created;
     }
+    Date created;
 
-    public String getLang ()
-    {
-        return lang;
+    @SerializedName("lang")
+    public String getLang() {
+        return this.lang;
     }
-
-    public void setLang (String lang)
-    {
+    public void setLang(String lang) {
         this.lang = lang;
     }
+    String lang;
 
-    @Override
-    public String toString()
-    {
-        return "Classe Query [results = "+results+", count = "+count+", created = "+created+", lang = "+lang+"]";
+    @SerializedName("results")
+    public Results getResults() {
+        return this.results;
     }
+    public void setResults(Results results) {
+        this.results = results;
+    }
+    Results results;
+
 }

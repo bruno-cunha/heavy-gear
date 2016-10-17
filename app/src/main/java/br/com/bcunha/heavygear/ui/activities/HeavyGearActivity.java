@@ -7,10 +7,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.gson.JsonObject;
-
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.api.Api;
+import br.com.bcunha.heavygear.model.pojo.Resposta;
+import br.com.bcunha.heavygear.model.pojo.Resposta;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -43,15 +43,16 @@ public class HeavyGearActivity extends Activity {
     @OnClick(R.id.btnCotacao)
     public void buscar(View view) {
 
-        apiService.getCotacao(edtCotacao.getText().toString()).enqueue(new Callback<JsonObject>(){
+        apiService.getCotacao(edtCotacao.getText().toString()).enqueue(new Callback<Resposta>(){
             @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+            public void onResponse(Call<Resposta> call, Response<Resposta> response) {
                 int statusCode = response.code();
-                txtCotacao.setText(response.body().toString());
+                Resposta resposta = response.body();
+                txtCotacao.setText(resposta.getQuery().getResults().getQuote().getLastTradePriceOnly().toString());
             }
 
             @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
+            public void onFailure(Call<Resposta> call, Throwable t) {
                 // Log error here since request failed
             }
         });

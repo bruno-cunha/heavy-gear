@@ -2,14 +2,8 @@ package br.com.bcunha.heavygear.model.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 
-import java.io.IOException;
-
-import br.com.bcunha.heavygear.model.pojo.Query;
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -37,7 +31,7 @@ public class Api {
         .build();
 
         IApi apiService = retrofit.create(IApi.class);
-        String query  = "select * from yahoo.finance.quotes where symbol in (\"" + codigo + "\")";
+        String query  = "select * from yahoo.finance.quote where symbol in (\"" + codigo + "\")";
         String env    = "store://datatables.org/alltableswithkeys";
         String format = "json";
 
