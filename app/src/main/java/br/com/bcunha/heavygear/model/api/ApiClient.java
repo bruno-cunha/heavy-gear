@@ -11,11 +11,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by BRUNO on 09/10/2016.
  */
 public class ApiClient {
-    public static final String BASE_URL      = "http://query.yahooapis.com/v1/public/";
-    public static final String QUERY_QUOTE   = "select * from yahoo.finance.quote where symbol in (\"?codigo?\")";
-    public static final String QUERY_QUOTES  = "select * from yahoo.finance.quotes where symbol in (\"?codigo?\")";
-    public static final String ENV           = "store://datatables.org/alltableswithkeys";
-    public static final String FORMAT        = "json";
+    public static final String BASE_URL          = "http://query.yahooapis.com/v1/public/";
+    public static final String QUERY_QUOTE       = "select * from yahoo.finance.quote where symbol in (\"?codigo?\")";
+    public static final String QUERY_QUOTE_LISTA = "select * from yahoo.finance.quote where symbol in (?codigo?)";
+    public static final String QUERY_QUOTES      = "select * from yahoo.finance.quotes where symbol in (\"?codigo?\")";
+    public static final String ENV               = "store://datatables.org/alltableswithkeys";
+    public static final String FORMAT            = "json";
 
     private static Retrofit retrofit = null;
 

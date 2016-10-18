@@ -6,6 +6,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.List;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.api.ApiClient;
@@ -20,6 +23,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static br.com.bcunha.heavygear.model.api.ApiClient.getRetrofit;
+import static java.security.AccessController.getContext;
 
 public class HeavyGearActivity extends Activity {
 
@@ -45,6 +49,20 @@ public class HeavyGearActivity extends Activity {
 
     @OnClick(R.id.btnCotacao)
     public void buscar(View view) {
+        /*apiClient.getQueryValor(
+        ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", "\"BRFS3.SA\",\"GGBR3.SA\""),
+        ApiClient.ENV,
+        ApiClient.FORMAT)
+        .enqueue(new Callback<RespostaValorLista>(){
+            @Override
+            public void onResponse(Call<RespostaValorLista> call, Response<RespostaValorLista> response) {
+                txtCotacao.setText(response.body().toString());
+            }
+            @Override
+            public void onFailure(Call<RespostaValorLista> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
+            }
+        });*/
         apiClient.getQueryValor(
             ApiClient.QUERY_QUOTE.replace("?codigo?", edtCotacao.getText().toString()),
             ApiClient.ENV,
@@ -57,23 +75,24 @@ public class HeavyGearActivity extends Activity {
             }
             @Override
             public void onFailure(Call<RespostaValor> call, Throwable t) {
-                // Log error here since request failed
+                Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
             }
         });
-        /*apiClient.getQueryInfo(
+        /*Call<RespostaInfo> call =  apiClient.getQueryInfo(
             ApiClient.QUERY_QUOTES.replace("?codigo?", edtCotacao.getText().toString()),
             ApiClient.ENV,
-            ApiClient.FORMAT)
-        .enqueue(new Callback<RespostaInfo>(){
+            ApiClient.FORMAT);
+
+        call.enqueue(new Callback<RespostaInfo>(){
             @Override
             public void onResponse(Call<RespostaInfo> call, Response<RespostaInfo> response) {
                 response.body();
                 RespostaInfo.Quote respostaInfo = response.body().getQuery().getResults().getQuote();
-                //txtCotacao.setText(Double.toString(respostaInfo.getLastTradePriceOnly()));
+                txtCotacao.setText(Double.toString(respostaInfo.getLastTradePriceOnly()));
             }
             @Override
             public void onFailure(Call<RespostaInfo> call, Throwable t) {
-                // Log error here since request failed
+                Toast.makeText(getContext(), "Failure", Toast.LENGTH_SHORT).show();
             }
         });*/
     }
