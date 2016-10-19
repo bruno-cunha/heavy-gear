@@ -29,7 +29,7 @@ public class HeavyGearActivity extends Activity {
     private ApiInterface apiClient;
 
     @BindView(R.id.recyclerView)
-    private RecyclerView recyclerView;
+    RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.Adapter rvAdapter;
 
@@ -96,6 +96,6 @@ public class HeavyGearActivity extends Activity {
             public void onFailure(Call<RespostaInfo> call, Throwable t) {
                 Toast.makeText(getContext(), "Failure", Toast.LENGTH_SHORT).show();
             }
-        });*/
-    }
+        });
+    }*/
 }
