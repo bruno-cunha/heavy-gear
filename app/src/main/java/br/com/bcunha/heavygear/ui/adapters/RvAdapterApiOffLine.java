@@ -6,16 +6,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import br.com.bcunha.heavygear.R;
+import br.com.bcunha.heavygear.model.pojo.Acao;
 import br.com.bcunha.heavygear.model.pojo.RespostaValorLista;
+
+import static br.com.bcunha.heavygear.R.id.codigo;
 
 /**
  * Created by BRUNO on 18/10/2016.
  */
 
-public class RvAdapter extends RecyclerView.Adapter<RvAdapter.RvViewHolder> {
+public class RvAdapterApiOffLine extends RecyclerView.Adapter<RvAdapterApiOffLine.RvViewHolder> {
 
     public static class RvViewHolder extends RecyclerView.ViewHolder{
 
@@ -30,26 +35,27 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.RvViewHolder> {
             cotacao = (TextView) view.findViewById(R.id.cotacao);
         }
     }
-    private List<RespostaValorLista.Quote> quote;
 
-    public RvAdapter(List<RespostaValorLista.Quote> quote) {
-        this.quote = quote;
+    private List<Acao> acoes = new ArrayList<Acao>() {{add(new Acao("BRFS3","BR Foods", "Ordinaria", 57.3));
+                                                       add(new Acao("GGBR3","Gerdau", "Ordinaria", 10.0));
+                                                       add(new Acao("RUMO3","Rumo", "Ordinaria", 6.80));}};
+
+    public RvAdapterApiOffLine() {
     }
-
 
     @Override
     public int getItemCount() {
-        if (quote == null) {
+        if (acoes == null) {
             return 0;
         }
-        return quote.size();
+        return acoes.size();
     }
 
     @Override
     public void onBindViewHolder(RvViewHolder rvViewHolder, int position) {
-        rvViewHolder.codigo.setText(quote.get(position).getSymbol().toString());
-        rvViewHolder.empresa.setText(quote.get(position).getName().toString());
-        rvViewHolder.cotacao.setText(quote.get(position).getLastTradePriceOnly().toString());
+        rvViewHolder.codigo.setText(acoes.get(position).getCodigo().toString());
+        rvViewHolder.empresa.setText(acoes.get(position).getEmpresa().toString());
+        rvViewHolder.cotacao.setText(Double.toString(acoes.get(position).getCotacao()));
     }
 
     @Override

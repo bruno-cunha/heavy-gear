@@ -7,11 +7,13 @@ public class Acao {
     private String codigo;
     private String empresa;
     private String tipo;
+    private double cotacao;
 
-    public Acao(String codigo, String empresa, String tipo) {
+    public Acao(String codigo, String empresa, String tipo, double cotacao) {
         this.codigo = codigo;
         this.empresa = empresa;
         this.tipo = tipo;
+        this.cotacao = cotacao;
     }
 
     public String getCodigo() {
@@ -36,5 +38,13 @@ public class Acao {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public double getCotacao() {
+        return cotacao;
+    }
+
+    public void setCotacao(double cotacao) {
+        this.cotacao = cotacao;
     }
 }

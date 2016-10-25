@@ -10,13 +10,18 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.api.ApiClient;
 import br.com.bcunha.heavygear.model.api.ApiInterface;
+import br.com.bcunha.heavygear.model.pojo.Acao;
 import br.com.bcunha.heavygear.model.pojo.RespostaInfo;
 import br.com.bcunha.heavygear.model.pojo.RespostaValor;
+import br.com.bcunha.heavygear.model.pojo.RespostaValorLista;
+import br.com.bcunha.heavygear.ui.adapters.RvAdapter;
+import br.com.bcunha.heavygear.ui.adapters.RvAdapterApiOffLine;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -44,9 +49,24 @@ public class HeavyGearActivity extends Activity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        //rvAdapter = new rvAdapter(dataset);
-        //recyclerView.setAdapter(rvAdapter);
+        /*apiClient.getQueryValorLista(
+        ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", "\"BRFS3.SA\",\"GGBR3.SA\""),
+        ApiClient.ENV,
+        ApiClient.FORMAT)
+        .enqueue(new Callback<RespostaValorLista>(){
+            @Override
+            public void onResponse(Call<RespostaValorLista> call, Response<RespostaValorLista> response) {
+                rvAdapter = new RvAdapter(response.body().getQuery().getResults().getQuote());
+                recyclerView.setAdapter(rvAdapter);
+            }
+            @Override
+            public void onFailure(Call<RespostaValorLista> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
+            }
+        });*/
 
+        rvAdapter = new RvAdapterApiOffLine();
+        recyclerView.setAdapter(rvAdapter);
     }
 
     //@OnClick(R.id.btnCotacao)
