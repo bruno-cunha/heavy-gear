@@ -49,7 +49,7 @@ public class HeavyGearActivity extends Activity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        /*apiClient.getQueryValorLista(
+        apiClient.getQueryValorLista(
         ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", "\"BRFS3.SA\",\"GGBR3.SA\""),
         ApiClient.ENV,
         ApiClient.FORMAT)
@@ -63,10 +63,10 @@ public class HeavyGearActivity extends Activity {
             public void onFailure(Call<RespostaValorLista> call, Throwable t) {
                 Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
             }
-        });*/
+        });
 
-        rvAdapter = new RvAdapterApiOffLine();
-        recyclerView.setAdapter(rvAdapter);
+        //rvAdapter = new RvAdapterApiOffLine();
+        //recyclerView.setAdapter(rvAdapter);
     }
 
     //@OnClick(R.id.btnCotacao)
