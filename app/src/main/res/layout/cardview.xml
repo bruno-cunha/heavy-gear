@@ -5,11 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/cardView"
-    card_view:cardCornerRadius="5dp"
-    card_view:contentPadding="25dp"
-    card_view:cardElevation="6dp"
-    card_view:cardMaxElevation="10dp"
-    card_view:cardUseCompatPadding="true">
+    android:layout_marginTop="5dp"
+    android:layout_marginLeft="2dp"
+    android:layout_marginRight="2dp"
+    android:layout_marginBottom="0dp"
+    card_view:contentPadding="20dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,22 +21,34 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"/>
+            android:layout_alignParentLeft="true"
+            android:text="BRFS3"/>
 
         <TextView
             android:id="@+id/empresa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@id/codigo"/>
+            android:layout_toRightOf="@id/codigo"
+            android:text="Brsil Foods S.A"/>
 
         <TextView
             android:id="@+id/cotacao"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@id/empresa"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentEnd="true"
+            android:text="57.11"/>
+
+        <TextView
+            android:id="@+id/moeda"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toStartOf="@id/cotacao"
+            android:text="@string/moeda"/>
 
     </RelativeLayout>
 
