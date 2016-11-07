@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+
 import java.util.List;
 
 import br.com.bcunha.heavygear.R;
@@ -31,6 +32,10 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.RvViewHolder> {
         }
     }
     private List<RespostaValorLista.Quote> quote;
+
+    public RvAdapter(){
+        this.quote = null;
+    }
 
     public RvAdapter(List<RespostaValorLista.Quote> quote) {
         this.quote = quote;

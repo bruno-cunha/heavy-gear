@@ -1,9 +1,12 @@
 package br.com.bcunha.heavygear.ui.activities;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,19 +25,15 @@ import br.com.bcunha.heavygear.model.pojo.RespostaValor;
 import br.com.bcunha.heavygear.model.pojo.RespostaValorLista;
 import br.com.bcunha.heavygear.ui.adapters.RvAdapter;
 import br.com.bcunha.heavygear.ui.adapters.RvAdapterApiOffLine;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class HeavyGearActivity extends Activity {
+public class HeavyGearActivity extends AppCompatActivity {
 
     private ApiInterface apiClient;
-
-    @BindView(R.id.recyclerView)
-    RecyclerView recyclerView;
+    private Toolbar toolbar;
+    private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.Adapter rvAdapter;
 
@@ -43,30 +42,57 @@ public class HeavyGearActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_heavy_gear);
 
-        apiClient = ApiClient.getRetrofit().create(ApiInterface.class);
-        ButterKnife.bind(this);
+        apiClient     = ApiClient.getRetrofit().create(ApiInterface.class);
 
+        toolbar       = (Toolbar) findViewById(R.id.inc_toolbar);
+        toolbar.setTitle(R.string.app_name);
+        toolbar.inflateMenu(R.menu.menu);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch(item.getItemId()) {
+                    case R.id.action_search:
+                        break;
+                }
+                return true;
+            }
+        });
+        setSupportActionBar(toolbar);
+
+        recyclerView  = (RecyclerView) findViewById(R.id.recyclerView);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
         apiClient.getQueryValorLista(
-        ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", "\"BRFS3.SA\",\"GGBR3.SA\""),
-        ApiClient.ENV,
-        ApiClient.FORMAT)
-        .enqueue(new Callback<RespostaValorLista>(){
-            @Override
-            public void onResponse(Call<RespostaValorLista> call, Response<RespostaValorLista> response) {
-                rvAdapter = new RvAdapter(response.body().getQuery().getResults().getQuote());
-                recyclerView.setAdapter(rvAdapter);
-            }
-            @Override
-            public void onFailure(Call<RespostaValorLista> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
-            }
-        });
+            ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", "\"BRFS3.SA\",\"GGBR3.SA\""),
+            ApiClient.ENV,
+            ApiClient.FORMAT)
+            .enqueue(new Callback<RespostaValorLista>(){
+                @Override
+                public void onResponse(Call<RespostaValorLista> call,
+                                       Response<RespostaValorLista> response) {
+                    rvAdapter = new RvAdapter(response.body().getQuery().getResults().getQuote());
+                    recyclerView.setAdapter(rvAdapter);
+                }
+                @Override
+                public void onFailure(Call<RespostaValorLista> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
+                }
+            });
 
         //rvAdapter = new RvAdapterApiOffLine();
         //recyclerView.setAdapter(rvAdapter);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
     }
 
     //@OnClick(R.id.btnCotacao)

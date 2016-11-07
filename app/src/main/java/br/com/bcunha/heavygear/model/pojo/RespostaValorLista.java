@@ -171,7 +171,7 @@ public class RespostaValorLista {
 
         @SerializedName("Symbol")
         public String getSymbol() {
-            return this.Symbol;
+            return this.Symbol.substring(0, 5);
         }
         public void setSymbol(String symbol) {
             this.Symbol = symbol;
