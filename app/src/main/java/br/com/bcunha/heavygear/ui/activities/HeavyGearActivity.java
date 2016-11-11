@@ -3,6 +3,7 @@ package br.com.bcunha.heavygear.ui.activities;
 import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -45,9 +46,8 @@ public class HeavyGearActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_heavy_gear);
 
-        apiClient     = ApiClient.getRetrofit().create(ApiInterface.class);
-
-        toolbar       = (Toolbar) findViewById(R.id.inc_toolbar);
+        apiClient = ApiClient.getRetrofit().create(ApiInterface.class);
+        toolbar   = (Toolbar) findViewById(R.id.inc_toolbar);
         toolbar.setTitle(R.string.app_name);
         toolbar.inflateMenu(R.menu.menu);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -92,7 +92,9 @@ public class HeavyGearActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu, menu);
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView       = (SearchView)    menu.findItem(R.id.action_search).getActionView();
+
+        MenuItem menuItem     = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView)    MenuItemCompat.getActionView(menuItem);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         return true;
