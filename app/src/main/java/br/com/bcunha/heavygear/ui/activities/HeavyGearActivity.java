@@ -2,6 +2,7 @@ package br.com.bcunha.heavygear.ui.activities;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -13,22 +14,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.api.ApiClient;
 import br.com.bcunha.heavygear.model.api.ApiInterface;
+import br.com.bcunha.heavygear.model.db.HeavyGearAssetsHelper;
 import br.com.bcunha.heavygear.model.pojo.Acao;
-import br.com.bcunha.heavygear.model.pojo.RespostaInfo;
-import br.com.bcunha.heavygear.model.pojo.RespostaValor;
-import br.com.bcunha.heavygear.model.pojo.RespostaValorLista;
+import br.com.bcunha.heavygear.model.pojo.RespostaSimplesMultipla;
 import br.com.bcunha.heavygear.ui.adapters.RvAdapter;
-import br.com.bcunha.heavygear.ui.adapters.RvAdapterApiOffLine;
+import br.com.bcunha.heavygear.ui.adapters.RvPesquisaAdapter;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -36,25 +35,30 @@ import retrofit2.Response;
 public class HeavyGearActivity extends AppCompatActivity {
 
     private ApiInterface apiClient;
+    private HeavyGearAssetsHelper heavyGearAssetsHelper;
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
-    private RecyclerView.Adapter rvAdapter;
+    private RvAdapter rvAdapter;
+    private List<Acao> acoes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //setContentView(R.layout.testecoordinator);
         setContentView(R.layout.activity_heavy_gear);
 
-        apiClient = ApiClient.getRetrofit().create(ApiInterface.class);
-        toolbar   = (Toolbar) findViewById(R.id.inc_toolbar);
+        heavyGearAssetsHelper = new HeavyGearAssetsHelper(this);
+        heavyGearAssetsHelper.openDB();
+        toolbar = (Toolbar) findViewById(R.id.inc_toolbar);
         toolbar.setTitle(R.string.app_name);
         toolbar.inflateMenu(R.menu.menu);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                switch(item.getItemId()) {
+                switch (item.getItemId()) {
                     case R.id.action_search:
+                        //botao menu
                         break;
                 }
                 return true;
@@ -62,29 +66,41 @@ public class HeavyGearActivity extends AppCompatActivity {
         });
         setSupportActionBar(toolbar);
 
-        recyclerView  = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        apiClient.getQueryValorLista(
-            ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", "\"BRFS3.SA\",\"GGBR3.SA\""),
-            ApiClient.ENV,
-            ApiClient.FORMAT)
-            .enqueue(new Callback<RespostaValorLista>(){
-                @Override
-                public void onResponse(Call<RespostaValorLista> call,
-                                       Response<RespostaValorLista> response) {
-                    rvAdapter = new RvAdapter(response.body().getQuery().getResults().getQuote());
-                    recyclerView.setAdapter(rvAdapter);
-                }
-                @Override
-                public void onFailure(Call<RespostaValorLista> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
-                }
-            });
+        Acao acaoBRFS3 = new Acao("BRFS3.SA", "Brasil Foodas S.A", "", 51.11);
+        Acao acaoITSA4 = new Acao("ITSA4.SA", "Itau SA", "", 13.1);
+        Acao acaoGGBR3 = new Acao("GGBR4.SA", "Gerdau", "", 13.1);
+        Acao acaoGOAU4 = new Acao("GOAU4.SA", "Metalurgica Gerdau", "", 13.1);
+        Acao acaoJBSS3 = new Acao("JBSS3.SA", "JBS", "", 13.1);
 
-        //rvAdapter = new RvAdapterApiOffLine();
-        //recyclerView.setAdapter(rvAdapter);
+        acoes = new ArrayList<Acao>();
+        acoes.add(acaoBRFS3);
+        acoes.add(acaoITSA4);
+        acoes.add(acaoGGBR3);
+        acoes.add(acaoGOAU4);
+        acoes.add(acaoJBSS3);
+
+        apiClient = ApiClient.getRetrofit().create(ApiInterface.class);
+        /*apiClient.getQueryValorLista(
+        ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", formatCodigo(acoes)),
+        ApiClient.ENV,
+        ApiClient.FORMAT)
+        .enqueue(new Callback<RespostaSimplesMultipla>() {
+            @Override
+            public void onResponse(Call<RespostaSimplesMultipla> call,
+                                   Response<RespostaSimplesMultipla> response) {
+                rvAdapter = new RvAdapter().createFromQuote(response.body().getQuery().getResults().getQuote());
+                recyclerView.setAdapter(rvAdapter);
+            }
+
+            @Override
+            public void onFailure(Call<RespostaSimplesMultipla> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
+            }
+        });*/
     }
 
     @Override
@@ -93,8 +109,8 @@ public class HeavyGearActivity extends AppCompatActivity {
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 
-        MenuItem menuItem     = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView)    MenuItemCompat.getActionView(menuItem);
+        MenuItem menuItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         return true;
@@ -105,53 +121,59 @@ public class HeavyGearActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    //@OnClick(R.id.btnCotacao)
-    //public void buscar(View view) {
-        /*apiClient.getQueryValor(
-        ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", "\"BRFS3.SA\",\"GGBR3.SA\""),
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        String sender;
+        String codigo;
+
+        if (intent.getStringExtra("sender").equals("PesquisaActivity")) {
+            sender = intent.getStringExtra("sender");
+            codigo = intent.getStringExtra("codigo");
+
+            acoes.add(heavyGearAssetsHelper.getAcao(codigo));
+            atualizar((Button) findViewById(R.id.atualizar));
+        }
+    }
+
+    public String formatCodigo(List<Acao> acoes) {
+        StringBuffer codigos = new StringBuffer();
+        boolean primeiro = true;
+
+        for (Acao acao : acoes) {
+            if (primeiro) {
+                codigos.append("\"").append(acao.getCodigo().toString()).append("\"");
+                primeiro = false;
+            } else {
+                codigos.append(",").append("\"").append(acao.getCodigo().toString()).append("\"");
+            }
+        }
+        return codigos.toString();
+    }
+
+    public void atualizar(View view) {
+        apiClient.getQueryValorLista(
+        ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", formatCodigo(acoes)),
         ApiClient.ENV,
         ApiClient.FORMAT)
-        .enqueue(new Callback<RespostaValorLista>(){
+        .enqueue(new Callback<RespostaSimplesMultipla>() {
             @Override
-            public void onResponse(Call<RespostaValorLista> call, Response<RespostaValorLista> response) {
-                txtCotacao.setText(response.body().toString());
+            public void onResponse(Call<RespostaSimplesMultipla> call,
+                                   Response<RespostaSimplesMultipla> response) {
+                rvAdapter = new RvAdapter().createFromQuote(response.body().getQuery().getResults().getQuote());
+                recyclerView.setAdapter(rvAdapter);
             }
-            @Override
-            public void onFailure(Call<RespostaValorLista> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
-            }
-        });*/
-        /*apiClient.getQueryValor(
-            ApiClient.QUERY_QUOTE.replace("?codigo?", edtCotacao.getText().toString()),
-            ApiClient.ENV,
-            ApiClient.FORMAT)
-        .enqueue(new Callback<RespostaValor>(){
-            @Override
-            public void onResponse(Call<RespostaValor> call, Response<RespostaValor> response) {
-                RespostaValor.Quote  respostaValor =  response.body().getQuery().getResults().getQuote();
-                txtCotacao.setText(respostaValor.getLastTradePriceOnly().toString());
-            }
-            @Override
-            public void onFailure(Call<RespostaValor> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
-            }
-        });*/
-        /*Call<RespostaInfo> call =  apiClient.getQueryInfo(
-            ApiClient.QUERY_QUOTES.replace("?codigo?", edtCotacao.getText().toString()),
-            ApiClient.ENV,
-            ApiClient.FORMAT);
 
-        call.enqueue(new Callback<RespostaInfo>(){
             @Override
-            public void onResponse(Call<RespostaInfo> call, Response<RespostaInfo> response) {
-                response.body();
-                RespostaInfo.Quote respostaInfo = response.body().getQuery().getResults().getQuote();
-                txtCotacao.setText(Double.toString(respostaInfo.getLastTradePriceOnly()));
-            }
-            @Override
-            public void onFailure(Call<RespostaInfo> call, Throwable t) {
-                Toast.makeText(getContext(), "Failure", Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<RespostaSimplesMultipla> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
             }
         });
-    }*/
+    }
+
+    @Override
+    protected void onDestroy() {
+        heavyGearAssetsHelper.closeDB();
+        super.onDestroy();
+    }
 }

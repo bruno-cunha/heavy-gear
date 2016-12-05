@@ -7,10 +7,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import br.com.bcunha.heavygear.R;
-import br.com.bcunha.heavygear.model.pojo.RespostaValorLista;
+import br.com.bcunha.heavygear.model.pojo.Acao;
+import br.com.bcunha.heavygear.model.pojo.RespostaSimplesMultipla;
 
 /**
  * Created by BRUNO on 18/10/2016.
@@ -31,41 +33,60 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.RvViewHolder> {
             cotacao = (TextView) view.findViewById(R.id.cotacao);
         }
     }
-    private List<RespostaValorLista.Quote> quote;
+    private List<Acao> acoes;
 
-    public RvAdapter(){
-        this.quote = null;
+    public RvAdapter() {}
+
+    public RvAdapter(List<Acao> acoes){
+        this.acoes = acoes;
     }
 
-    public RvAdapter(List<RespostaValorLista.Quote> quote) {
-        this.quote = quote;
-    }
+    public static RvAdapter createFromQuote(List<RespostaSimplesMultipla.Quote> quoteAcoes){
+        List<Acao> acoes  = new ArrayList<Acao>();
 
+        for (RespostaSimplesMultipla.Quote quote: quoteAcoes) {
+            acoes.add(new Acao (quote.getsymbol(),
+                                quote.getName(),
+                                "", //da erro quando vai pegar o preco da acao selecionada na pesquisa
+                                Double.parseDouble(quote.getLastTradePriceOnly())));
+        }
+
+        return new RvAdapter(acoes);
+    }
 
     @Override
     public int getItemCount() {
-        if (quote == null) {
+        if (acoes == null) {
             return 0;
         }
-        return quote.size();
+        return acoes.size();
     }
 
     @Override
     public void onBindViewHolder(RvViewHolder rvViewHolder, int position) {
-        rvViewHolder.codigo.setText(quote.get(position).getSymbol().toString());
-        rvViewHolder.empresa.setText(quote.get(position).getName().toString());
-        rvViewHolder.cotacao.setText(quote.get(position).getLastTradePriceOnly().toString());
+        rvViewHolder.codigo.setText(acoes.get(position).getCodigo());
+        rvViewHolder.empresa.setText(acoes.get(position).getEmpresa());
+        rvViewHolder.cotacao.setText(String.format("%.2f", acoes.get(position).getCotacao()));
     }
 
     @Override
     public RvViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview, parent, false);
-        RvViewHolder rvViewHolder = new RvViewHolder(v);
-        return rvViewHolder;
+        return new RvViewHolder(v);
     }
 
-    @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
+    public void add(Acao acao) {
+        acoes.add(acao);
+        notifyDataSetChanged();
+    }
+
+    public void remove(int position) {
+
+    }
+
+    public void update(List<Acao> novasAcoes) {
+        acoes.clear();
+        acoes.addAll(novasAcoes);
+        notifyDataSetChanged();
     }
 }

@@ -6,6 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import br.com.bcunha.heavygear.model.pojo.Acao;
+
 /**
  * Created by BRUNO on 12/09/2016.
  */
@@ -23,6 +28,7 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
     // Campos tabela ACOES
     public static final String CAMPO_EMPRESA = "empresa";
     public static final String CAMPO_TIPO    = "tipo";
+    public static final String CAMPO_COTACAO = "cotacao";
 
     SQLiteDatabase heavyGearDB;
 
@@ -70,6 +76,22 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
         return heavyGearDB.delete(TABELA_ACOES, where, null);
     }
 
+    public Acao getAcao(String codigo) {
+        String query = "SELECT "+
+                         " * " +
+                        "FROM " +
+                          TABELA_ACOES +
+                        " WHERE " +
+                          CAMPO_CODIGO + " = '" + codigo + "'";
+        Cursor cursor = heavyGearDB.rawQuery(query, null);
+        cursor.moveToFirst();
+        Acao acao = new Acao(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)) + ".SA",
+                             cursor.getString(cursor.getColumnIndex(CAMPO_EMPRESA)),
+                             cursor.getString(cursor.getColumnIndex(CAMPO_TIPO)),
+                             0);
+        return acao;
+    }
+
     public Cursor getAcoes(){
         String query = "SELECT * FROM " + TABELA_ACOES;
 
@@ -78,5 +100,25 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
 
     public Cursor execQuery (String query) {
         return heavyGearDB.rawQuery(query, null);
+    }
+
+    public List<Acao> pesquisaAcao(String filtro){
+        String query = "SELECT " +
+                        " * "+
+                       " FROM " +
+                          TABELA_ACOES +
+                       " WHERE " +
+                          CAMPO_CODIGO + " LIKE '%" + filtro + "%'";
+
+        Cursor cursor = heavyGearDB.rawQuery(query, null);
+        List<Acao> acoes = new ArrayList<Acao>();
+
+        while (cursor.moveToNext()) {
+            acoes.add(new Acao(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)),
+                               cursor.getString(cursor.getColumnIndex(CAMPO_EMPRESA)),
+                               cursor.getString(cursor.getColumnIndex(CAMPO_TIPO)),
+                               0));
+        }
+        return acoes;
     }
 }

@@ -8,13 +8,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.pojo.Acao;
-import br.com.bcunha.heavygear.model.pojo.RespostaValorLista;
-
-import static br.com.bcunha.heavygear.R.id.codigo;
 
 /**
  * Created by BRUNO on 18/10/2016.
