@@ -45,7 +45,6 @@ public class HeavyGearActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.testecoordinator);
         setContentView(R.layout.activity_heavy_gear);
 
         heavyGearAssetsHelper = new HeavyGearAssetsHelper(this);
