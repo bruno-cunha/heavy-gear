@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -19,6 +20,8 @@ import br.com.bcunha.heavygear.model.pojo.Acao;
 
 public class AutoCompleteAdapter extends ArrayAdapter<Acao> {
 
+    private Filter filter;
+
     public AutoCompleteAdapter(Context context, int resource, List<Acao> objects) {
         super(context, resource, objects);
     }
@@ -29,11 +32,22 @@ public class AutoCompleteAdapter extends ArrayAdapter<Acao> {
         if(convertView == null){
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.autocomplete_item,parent, false);
         };
+
+        TextView txtCodigo = (TextView) convertView.findViewById(R.id.codigo);
+
+        final Acao acao = getItem(position);
+
+        txtCodigo.setText(acao.getCodigo());
+
+        return convertView;
     }
 
     @NonNull
     @Override
     public Filter getFilter() {
+        if (filter == null){
+            filter = new AcoesFilter();
+        }
         return super.getFilter();
     }
 }
