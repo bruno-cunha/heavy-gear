@@ -4,16 +4,26 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.Filter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -27,7 +37,6 @@ import br.com.bcunha.heavygear.model.db.HeavyGearAssetsHelper;
 import br.com.bcunha.heavygear.model.pojo.Acao;
 import br.com.bcunha.heavygear.model.pojo.RespostaSimplesMultipla;
 import br.com.bcunha.heavygear.ui.adapters.RvAdapter;
-import br.com.bcunha.heavygear.ui.adapters.RvPesquisaAdapter;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -41,6 +50,79 @@ public class HeavyGearActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private RvAdapter rvAdapter;
     private List<Acao> acoes;
+    private AutoCompleteAdapter autoCompleteAdapter;
+
+    public class AcoesFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence charSequence) {
+            List<Acao> acoes = new ArrayList<Acao>();
+            FilterResults filterResults = new FilterResults();
+            String substr = charSequence.toString().toLowerCase();
+
+            if(substr == null || substr.length() == 0) {
+                filterResults.values = acoes;
+                filterResults.count = acoes.size();
+            } else {
+                final ArrayList<Acao> retAcoes = new ArrayList<Acao>();
+                for (Acao acao : acoes) {
+                    try {
+                        if(acao.getCodigo().toLowerCase().contains(charSequence))  {
+                            retAcoes.add(acao);
+                        }
+                    } catch (Exception e) {
+                        Log.i(Acao.class.toString(), e.getMessage());
+                    }
+                }
+                filterResults.values = retAcoes;
+                filterResults.count = retAcoes.size();
+            }
+            return filterResults;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            autoCompleteAdapter.clear();
+            if (filterResults.count > 0) {
+                for (Acao acao : (ArrayList<Acao>) filterResults.values) {
+                    autoCompleteAdapter.add(acao);
+                }
+            }
+        }
+    }
+
+    public class AutoCompleteAdapter extends ArrayAdapter<Acao> {
+
+        private Filter filter;
+
+        public AutoCompleteAdapter(Context context, int resource, List<Acao> objects) {
+            super(context, resource, objects);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if(convertView == null){
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.autocomplete_item,parent, false);
+            };
+
+            TextView txtCodigo = (TextView) convertView.findViewById(R.id.codigo);
+
+            final Acao acao = getItem(position);
+
+            txtCodigo.setText(acao.getCodigo());
+
+            return convertView;
+        }
+
+        @NonNull
+        @Override
+        public Filter getFilter() {
+            if (filter == null){
+                filter = new AcoesFilter();
+            }
+            return super.getFilter();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +147,27 @@ public class HeavyGearActivity extends AppCompatActivity {
         });
         setSupportActionBar(toolbar);
 
+        ActionBar actionBar = getSupportActionBar(); // you can use ABS or the non-bc ActionBar
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_USE_LOGO | ActionBar.DISPLAY_SHOW_HOME
+        | ActionBar.DISPLAY_HOME_AS_UP); // what's mainly important here is DISPLAY_SHOW_CUSTOM. the rest is optional
+
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        // inflate the view that we created before
+        View v = inflater.inflate(R.layout.toolbar_autocomplete, null);
+        AutoCompleteTextView textView =  (AutoCompleteTextView) v.findViewById(R.id.autoComplete);
+
+        textView.setAdapter(autoCompleteAdapter);
+
+        textView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // do something when the user clicks
+            }
+        });
+        actionBar.setCustomView(v);
+
+
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -83,6 +186,8 @@ public class HeavyGearActivity extends AppCompatActivity {
         acoes.add(acaoJBSS3);
 
         apiClient = ApiClient.getRetrofit().create(ApiInterface.class);
+
+
         /*apiClient.getQueryValorLista(
         ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", formatCodigo(acoes)),
         ApiClient.ENV,
@@ -102,7 +207,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         });*/
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
 
@@ -113,7 +218,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         return true;
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
