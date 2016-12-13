@@ -1,20 +1,15 @@
 package br.com.bcunha.heavygear.ui.activities;
 
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,10 +20,8 @@ import android.widget.Button;
 import android.widget.Filter;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.api.ApiClient;
@@ -98,7 +91,6 @@ public class HeavyGearActivity extends AppCompatActivity {
             super(context, resource, objects);
         }
 
-        @NonNull
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if(convertView == null){
@@ -114,7 +106,6 @@ public class HeavyGearActivity extends AppCompatActivity {
             return convertView;
         }
 
-        @NonNull
         @Override
         public Filter getFilter() {
             if (filter == null){
@@ -128,6 +119,19 @@ public class HeavyGearActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_heavy_gear);
+
+        Acao acaoBRFS3 = new Acao("BRFS3.SA", "Brasil Foodas S.A", "", 51.11);
+        Acao acaoITSA4 = new Acao("ITSA4.SA", "Itau SA", "", 13.1);
+        Acao acaoGGBR3 = new Acao("GGBR4.SA", "Gerdau", "", 13.1);
+        Acao acaoGOAU4 = new Acao("GOAU4.SA", "Metalurgica Gerdau", "", 13.1);
+        Acao acaoJBSS3 = new Acao("JBSS3.SA", "JBS", "", 13.1);
+
+        acoes = new ArrayList<Acao>();
+        acoes.add(acaoBRFS3);
+        acoes.add(acaoITSA4);
+        acoes.add(acaoGGBR3);
+        acoes.add(acaoGOAU4);
+        acoes.add(acaoJBSS3);
 
         heavyGearAssetsHelper = new HeavyGearAssetsHelper(this);
         heavyGearAssetsHelper.openDB();
@@ -154,11 +158,12 @@ public class HeavyGearActivity extends AppCompatActivity {
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         // inflate the view that we created before
         View v = inflater.inflate(R.layout.toolbar_autocomplete, null);
-        AutoCompleteTextView textView =  (AutoCompleteTextView) v.findViewById(R.id.autoComplete);
+        AutoCompleteAdapter autoCompleteAdapter = new AutoCompleteAdapter(this, R.layout.autocomplete_item, acoes);
+        AutoCompleteTextView autoCompleteTextView =  (AutoCompleteTextView) v.findViewById(R.id.autoComplete);
 
-        textView.setAdapter(autoCompleteAdapter);
+        autoCompleteTextView.setAdapter(autoCompleteAdapter);
 
-        textView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -167,24 +172,9 @@ public class HeavyGearActivity extends AppCompatActivity {
         });
         actionBar.setCustomView(v);
 
-
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-
-        Acao acaoBRFS3 = new Acao("BRFS3.SA", "Brasil Foodas S.A", "", 51.11);
-        Acao acaoITSA4 = new Acao("ITSA4.SA", "Itau SA", "", 13.1);
-        Acao acaoGGBR3 = new Acao("GGBR4.SA", "Gerdau", "", 13.1);
-        Acao acaoGOAU4 = new Acao("GOAU4.SA", "Metalurgica Gerdau", "", 13.1);
-        Acao acaoJBSS3 = new Acao("JBSS3.SA", "JBS", "", 13.1);
-
-        acoes = new ArrayList<Acao>();
-        acoes.add(acaoBRFS3);
-        acoes.add(acaoITSA4);
-        acoes.add(acaoGGBR3);
-        acoes.add(acaoGOAU4);
-        acoes.add(acaoJBSS3);
-
         apiClient = ApiClient.getRetrofit().create(ApiInterface.class);
 
 
