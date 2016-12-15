@@ -48,7 +48,7 @@ public class PesquisaActivity extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.inc_toolbar);
         toolbar.setTitle(query);
-        toolbar.inflateMenu(R.menu.menu);
+        toolbar.inflateMenu(R.menu.menu_searchview);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -81,7 +81,7 @@ public class PesquisaActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
+        getMenuInflater().inflate(R.menu.menu_searchview, menu);
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 

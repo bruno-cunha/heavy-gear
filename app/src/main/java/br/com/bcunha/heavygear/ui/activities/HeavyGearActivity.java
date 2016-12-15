@@ -1,28 +1,15 @@
 package br.com.bcunha.heavygear.ui.activities;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.Filter;
-import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +34,7 @@ public class HeavyGearActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private RvAdapter rvAdapter;
     private List<Acao> acoes;
+    private AutoCompleteTextView autoCompleteTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,20 +56,28 @@ public class HeavyGearActivity extends AppCompatActivity {
 
         heavyGearAssetsHelper = new HeavyGearAssetsHelper(this);
         heavyGearAssetsHelper.openDB();
+
+        autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.autoComplete);
+        autoCompleteTextView.setVisibility(View.INVISIBLE);
+
         toolbar = (Toolbar) findViewById(R.id.inc_toolbar);
         toolbar.setTitle(R.string.app_name);
-        toolbar.inflateMenu(R.menu.menu);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+        /*toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.action_search:
-                        //botao menu
+                        if (autoCompleteTextView.getVisibility() == View.VISIBLE) {
+                            autoCompleteTextView.setVisibility(View.INVISIBLE);
+                        } else {
+                            autoCompleteTextView.setVisibility(View.VISIBLE);
+                        }
                         break;
                 }
                 return true;
             }
-        });
+        });*/
+        //toolbar.inflateMenu(R.menu.menu_autocomplete);
         setSupportActionBar(toolbar);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -111,26 +107,37 @@ public class HeavyGearActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
+        getMenuInflater().inflate(R.menu.menu_autocomplete, menu);
 
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        /*SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 
-        MenuItem menuItem = menu.findItem(R.id.action_search);
+        MenuItem menuItem = menu_searchview.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));*/
+
+        //MenuItem menuItem = menu.findItem(R.id.action_search);
 
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                if (autoCompleteTextView.getVisibility() == View.VISIBLE) {
+                    autoCompleteTextView.setVisibility(View.INVISIBLE);
+                } else {
+                    autoCompleteTextView.setVisibility(View.VISIBLE);
+                }
+                break;
+        }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        String sender;
+        /*String sender;
         String codigo;
 
         if (intent.getStringExtra("sender").equals("PesquisaActivity")) {
@@ -139,7 +146,7 @@ public class HeavyGearActivity extends AppCompatActivity {
 
             acoes.add(heavyGearAssetsHelper.getAcao(codigo));
             atualizar((Button) findViewById(R.id.atualizar));
-        }
+        }*/
     }
 
     public String formatCodigo(List<Acao> acoes) {
