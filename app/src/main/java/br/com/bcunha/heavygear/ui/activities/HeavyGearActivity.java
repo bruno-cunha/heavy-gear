@@ -1,15 +1,20 @@
 package br.com.bcunha.heavygear.ui.activities;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +29,8 @@ import br.com.bcunha.heavygear.ui.adapters.RvAdapter;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static br.com.bcunha.heavygear.R.menu.menu_searchview;
 
 public class HeavyGearActivity extends AppCompatActivity {
 
@@ -56,88 +63,38 @@ public class HeavyGearActivity extends AppCompatActivity {
 
         heavyGearAssetsHelper = new HeavyGearAssetsHelper(this);
         heavyGearAssetsHelper.openDB();
-
-        autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.autoComplete);
-        autoCompleteTextView.setVisibility(View.INVISIBLE);
-
         toolbar = (Toolbar) findViewById(R.id.inc_toolbar);
         toolbar.setTitle(R.string.app_name);
-        /*toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_search:
-                        if (autoCompleteTextView.getVisibility() == View.VISIBLE) {
-                            autoCompleteTextView.setVisibility(View.INVISIBLE);
-                        } else {
-                            autoCompleteTextView.setVisibility(View.VISIBLE);
-                        }
-                        break;
-                }
-                return true;
-            }
-        });*/
-        //toolbar.inflateMenu(R.menu.menu_autocomplete);
         setSupportActionBar(toolbar);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         apiClient = ApiClient.getRetrofit().create(ApiInterface.class);
-
-
-        /*apiClient.getQueryValorLista(
-        ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", formatCodigo(acoes)),
-        ApiClient.ENV,
-        ApiClient.FORMAT)
-        .enqueue(new Callback<RespostaSimplesMultipla>() {
-            @Override
-            public void onResponse(Call<RespostaSimplesMultipla> call,
-                                   Response<RespostaSimplesMultipla> response) {
-                rvAdapter = new RvAdapter().createFromQuote(response.body().getQuery().getResults().getQuote());
-                recyclerView.setAdapter(rvAdapter);
-            }
-
-            @Override
-            public void onFailure(Call<RespostaSimplesMultipla> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
-            }
-        });*/
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_autocomplete, menu);
+        getMenuInflater().inflate(menu_searchview, menu);
 
-        /*SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 
-        MenuItem menuItem = menu_searchview.findItem(R.id.action_search);
+        MenuItem menuItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));*/
-
-        //MenuItem menuItem = menu.findItem(R.id.action_search);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_search:
-                if (autoCompleteTextView.getVisibility() == View.VISIBLE) {
-                    autoCompleteTextView.setVisibility(View.INVISIBLE);
-                } else {
-                    autoCompleteTextView.setVisibility(View.VISIBLE);
-                }
-                break;
-        }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        /*String sender;
+        String sender;
         String codigo;
 
         if (intent.getStringExtra("sender").equals("PesquisaActivity")) {
@@ -146,7 +103,7 @@ public class HeavyGearActivity extends AppCompatActivity {
 
             acoes.add(heavyGearAssetsHelper.getAcao(codigo));
             atualizar((Button) findViewById(R.id.atualizar));
-        }*/
+        }
     }
 
     public String formatCodigo(List<Acao> acoes) {
