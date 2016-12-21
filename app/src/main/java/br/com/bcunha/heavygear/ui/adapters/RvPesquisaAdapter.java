@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,26 +21,20 @@ import br.com.bcunha.heavygear.ui.activities.HeavyGearActivity;
 
 public class RvPesquisaAdapter extends RecyclerView.Adapter<RvPesquisaAdapter.RvPesquisaViewHolder> {
 
-    public static class RvPesquisaViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class RvPesquisaViewHolder extends RecyclerView.ViewHolder {
         final TextView textView;
-        final ViewHolderClicks listener;
+        final ImageButton imageButton;
 
-        public RvPesquisaViewHolder(View view, ViewHolderClicks listener) {
+        public RvPesquisaViewHolder(View view) {
             super(view);
-            this.listener = listener;
             textView = (TextView) view.findViewById(R.id.textView);
-            textView.setOnClickListener(this);
-        }
+            imageButton = (ImageButton) view.findViewById(R.id.imageButton);
+            imageButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-        @Override
-        public void onClick (View view) {
-            if (view instanceof TextView) {
-                listener.onSelect((TextView) view);
-            }
-        }
-
-        public static interface ViewHolderClicks {
-            public void onSelect(TextView textView);
+                }
+            });
         }
     }
 
@@ -51,16 +46,7 @@ public class RvPesquisaAdapter extends RecyclerView.Adapter<RvPesquisaAdapter.Rv
 
     public RvPesquisaViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.row, parent, false);
-        RvPesquisaViewHolder rvPesquisaViewHolder = new RvPesquisaViewHolder(v, new RvPesquisaViewHolder.ViewHolderClicks() {
-            @Override
-            public void onSelect(TextView textView) {
-                Intent intent = new Intent(parent.getContext(), HeavyGearActivity.class);
-                intent.putExtra("sender", "PesquisaActivity");
-                intent.putExtra("codigo", textView.getText());
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                parent.getContext().startActivity(intent);
-            }
-        });
+        RvPesquisaViewHolder rvPesquisaViewHolder = new RvPesquisaViewHolder(v);
         return rvPesquisaViewHolder;
     }
 

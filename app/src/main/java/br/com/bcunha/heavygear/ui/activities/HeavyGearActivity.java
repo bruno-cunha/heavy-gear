@@ -74,6 +74,15 @@ public class HeavyGearActivity extends AppCompatActivity {
     }
 
     @Override
+    public void startActivity(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            //intent.putExtra("acoes", acoes);
+        }
+
+        super.startActivity(intent);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(menu_searchview, menu);
 
