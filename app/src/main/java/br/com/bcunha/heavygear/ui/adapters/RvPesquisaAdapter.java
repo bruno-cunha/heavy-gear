@@ -40,6 +40,8 @@ public class RvPesquisaAdapter extends RecyclerView.Adapter<RvPesquisaAdapter.Rv
 
     private List<Acao> resultados;
 
+    private List<Acao> watchList;
+
     public RvPesquisaAdapter(List<Acao> resultados) {
         this.resultados = resultados;
     }

@@ -1,9 +1,12 @@
 package br.com.bcunha.heavygear.model.pojo;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by BRUNO on 18/09/2016.
  */
-public class Acao {
+public class Acao implements Parcelable {
     private String codigo;
     private String empresa;
     private String tipo;
@@ -46,5 +49,37 @@ public class Acao {
 
     public void setCotacao(double cotacao) {
         this.cotacao = cotacao;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(codigo);
+        parcel.writeString(empresa);
+        parcel.writeString(tipo);
+        parcel.writeDouble(cotacao);
+    }
+
+    // Creator
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Acao createFromParcel(Parcel in){
+            return new Acao(in);
+        }
+
+        public Acao[] newArray(int size) {
+            return new Acao[size];
+        }
+    };
+
+    // "De-parcel object
+    public Acao(Parcel in) {
+        this.codigo = in.readString();
+        this.empresa = in.readString();
+        this.tipo = in.readString();
+        this.cotacao = in.readDouble();
     }
 }

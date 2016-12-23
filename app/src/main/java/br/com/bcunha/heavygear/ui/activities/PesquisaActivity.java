@@ -44,6 +44,8 @@ public class PesquisaActivity extends AppCompatActivity {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             query = intent.getStringExtra(SearchManager.QUERY);
             resultados = heavyGearAssetsHelper.pesquisaAcao(query);
+            //Acao acao= intent.getExtras().getParcelable("acoes");
+            //textView.setText(acao.toString());
         }
 
         toolbar = (Toolbar) findViewById(R.id.inc_toolbar);

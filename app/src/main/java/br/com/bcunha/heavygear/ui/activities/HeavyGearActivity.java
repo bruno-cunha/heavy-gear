@@ -40,7 +40,7 @@ public class HeavyGearActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private RvAdapter rvAdapter;
-    private List<Acao> acoes;
+    private List<Acao> watchList;
     private AutoCompleteTextView autoCompleteTextView;
 
     @Override
@@ -54,12 +54,12 @@ public class HeavyGearActivity extends AppCompatActivity {
         Acao acaoGOAU4 = new Acao("GOAU4.SA", "Metalurgica Gerdau", "", 13.1);
         Acao acaoJBSS3 = new Acao("JBSS3.SA", "JBS", "", 13.1);
 
-        acoes = new ArrayList<Acao>();
-        acoes.add(acaoBRFS3);
-        acoes.add(acaoITSA4);
-        acoes.add(acaoGGBR3);
-        acoes.add(acaoGOAU4);
-        acoes.add(acaoJBSS3);
+        watchList = new ArrayList<Acao>();
+        watchList.add(acaoBRFS3);
+        watchList.add(acaoITSA4);
+        watchList.add(acaoGGBR3);
+        watchList.add(acaoGOAU4);
+        watchList.add(acaoJBSS3);
 
         heavyGearAssetsHelper = new HeavyGearAssetsHelper(this);
         heavyGearAssetsHelper.openDB();
@@ -76,7 +76,8 @@ public class HeavyGearActivity extends AppCompatActivity {
     @Override
     public void startActivity(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            //intent.putExtra("acoes", acoes);
+            //intent.putExtra("watchList", watchList);
+            intent.putParcelableArrayListExtra("watchList", (ArrayList) watchList);
         }
 
         super.startActivity(intent);
@@ -110,7 +111,7 @@ public class HeavyGearActivity extends AppCompatActivity {
             sender = intent.getStringExtra("sender");
             codigo = intent.getStringExtra("codigo");
 
-            acoes.add(heavyGearAssetsHelper.getAcao(codigo));
+            watchList.add(heavyGearAssetsHelper.getAcao(codigo));
             atualizar((Button) findViewById(R.id.atualizar));
         }
     }
@@ -132,7 +133,7 @@ public class HeavyGearActivity extends AppCompatActivity {
 
     public void atualizar(View view) {
         apiClient.getQueryValorLista(
-        ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", formatCodigo(acoes)),
+        ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", formatCodigo(watchList)),
         ApiClient.ENV,
         ApiClient.FORMAT)
         .enqueue(new Callback<RespostaSimplesMultipla>() {
