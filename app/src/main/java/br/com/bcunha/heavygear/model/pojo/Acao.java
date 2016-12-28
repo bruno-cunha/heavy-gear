@@ -77,9 +77,9 @@ public class Acao implements Parcelable {
 
     // "De-parcel object
     public Acao(Parcel in) {
-        this.codigo = in.readString();
+        this.codigo  = in.readString();
         this.empresa = in.readString();
-        this.tipo = in.readString();
+        this.tipo    = in.readString();
         this.cotacao = in.readDouble();
     }
 }

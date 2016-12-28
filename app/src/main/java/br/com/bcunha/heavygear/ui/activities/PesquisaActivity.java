@@ -27,9 +27,10 @@ public class PesquisaActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private RvPesquisaAdapter rvPesquisaAdapter;
-    private String  query;
+    private String query;
     private HeavyGearAssetsHelper heavyGearAssetsHelper;
     private List<Acao> resultados;
+    private List<Acao> watchList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +45,7 @@ public class PesquisaActivity extends AppCompatActivity {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             query = intent.getStringExtra(SearchManager.QUERY);
             resultados = heavyGearAssetsHelper.pesquisaAcao(query);
-            //Acao acao= intent.getExtras().getParcelable("acoes");
-            //textView.setText(acao.toString());
+            watchList  = intent.getParcelableArrayListExtra("watchList");
         }
 
         toolbar = (Toolbar) findViewById(R.id.inc_toolbar);
