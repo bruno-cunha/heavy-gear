@@ -42,8 +42,10 @@ public class RvPesquisaAdapter extends RecyclerView.Adapter<RvPesquisaAdapter.Rv
 
     private List<Acao> watchList;
 
-    public RvPesquisaAdapter(List<Acao> resultados) {
+    public RvPesquisaAdapter(List<Acao> resultados, List<Acao> watchList) {
         this.resultados = resultados;
+        this.watchList  = watchList;
+        comparaResultadosEWatch();
     }
 
     public RvPesquisaViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
@@ -75,5 +77,13 @@ public class RvPesquisaAdapter extends RecyclerView.Adapter<RvPesquisaAdapter.Rv
         resultados.clear();
         resultados.addAll(novasAcoes);
         notifyDataSetChanged();
+    }
+
+    public void comparaResultadosEWatch() {
+        for (int contador = 0; contador < resultados.size(); contador++) {
+            if (watchList.contains(resultados.get(contador))) {
+                resultados.get(contador).setEmWatch(true);
+            }
+        }
     }
 }

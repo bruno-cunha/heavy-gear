@@ -114,7 +114,7 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
         List<Acao> acoes = new ArrayList<Acao>();
 
         while (cursor.moveToNext()) {
-            acoes.add(new Acao(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)),
+            acoes.add(new Acao(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)) + ".SA",
                                cursor.getString(cursor.getColumnIndex(CAMPO_EMPRESA)),
                                cursor.getString(cursor.getColumnIndex(CAMPO_TIPO)),
                                0));

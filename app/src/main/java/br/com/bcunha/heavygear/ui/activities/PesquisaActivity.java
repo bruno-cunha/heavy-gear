@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -20,6 +21,8 @@ import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.db.HeavyGearAssetsHelper;
 import br.com.bcunha.heavygear.model.pojo.Acao;
 import br.com.bcunha.heavygear.ui.adapters.RvPesquisaAdapter;
+
+import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 
 public class PesquisaActivity extends AppCompatActivity {
 
@@ -65,8 +68,10 @@ public class PesquisaActivity extends AppCompatActivity {
 
         recyclerView      = (RecyclerView) findViewById(R.id.recyclerView);
         layoutManager     = new LinearLayoutManager(this);
-        rvPesquisaAdapter = new RvPesquisaAdapter(resultados);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), VERTICAL);
+        rvPesquisaAdapter = new RvPesquisaAdapter(resultados, watchList);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(rvPesquisaAdapter);
     }
 

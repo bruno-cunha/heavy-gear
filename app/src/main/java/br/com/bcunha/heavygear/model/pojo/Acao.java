@@ -11,6 +11,7 @@ public class Acao implements Parcelable {
     private String empresa;
     private String tipo;
     private double cotacao;
+    private boolean emWatch;
 
     public Acao(String codigo, String empresa, String tipo, double cotacao) {
         this.codigo = codigo;
@@ -49,6 +50,30 @@ public class Acao implements Parcelable {
 
     public void setCotacao(double cotacao) {
         this.cotacao = cotacao;
+    }
+
+    public boolean isEmWatch() {
+        return emWatch;
+    }
+
+    public void setEmWatch(boolean emWatch) {
+        this.emWatch = emWatch;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Acao acao = (Acao) o;
+
+        return codigo.equals(acao.codigo);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return codigo.hashCode();
     }
 
     @Override
