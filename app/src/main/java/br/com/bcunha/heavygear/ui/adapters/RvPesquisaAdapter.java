@@ -15,6 +15,8 @@ import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.pojo.Acao;
 import br.com.bcunha.heavygear.ui.activities.HeavyGearActivity;
 
+import static br.com.bcunha.heavygear.R.id.imageButton;
+
 /**
  * Created by bruno on 17/11/16.
  */
@@ -29,12 +31,6 @@ public class RvPesquisaAdapter extends RecyclerView.Adapter<RvPesquisaAdapter.Rv
             super(view);
             textView = (TextView) view.findViewById(R.id.textView);
             imageButton = (ImageButton) view.findViewById(R.id.imageButton);
-            imageButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                }
-            });
         }
     }
 
@@ -55,8 +51,25 @@ public class RvPesquisaAdapter extends RecyclerView.Adapter<RvPesquisaAdapter.Rv
     }
 
     @Override
-    public void onBindViewHolder(RvPesquisaViewHolder rvPesquisaViewHolder, int position) {
+    public void onBindViewHolder(final RvPesquisaViewHolder rvPesquisaViewHolder, final int position) {
         rvPesquisaViewHolder.textView.setText(resultados.get(position).getCodigo());
+        if (resultados.get(position).isEmWatch()) {
+            rvPesquisaViewHolder.imageButton.setImageResource(R.drawable.ic_check);
+        } else {
+            rvPesquisaViewHolder.imageButton.setImageResource(R.drawable.ic_add);
+        }
+        rvPesquisaViewHolder.imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (resultados.get(position).isEmWatch()){
+                    resultados.get(position).setEmWatch(false);
+                    rvPesquisaViewHolder.imageButton.setImageResource(R.drawable.ic_add);
+                } else {
+                    resultados.get(position).setEmWatch(true);
+                    rvPesquisaViewHolder.imageButton.setImageResource(R.drawable.ic_check);
+                }
+            }
+        });
     }
 
     @Override
@@ -76,6 +89,7 @@ public class RvPesquisaAdapter extends RecyclerView.Adapter<RvPesquisaAdapter.Rv
     public void update(List<Acao> novasAcoes) {
         resultados.clear();
         resultados.addAll(novasAcoes);
+        comparaResultadosEWatch();
         notifyDataSetChanged();
     }
 

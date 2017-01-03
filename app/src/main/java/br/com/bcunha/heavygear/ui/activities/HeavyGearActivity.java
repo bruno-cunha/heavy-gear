@@ -76,10 +76,8 @@ public class HeavyGearActivity extends AppCompatActivity {
     @Override
     public void startActivity(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            //intent.putExtra("watchList", watchList);
             intent.putParcelableArrayListExtra("watchList", (ArrayList) watchList);
         }
-
         super.startActivity(intent);
     }
 
