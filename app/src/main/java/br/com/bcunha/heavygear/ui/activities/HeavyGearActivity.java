@@ -4,8 +4,11 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -43,6 +46,8 @@ public class HeavyGearActivity extends AppCompatActivity {
     private List<Acao> watchList;
     private AutoCompleteTextView autoCompleteTextView;
 
+    private List<Acao> acaoArrayList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +76,13 @@ public class HeavyGearActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         apiClient = ApiClient.getRetrofit().create(ApiInterface.class);
+
+        Intent intent = getIntent();
+        if (intent.hasExtra("activity")){
+            if (intent.getStringExtra("activity").equals("PesquisaActivity")){
+                acaoArrayList = intent.getParcelableArrayListExtra("result");
+            }
+        }
     }
 
     @Override
