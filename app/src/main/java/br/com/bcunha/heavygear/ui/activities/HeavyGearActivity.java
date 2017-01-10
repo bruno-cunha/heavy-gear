@@ -4,11 +4,9 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.os.PersistableBundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -33,6 +31,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.R.attr.button;
 import static br.com.bcunha.heavygear.R.menu.menu_searchview;
 
 public class HeavyGearActivity extends AppCompatActivity {
@@ -44,8 +43,6 @@ public class HeavyGearActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private RvAdapter rvAdapter;
     private List<Acao> watchList;
-    private AutoCompleteTextView autoCompleteTextView;
-
     private List<Acao> acaoArrayList;
 
     @Override
@@ -53,18 +50,25 @@ public class HeavyGearActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_heavy_gear);
 
-        Acao acaoBRFS3 = new Acao("BRFS3.SA", "Brasil Foodas S.A", "", 51.11);
-        Acao acaoITSA4 = new Acao("ITSA4.SA", "Itau SA", "", 13.1);
-        Acao acaoGGBR3 = new Acao("GGBR4.SA", "Gerdau", "", 13.1);
-        Acao acaoGOAU4 = new Acao("GOAU4.SA", "Metalurgica Gerdau", "", 13.1);
-        Acao acaoJBSS3 = new Acao("JBSS3.SA", "JBS", "", 13.1);
-
         watchList = new ArrayList<Acao>();
-        watchList.add(acaoBRFS3);
-        watchList.add(acaoITSA4);
-        watchList.add(acaoGGBR3);
-        watchList.add(acaoGOAU4);
-        watchList.add(acaoJBSS3);
+
+        if (savedInstanceState != null) {
+            watchList = savedInstanceState.getParcelableArrayList("watchList");
+        }
+
+        if (watchList.size() == 0) {
+            Acao acaoBRFS3 = new Acao("BRFS3.SA", "Brasil Foodas S.A", "", 51.11);
+            Acao acaoITSA4 = new Acao("ITSA4.SA", "Itau SA", "", 13.1);
+            Acao acaoGGBR3 = new Acao("GGBR4.SA", "Gerdau", "", 13.1);
+            Acao acaoGOAU4 = new Acao("GOAU4.SA", "Metalurgica Gerdau", "", 13.1);
+            Acao acaoJBSS3 = new Acao("JBSS3.SA", "JBS", "", 13.1);
+
+            watchList.add(acaoBRFS3);
+            watchList.add(acaoITSA4);
+            watchList.add(acaoGGBR3);
+            watchList.add(acaoGOAU4);
+            watchList.add(acaoJBSS3);
+        }
 
         heavyGearAssetsHelper = new HeavyGearAssetsHelper(this);
         heavyGearAssetsHelper.openDB();
@@ -78,10 +82,9 @@ public class HeavyGearActivity extends AppCompatActivity {
         apiClient = ApiClient.getRetrofit().create(ApiInterface.class);
 
         Intent intent = getIntent();
-        if (intent.hasExtra("activity")){
-            if (intent.getStringExtra("activity").equals("PesquisaActivity")){
-                acaoArrayList = intent.getParcelableArrayListExtra("result");
-            }
+        if (intent.hasExtra("activity") && intent.getStringExtra("activity").equals("PesquisaActivity")){
+                adicionaNoWatchLista(intent.<Acao>getParcelableArrayListExtra("result"));
+                atualizar(findViewById(R.id.atualizar));
         }
     }
 
@@ -159,6 +162,20 @@ public class HeavyGearActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public void adicionaNoWatchLista (List<Acao> selecionados) {
+        for (Acao acao : selecionados) {
+            if (acao.isInWatch() && !watchList.contains(acao)) {
+              watchList.add(acao);
+            }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putParcelableArrayList("watchList", (ArrayList) watchList);
     }
 
     @Override
