@@ -3,8 +3,10 @@ package br.com.bcunha.heavygear.ui.activities;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,6 +19,11 @@ import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +43,7 @@ import static br.com.bcunha.heavygear.R.menu.menu_searchview;
 
 public class HeavyGearActivity extends AppCompatActivity {
 
+    public static final String PREF = "Preferences";
     private ApiInterface apiClient;
     private HeavyGearAssetsHelper heavyGearAssetsHelper;
     private Toolbar toolbar;
@@ -52,16 +60,19 @@ public class HeavyGearActivity extends AppCompatActivity {
 
         watchList = new ArrayList<Acao>();
 
-        if (savedInstanceState != null) {
-            watchList = savedInstanceState.getParcelableArrayList("watchList");
-        }
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("watchList", "");
 
-        if (watchList.size() == 0) {
-            Acao acaoBRFS3 = new Acao("BRFS3.SA", "Brasil Foodas S.A", "", 51.11);
-            Acao acaoITSA4 = new Acao("ITSA4.SA", "Itau SA", "", 13.1);
-            Acao acaoGGBR3 = new Acao("GGBR4.SA", "Gerdau", "", 13.1);
-            Acao acaoGOAU4 = new Acao("GOAU4.SA", "Metalurgica Gerdau", "", 13.1);
-            Acao acaoJBSS3 = new Acao("JBSS3.SA", "JBS", "", 13.1);
+        if (!json.isEmpty()) {
+            Type type = new TypeToken<List<Acao>>(){}.getType();
+            watchList = gson.fromJson(json, type);
+        } else if (watchList.size() == 0) {
+            Acao acaoBRFS3 = new Acao("BRFS3.SA", "Brasil Foodas S.A", "", 51.11, true);
+            Acao acaoITSA4 = new Acao("ITSA4.SA", "Itau SA", "", 13.1, true);
+            Acao acaoGGBR3 = new Acao("GGBR4.SA", "Gerdau", "", 13.1, true);
+            Acao acaoGOAU4 = new Acao("GOAU4.SA", "Metalurgica Gerdau", "", 13.1, true);
+            Acao acaoJBSS3 = new Acao("JBSS3.SA", "JBS", "", 13.1, true);
 
             watchList.add(acaoBRFS3);
             watchList.add(acaoITSA4);
@@ -82,9 +93,9 @@ public class HeavyGearActivity extends AppCompatActivity {
         apiClient = ApiClient.getRetrofit().create(ApiInterface.class);
 
         Intent intent = getIntent();
-        if (intent.hasExtra("activity") && intent.getStringExtra("activity").equals("PesquisaActivity")){
-                adicionaNoWatchLista(intent.<Acao>getParcelableArrayListExtra("result"));
-                atualizar(findViewById(R.id.atualizar));
+        if (intent.hasExtra("activity") && intent.getStringExtra("activity").equals("PesquisaActivity")) {
+            adicionaNoWatchLista(intent.<Acao>getParcelableArrayListExtra("result"));
+            atualizar(findViewById(R.id.atualizar));
         }
     }
 
@@ -164,18 +175,31 @@ public class HeavyGearActivity extends AppCompatActivity {
         });
     }
 
-    public void adicionaNoWatchLista (List<Acao> selecionados) {
+    public void adicionaNoWatchLista(List<Acao> selecionados) {
         for (Acao acao : selecionados) {
             if (acao.isInWatch() && !watchList.contains(acao)) {
-              watchList.add(acao);
+                watchList.add(acao);
             }
         }
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState){
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putParcelableArrayList("watchList", (ArrayList) watchList);
+    protected void onStop() {
+        super.onStop();
+        //savedInstanceState.putParcelableArrayList("watchList", (ArrayList) watchList);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
+
+        Gson gson   = new Gson();
+        String json = gson.toJson(watchList);
+
+        SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
+        preferencesEditor.putString("watchList", json);
+        preferencesEditor.commit();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override

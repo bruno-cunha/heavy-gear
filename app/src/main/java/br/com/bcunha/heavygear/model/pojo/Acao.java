@@ -11,13 +11,21 @@ public class Acao implements Parcelable {
     private String empresa;
     private String tipo;
     private double cotacao;
-    private boolean emWatch;
+    private boolean inWatch;
 
     public Acao(String codigo, String empresa, String tipo, double cotacao) {
         this.codigo = codigo;
         this.empresa = empresa;
         this.tipo = tipo;
         this.cotacao = cotacao;
+    }
+
+    public Acao(String codigo, String empresa, String tipo, double cotacao, boolean inWatch) {
+        this.codigo = codigo;
+        this.empresa = empresa;
+        this.tipo = tipo;
+        this.cotacao = cotacao;
+        this.inWatch = inWatch;
     }
 
     public String getCodigo() {
@@ -52,12 +60,12 @@ public class Acao implements Parcelable {
         this.cotacao = cotacao;
     }
 
-    public boolean isEmWatch() {
-        return emWatch;
+    public boolean isInWatch() {
+        return inWatch;
     }
 
-    public void setEmWatch(boolean emWatch) {
-        this.emWatch = emWatch;
+    public void setInWatch(boolean inWatch) {
+        this.inWatch = inWatch;
     }
 
     @Override
@@ -87,6 +95,7 @@ public class Acao implements Parcelable {
         parcel.writeString(empresa);
         parcel.writeString(tipo);
         parcel.writeDouble(cotacao);
+        parcel.writeInt(inWatch ? 1 : 0);
     }
 
     // Creator
@@ -106,5 +115,6 @@ public class Acao implements Parcelable {
         this.empresa = in.readString();
         this.tipo    = in.readString();
         this.cotacao = in.readDouble();
+        this.inWatch = (in.readInt() == 0) ? false : true;
     }
 }

@@ -7,15 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.pojo.Acao;
 import br.com.bcunha.heavygear.ui.activities.HeavyGearActivity;
-
-import static br.com.bcunha.heavygear.R.id.imageButton;
 
 /**
  * Created by bruno on 17/11/16.
@@ -53,7 +51,7 @@ public class RvPesquisaAdapter extends RecyclerView.Adapter<RvPesquisaAdapter.Rv
     @Override
     public void onBindViewHolder(final RvPesquisaViewHolder rvPesquisaViewHolder, final int position) {
         rvPesquisaViewHolder.textView.setText(resultados.get(position).getCodigo());
-        if (resultados.get(position).isEmWatch()) {
+        if (resultados.get(position).isInWatch()) {
             rvPesquisaViewHolder.imageButton.setImageResource(R.drawable.ic_check);
         } else {
             rvPesquisaViewHolder.imageButton.setImageResource(R.drawable.ic_add);
@@ -61,13 +59,18 @@ public class RvPesquisaAdapter extends RecyclerView.Adapter<RvPesquisaAdapter.Rv
         rvPesquisaViewHolder.imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (resultados.get(position).isEmWatch()){
-                    resultados.get(position).setEmWatch(false);
+                if (resultados.get(position).isInWatch()){
+                    resultados.get(position).setInWatch(false);
                     rvPesquisaViewHolder.imageButton.setImageResource(R.drawable.ic_add);
                 } else {
-                    resultados.get(position).setEmWatch(true);
+                    resultados.get(position).setInWatch(true);
                     rvPesquisaViewHolder.imageButton.setImageResource(R.drawable.ic_check);
                 }
+
+                Intent intent = new Intent(view.getContext(), HeavyGearActivity.class);
+                intent.putExtra("activity", "PesquisaActivity");
+                intent.putParcelableArrayListExtra("result", (ArrayList) resultados);
+                view.getContext().startActivity(intent);
             }
         });
     }
@@ -96,7 +99,7 @@ public class RvPesquisaAdapter extends RecyclerView.Adapter<RvPesquisaAdapter.Rv
     public void comparaResultadosEWatch() {
         for (int contador = 0; contador < resultados.size(); contador++) {
             if (watchList.contains(resultados.get(contador))) {
-                resultados.get(contador).setEmWatch(true);
+                resultados.get(contador).setInWatch(true);
             }
         }
     }
