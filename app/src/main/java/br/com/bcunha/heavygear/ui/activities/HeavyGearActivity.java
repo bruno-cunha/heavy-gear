@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -68,11 +69,11 @@ public class HeavyGearActivity extends AppCompatActivity {
             Type type = new TypeToken<List<Acao>>(){}.getType();
             watchList = gson.fromJson(json, type);
         } else if (watchList.size() == 0) {
-            Acao acaoBRFS3 = new Acao("BRFS3.SA", "Brasil Foodas S.A", "", 51.11, true);
-            Acao acaoITSA4 = new Acao("ITSA4.SA", "Itau SA", "", 13.1, true);
-            Acao acaoGGBR3 = new Acao("GGBR4.SA", "Gerdau", "", 13.1, true);
-            Acao acaoGOAU4 = new Acao("GOAU4.SA", "Metalurgica Gerdau", "", 13.1, true);
-            Acao acaoJBSS3 = new Acao("JBSS3.SA", "JBS", "", 13.1, true);
+            Acao acaoBRFS3 = new Acao("BRFS3.SA", "Brasil Foodas S.A" , "",  51.11, true);
+            Acao acaoITSA4 = new Acao("ITSA4.SA", "Itau SA"           , "",  13.11, true);
+            Acao acaoGGBR3 = new Acao("GGBR4.SA", "Gerdau"            , "",  13.11, true);
+            Acao acaoGOAU4 = new Acao("GOAU4.SA", "Metalurgica Gerdau", "",  13.11, true);
+            Acao acaoJBSS3 = new Acao("JBSS3.SA", "JBS"               , "",  13.11, true);
 
             watchList.add(acaoBRFS3);
             watchList.add(acaoITSA4);
@@ -90,6 +91,29 @@ public class HeavyGearActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                watchList.remove(viewHolder.getAdapterPosition());
+                //ca.notifyItemRemoved(viewHolder.getAdapterPosition());
+            }
+
+            @Override
+            public void onMoved(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, int fromPos, RecyclerView.ViewHolder target, int toPos, int x, int y) {
+                super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y);
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
         apiClient = ApiClient.getRetrofit().create(ApiInterface.class);
 
         Intent intent = getIntent();
