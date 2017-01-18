@@ -51,15 +51,13 @@ public class HeavyGearActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private RvAdapter rvAdapter;
-    private List<Acao> watchList;
-    private List<Acao> acaoArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_heavy_gear);
 
-        watchList = new ArrayList<Acao>();
+        List<Acao> watchList = new ArrayList<Acao>();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
         Gson gson = new Gson();
@@ -88,9 +86,11 @@ public class HeavyGearActivity extends AppCompatActivity {
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         layoutManager = new LinearLayoutManager(this);
+        rvAdapter = new RvAdapter(watchList);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(rvAdapter);
 
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
@@ -101,8 +101,7 @@ public class HeavyGearActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                watchList.remove(viewHolder.getAdapterPosition());
-                //ca.notifyItemRemoved(viewHolder.getAdapterPosition());
+                rvAdapter.remove(viewHolder.getAdapterPosition());
             }
 
             @Override
@@ -126,7 +125,7 @@ public class HeavyGearActivity extends AppCompatActivity {
     @Override
     public void startActivity(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            intent.putParcelableArrayListExtra("watchList", (ArrayList) watchList);
+            intent.putParcelableArrayListExtra("watchList", (ArrayList) rvAdapter.watchList);
         }
         super.startActivity(intent);
     }
@@ -159,7 +158,7 @@ public class HeavyGearActivity extends AppCompatActivity {
             sender = intent.getStringExtra("sender");
             codigo = intent.getStringExtra("codigo");
 
-            watchList.add(heavyGearAssetsHelper.getAcao(codigo));
+            rvAdapter.watchList.add(heavyGearAssetsHelper.getAcao(codigo));
             atualizar((Button) findViewById(R.id.atualizar));
         }
     }
@@ -181,7 +180,7 @@ public class HeavyGearActivity extends AppCompatActivity {
 
     public void atualizar(View view) {
         apiClient.getQueryValorLista(
-        ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", formatCodigo(watchList)),
+        ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", formatCodigo(rvAdapter.watchList)),
         ApiClient.ENV,
         ApiClient.FORMAT)
         .enqueue(new Callback<RespostaSimplesMultipla>() {
@@ -201,8 +200,8 @@ public class HeavyGearActivity extends AppCompatActivity {
 
     public void adicionaNoWatchLista(List<Acao> selecionados) {
         for (Acao acao : selecionados) {
-            if (acao.isInWatch() && !watchList.contains(acao)) {
-                watchList.add(acao);
+            if (acao.isInWatch() && !rvAdapter.watchList.contains(acao)) {
+                rvAdapter.watchList.add(acao);
             }
         }
     }
@@ -210,11 +209,10 @@ public class HeavyGearActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        //savedInstanceState.putParcelableArrayList("watchList", (ArrayList) watchList);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
 
         Gson gson   = new Gson();
-        String json = gson.toJson(watchList);
+        String json = gson.toJson(rvAdapter.watchList);
 
         SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
         preferencesEditor.putString("watchList", json);

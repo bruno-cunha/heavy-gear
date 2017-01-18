@@ -33,12 +33,13 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.RvViewHolder> {
             cotacao = (TextView) view.findViewById(R.id.cotacao);
         }
     }
-    private List<Acao> acoes;
+
+    public List<Acao> watchList;
 
     public RvAdapter() {}
 
-    public RvAdapter(List<Acao> acoes){
-        this.acoes = acoes;
+    public RvAdapter(List<Acao> watchList){
+        this.watchList = watchList;
     }
 
     public static RvAdapter createFromQuote(List<RespostaSimplesMultipla.Quote> quoteAcoes){
@@ -56,17 +57,17 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.RvViewHolder> {
 
     @Override
     public int getItemCount() {
-        if (acoes == null) {
+        if (watchList == null) {
             return 0;
         }
-        return acoes.size();
+        return watchList.size();
     }
 
     @Override
     public void onBindViewHolder(RvViewHolder rvViewHolder, int position) {
-        rvViewHolder.codigo.setText(acoes.get(position).getCodigo());
-        rvViewHolder.empresa.setText(acoes.get(position).getEmpresa());
-        rvViewHolder.cotacao.setText(String.format("%.2f", acoes.get(position).getCotacao()));
+        rvViewHolder.codigo.setText(watchList.get(position).getCodigo());
+        rvViewHolder.empresa.setText(watchList.get(position).getEmpresa());
+        rvViewHolder.cotacao.setText(String.format("%.2f", watchList.get(position).getCotacao()));
     }
 
     @Override
@@ -76,17 +77,18 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.RvViewHolder> {
     }
 
     public void add(Acao acao) {
-        acoes.add(acao);
+        watchList.add(acao);
         notifyDataSetChanged();
     }
 
     public void remove(int position) {
-
+        watchList.remove(position);
+        notifyItemRemoved(position);
     }
 
     public void update(List<Acao> novasAcoes) {
-        acoes.clear();
-        acoes.addAll(novasAcoes);
+        watchList.clear();
+        watchList.addAll(novasAcoes);
         notifyDataSetChanged();
     }
 }
