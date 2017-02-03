@@ -11,6 +11,7 @@ public class HeavyReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         intent = new Intent("HEAVYSERVICE");
+        intent.setPackage(".model.service.HeavyService");
         context.startService(intent);
     }
 }
