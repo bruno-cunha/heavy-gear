@@ -135,16 +135,18 @@ public class HeavyGearActivity extends AppCompatActivity {
             adicionaNoWatchLista(intent.<Acao>getParcelableArrayListExtra("result"));
             atualizar(findViewById(R.id.atualizar));
         }
+
+        //Intent intent2 = new Intent("HEAVYSERVICE");
+        //intent2.setPackage(".model.service.HeavyService");
+        Intent intent2 = new Intent(this, HeavyService.class);
+        startService(intent2);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        Intent intent = new Intent("HEAVYSERVICE");
-        intent.setPackage(".model.service.HeavyService");
-        startService(intent);
-        //Intent intent1 = new Intent(this, HeavyService.class);
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+
+//        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -168,6 +170,11 @@ public class HeavyGearActivity extends AppCompatActivity {
         SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
         preferencesEditor.putString("watchList", json);
         preferencesEditor.commit();
+
+        if (isBound) {
+            unbindService(serviceConnection);
+            isBound = false;
+        }
     }
 
     @Override
@@ -218,7 +225,7 @@ public class HeavyGearActivity extends AppCompatActivity {
     }
 
     public void atualizar(View view) {
-        //heavyServiceBound.minhaString();
+        heavyServiceBound.minhaString();
         //apiClient.getQueryValorLista(
         //ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", formatCodigo(rvAdapter.watchList)),
         //ApiClient.ENV,

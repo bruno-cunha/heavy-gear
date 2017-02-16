@@ -22,7 +22,7 @@ public class HeavyService extends Service {
 
     private String LOG_TAG = "HeavyService";
     private HeavyBinder mBinder = new HeavyBinder();
-    private ApiInterface apiClient;
+    //private ApiInterface apiClient;
     private Worker worker;
     public List<Acao> watchlist;
 
@@ -45,7 +45,7 @@ public class HeavyService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        apiClient = ApiClient.getRetrofit().create(ApiInterface.class);
+        //apiClient = ApiClient.getRetrofit().create(ApiInterface.class);
         worker = new Worker();
         Log.i(LOG_TAG, "onCreate");
     }
@@ -64,33 +64,37 @@ public class HeavyService extends Service {
 
         @Override
         public void run() {
-//            while (ativo && count < 100) {
-//                try {
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                count++;
-//                Log.i(LOG_TAG, "Contador"+count);
-//            }
-//            stopSelf();
-
-            apiClient.getQueryValorLista(
-            ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", formatCodigo(watchlist)),
-            ApiClient.ENV,
-            ApiClient.FORMAT)
-            .enqueue(new Callback<RespostaSimplesMultipla>() {
-                @Override
-                public void onResponse(Call<RespostaSimplesMultipla> call,
-                                       Response<RespostaSimplesMultipla> response) {
-//                    rvAdapter = new RvAdapter().createFromQuote(response.body().getQuery().getResults().getQuote());
-//                    recyclerView.setAdapter(rvAdapter);
-               }
-                @Override
-                public void onFailure(Call<RespostaSimplesMultipla> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
+            while (ativo && count < 100) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            });
+                count++;
+                Log.i(LOG_TAG, "Contador"+count);
+            }
+            stopSelf();
+//            while (ativo && count < 100) {
+//                apiClient.getQueryValorLista(
+//                ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", formatCodigo(watchlist)),
+//                ApiClient.ENV,
+//                ApiClient.FORMAT)
+//                .enqueue(new Callback<RespostaSimplesMultipla>() {
+//                    @Override
+//                    public void onResponse(Call<RespostaSimplesMultipla> call,
+//                                           Response<RespostaSimplesMultipla> response) {
+////                      rvAdapter = new RvAdapter().createFromQuote(response.body().getQuery().getResults().getQuote());
+////                      recyclerView.setAdapter(rvAdapter);
+//                        minhaString();
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<RespostaSimplesMultipla> call, Throwable t) {
+////                    Toast.ma7keText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//                Log.i(LOG_TAG, "Executa enqueue");
+//            }
         }
     }
 
