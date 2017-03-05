@@ -74,6 +74,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_heavy_gear);
 
+        // Carrega watchList
         List<Acao> watchList = new ArrayList<Acao>();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
@@ -97,12 +98,16 @@ public class HeavyGearActivity extends AppCompatActivity {
             watchList.add(acaoJBSS3);
         }
 
+        // SQLite
         heavyGearAssetsHelper = new HeavyGearAssetsHelper(this);
         heavyGearAssetsHelper.openDB();
+
+        // ToolBar
         toolbar = (Toolbar) findViewById(R.id.inc_toolbar);
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
+        // RecyclerView
         layoutManager = new LinearLayoutManager(this);
         rvAdapter     = new RvAdapter(watchList);
         recyclerView  = (RecyclerView) findViewById(R.id.recyclerView);
@@ -130,12 +135,14 @@ public class HeavyGearActivity extends AppCompatActivity {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
+        // Carrega todas as ações selecionadas na activity de pesquisa
         Intent intent = getIntent();
         if (intent.hasExtra("activity") && intent.getStringExtra("activity").equals("PesquisaActivity")) {
             adicionaNoWatchLista(intent.<Acao>getParcelableArrayListExtra("result"));
             atualizar(findViewById(R.id.atualizar));
         }
 
+        // Inicia Serviço
         //Intent intent2 = new Intent("HEAVYSERVICE");
         //intent2.setPackage(".model.service.HeavyService");
         Intent intent2 = new Intent(this, HeavyService.class);
@@ -145,8 +152,9 @@ public class HeavyGearActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-//        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        // Bind Serviço
+        Intent intent = new Intent(this, HeavyService.class);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -162,6 +170,7 @@ public class HeavyGearActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        // Salva watchList
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
 
         Gson gson   = new Gson();
@@ -171,6 +180,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         preferencesEditor.putString("watchList", json);
         preferencesEditor.commit();
 
+        // UnBind Serviço
         if (isBound) {
             unbindService(serviceConnection);
             isBound = false;
@@ -185,6 +195,7 @@ public class HeavyGearActivity extends AppCompatActivity {
 
     @Override
     public void startActivity(Intent intent) {
+        // Envia watchList para activity de pesquisa
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             intent.putParcelableArrayListExtra("watchList", (ArrayList) rvAdapter.watchList);
         }
@@ -195,8 +206,8 @@ public class HeavyGearActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(menu_searchview, menu);
 
+        // Configura SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-
         MenuItem menuItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -215,6 +226,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         String sender;
         String codigo;
 
+        // Carrega ação selecionada na activity de pesquisa
         if (intent.getStringExtra("sender").equals("PesquisaActivity")) {
             sender = intent.getStringExtra("sender");
             codigo = intent.getStringExtra("codigo");
@@ -226,6 +238,7 @@ public class HeavyGearActivity extends AppCompatActivity {
 
     public void atualizar(View view) {
         heavyServiceBound.minhaString();
+
         //apiClient.getQueryValorLista(
         //ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", formatCodigo(rvAdapter.watchList)),
         //ApiClient.ENV,
