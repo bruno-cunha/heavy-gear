@@ -1,15 +1,18 @@
 package br.com.bcunha.heavygear.ui.activities;
 
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -47,7 +50,9 @@ import static br.com.bcunha.heavygear.R.menu.menu_searchview;
 
 public class HeavyGearActivity extends AppCompatActivity {
 
-    public static final String PREF = "Preferences";
+    public  static final String PREF = "Preferences";
+    private static final String ACTION_HEAVYSERVICE = "ACTION_HEAVYSERVICE";
+
     private HeavyGearAssetsHelper heavyGearAssetsHelper;
     private Toolbar toolbar;
     private RecyclerView recyclerView;
@@ -66,6 +71,16 @@ public class HeavyGearActivity extends AppCompatActivity {
         public void onServiceDisconnected(ComponentName arg0) {
             heavyServiceBound = null;
             isBound = false;
+        }
+    };
+
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(ACTION_HEAVYSERVICE.equals(intent.getAction())) {
+                rvAdapter = new RvAdapter().createFromQuote((ArrayList) intent.getParcelableArrayListExtra("watchList"));
+                recyclerView.setAdapter(rvAdapter);
+            }
         }
     };
 
@@ -160,11 +175,20 @@ public class HeavyGearActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        // Registra o recevier do serviço
+        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(heavyServiceBound);
+        IntentFilter filter = new IntentFilter(ACTION_HEAVYSERVICE);
+        manager.registerReceiver(this.receiver, filter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+
+        // Desregistra o receier do serviço
+        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(heavyServiceBound);
+        manager.unregisterReceiver(this.receiver);
     }
 
     @Override
@@ -223,10 +247,10 @@ public class HeavyGearActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        // Carrega ação selecionada na activity de pesquisa
         String sender;
         String codigo;
 
-        // Carrega ação selecionada na activity de pesquisa
         if (intent.getStringExtra("sender").equals("PesquisaActivity")) {
             sender = intent.getStringExtra("sender");
             codigo = intent.getStringExtra("codigo");

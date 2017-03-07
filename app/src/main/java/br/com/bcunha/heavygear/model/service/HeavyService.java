@@ -1,9 +1,11 @@
 package br.com.bcunha.heavygear.model.service;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Window;
 import android.widget.Toast;
@@ -42,6 +44,7 @@ public class HeavyService extends Service {
         if (worker != null && !worker.isAlive()) {
             worker.start();
         }
+
         Log.i(LOG_TAG, "onStartCommand");
         //return(START_STICKY);
         return super.onStartCommand(intent, flags, startId);
@@ -65,7 +68,7 @@ public class HeavyService extends Service {
         watchList.add(acaoGOAU4);
         watchList.add(acaoJBSS3);
 
-        worker = new Worker();
+        worker = new Worker(this);
         Log.i(LOG_TAG, "onCreate");
     }
 
@@ -75,10 +78,13 @@ public class HeavyService extends Service {
     }
 
     private class Worker extends Thread {
+        public Context context;
         public int count = 0;
         public boolean ativo = true;
+        private static final String ACTION_HEAVYSERVICE = "ACTION_HEAVYSERVICE";
 
-        public Worker() {
+        public Worker(Context context) {
+            this.context = context;
         }
 
         @Override
@@ -94,6 +100,23 @@ public class HeavyService extends Service {
                                            Response<RespostaSimplesMultipla> response) {
 //                      rvAdapter = new RvAdapter().createFromQuote(response.body().getQuery().getResults().getQuote());
 //                      recyclerView.setAdapter(rvAdapter);
+
+                        List<RespostaSimplesMultipla.Quote> quoteAcoes = response.body().getQuery().getResults().getQuote();
+                        List<Acao> acoes  = new ArrayList<Acao>();
+
+                        for (RespostaSimplesMultipla.Quote quote: quoteAcoes) {
+                            acoes.add(new Acao (quote.getsymbol(),
+                                                quote.getName(),
+                                                "", //da erro quando vai pegar o preco da acao selecionada na pesquisa
+                                                Double.parseDouble(quote.getLastTradePriceOnly())));
+                        }
+
+
+                        Intent intent = new Intent(ACTION_HEAVYSERVICE);
+                        intent.putParcelableArrayListExtra("watchList", (ArrayList) acoes);
+
+                        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(context);
+                        manager.sendBroadcast(intent);
                         Log.i(LOG_TAG, "Manipulando o resultado:" + response.body().getQuery().getResults().getQuote().get(1).getLastTradePriceOnly());
                     }
 
