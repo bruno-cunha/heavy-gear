@@ -89,7 +89,7 @@ public class HeavyService extends Service {
 
         @Override
         public void run() {
-            while (ativo && count < 100) {
+            while (ativo /*&& count < 100*/) {
                 apiClient.getQueryValorLista(
                 ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", formatCodigo(watchList)),
                 ApiClient.ENV,
@@ -98,8 +98,8 @@ public class HeavyService extends Service {
                     @Override
                     public void onResponse(Call<RespostaSimplesMultipla> call,
                                            Response<RespostaSimplesMultipla> response) {
-//                      rvAdapter = new RvAdapter().createFromQuote(response.body().getQuery().getResults().getQuote());
-//                      recyclerView.setAdapter(rvAdapter);
+  //                      rvAdapter = new RvAdapter().createFromQuote(response.body().getQuery().getResults().getQuote());
+  //                      recyclerView.setAdapter(rvAdapter);
 
                         List<RespostaSimplesMultipla.Quote> quoteAcoes = response.body().getQuery().getResults().getQuote();
                         List<Acao> acoes  = new ArrayList<Acao>();
@@ -115,8 +115,7 @@ public class HeavyService extends Service {
                         Intent intent = new Intent(ACTION_HEAVYSERVICE);
                         intent.putParcelableArrayListExtra("watchList", (ArrayList) acoes);
 
-                        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(context);
-                        manager.sendBroadcast(intent);
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                         Log.i(LOG_TAG, "Manipulando o resultado:" + response.body().getQuery().getResults().getQuote().get(1).getLastTradePriceOnly());
                     }
 

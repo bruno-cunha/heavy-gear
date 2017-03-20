@@ -78,7 +78,8 @@ public class HeavyGearActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(ACTION_HEAVYSERVICE.equals(intent.getAction())) {
-                rvAdapter = new RvAdapter().createFromQuote((ArrayList) intent.getParcelableArrayListExtra("watchList"));
+                rvAdapter = new RvAdapter((ArrayList) intent.getParcelableArrayListExtra("watchList"));
+                //rvAdapter = new RvAdapter().createFromQuote();
                 recyclerView.setAdapter(rvAdapter);
             }
         }
@@ -177,9 +178,8 @@ public class HeavyGearActivity extends AppCompatActivity {
         super.onResume();
 
         // Registra o recevier do serviço
-        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(heavyServiceBound);
         IntentFilter filter = new IntentFilter(ACTION_HEAVYSERVICE);
-        manager.registerReceiver(this.receiver, filter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(this.receiver, filter);
     }
 
     @Override
@@ -187,8 +187,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         super.onPause();
 
         // Desregistra o receier do serviço
-        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(heavyServiceBound);
-        manager.unregisterReceiver(this.receiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(this.receiver);
     }
 
     @Override
