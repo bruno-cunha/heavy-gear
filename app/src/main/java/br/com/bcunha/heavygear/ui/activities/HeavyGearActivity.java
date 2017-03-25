@@ -33,6 +33,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.api.ApiClient;

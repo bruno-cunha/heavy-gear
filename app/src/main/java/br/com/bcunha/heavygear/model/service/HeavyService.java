@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import br.com.bcunha.heavygear.model.api.ApiClient;
 import br.com.bcunha.heavygear.model.api.ApiInterface;
@@ -28,10 +30,13 @@ import static br.com.bcunha.heavygear.R.id.recyclerView;
 public class HeavyService extends Service {
 
     private String LOG_TAG = "HeavyService";
+    private final int timer_WIFI = 10000; // 10sec
+    private final int timer_3G   = 1000000;
     private HeavyBinder mBinder = new HeavyBinder();
     private ApiInterface apiClient;
     private Worker worker;
     private List<Acao> watchList;
+    private Handler handler = new Handler();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -41,8 +46,8 @@ public class HeavyService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (worker != null && !worker.isAlive()) {
-            worker.start();
+        if (worker != null) {
+            handler.postDelayed(worker, timer_WIFI);
         }
 
         Log.i(LOG_TAG, "onStartCommand");
@@ -77,10 +82,8 @@ public class HeavyService extends Service {
         super.onDestroy();
     }
 
-    private class Worker extends Thread {
+    private class Worker implements Runnable {
         public Context context;
-        public int count = 0;
-        public boolean ativo = true;
         private static final String ACTION_HEAVYSERVICE = "ACTION_HEAVYSERVICE";
 
         public Worker(Context context) {
@@ -89,51 +92,44 @@ public class HeavyService extends Service {
 
         @Override
         public void run() {
-            while (ativo /*&& count < 100*/) {
-                apiClient.getQueryValorLista(
-                ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", formatCodigo(watchList)),
-                ApiClient.ENV,
-                ApiClient.FORMAT)
-                .enqueue(new Callback<RespostaSimplesMultipla>() {
-                    @Override
-                    public void onResponse(Call<RespostaSimplesMultipla> call,
-                                           Response<RespostaSimplesMultipla> response) {
-  //                      rvAdapter = new RvAdapter().createFromQuote(response.body().getQuery().getResults().getQuote());
-  //                      recyclerView.setAdapter(rvAdapter);
+            apiClient.getQueryValorLista(
+            ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", formatCodigo(watchList)),
+            ApiClient.ENV,
+            ApiClient.FORMAT)
+            .enqueue(new Callback<RespostaSimplesMultipla>() {
+                @Override
+                public void onResponse(Call<RespostaSimplesMultipla> call,
+                                       Response<RespostaSimplesMultipla> response) {
+                    //                      rvAdapter = new RvAdapter().createFromQuote(response.body().getQuery().getResults().getQuote());
+                    //                      recyclerView.setAdapter(rvAdapter);
 
-                        List<RespostaSimplesMultipla.Quote> quoteAcoes = response.body().getQuery().getResults().getQuote();
-                        List<Acao> acoes  = new ArrayList<Acao>();
+                    List<RespostaSimplesMultipla.Quote> quoteAcoes = response.body().getQuery().getResults().getQuote();
+                    List<Acao> acoes  = new ArrayList<Acao>();
 
-                        for (RespostaSimplesMultipla.Quote quote: quoteAcoes) {
-                            acoes.add(new Acao (quote.getsymbol(),
-                                                quote.getName(),
-                                                "", //da erro quando vai pegar o preco da acao selecionada na pesquisa
-                                                Double.parseDouble(quote.getLastTradePriceOnly())));
-                        }
-
-
-                        Intent intent = new Intent(ACTION_HEAVYSERVICE);
-                        intent.putParcelableArrayListExtra("watchList", (ArrayList) acoes);
-
-                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                        Log.i(LOG_TAG, "Manipulando o resultado:" + response.body().getQuery().getResults().getQuote().get(1).getLastTradePriceOnly());
+                    for (RespostaSimplesMultipla.Quote quote: quoteAcoes) {
+                        acoes.add(new Acao (quote.getsymbol(),
+                        quote.getName(),
+                        "", //da erro quando vai pegar o preco da acao selecionada na pesquisa
+                        Double.parseDouble(quote.getLastTradePriceOnly())));
                     }
 
-                    @Override
-                    public void onFailure(Call<RespostaSimplesMultipla> call, Throwable t) {
-                        Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
-                    }
-                });
 
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Intent intent = new Intent(ACTION_HEAVYSERVICE);
+                    intent.putParcelableArrayListExtra("watchList", (ArrayList) acoes);
+
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                    Log.i(LOG_TAG, "Manipulando o resultado:" + response.body().getQuery().getResults().getQuote().get(1).getLastTradePriceOnly());
                 }
-                count++;
-                Log.i(LOG_TAG, "Consulta Executada");
-            }
-            stopSelf();
+
+                @Override
+                public void onFailure(Call<RespostaSimplesMultipla> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            Log.i(LOG_TAG, "Consulta Executada");
+
+            handler.postDelayed(this, timer_WIFI);
         }
     }
 
