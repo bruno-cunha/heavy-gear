@@ -48,7 +48,7 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.RvViewHolder> {
         for (RespostaSimplesMultipla.Quote quote: quoteAcoes) {
             acoes.add(new Acao (quote.getsymbol(),
                                 quote.getName(),
-                                "", //da erro quando vai pegar o preco da acao selecionada na pesquisa
+                                "",
                                 Double.parseDouble(quote.getLastTradePriceOnly())));
         }
 

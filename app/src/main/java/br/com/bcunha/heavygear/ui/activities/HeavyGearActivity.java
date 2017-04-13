@@ -79,9 +79,8 @@ public class HeavyGearActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(ACTION_HEAVYSERVICE.equals(intent.getAction())) {
-                rvAdapter = new RvAdapter((ArrayList) intent.getParcelableArrayListExtra("watchList"));
-                //rvAdapter = new RvAdapter().createFromQuote();
-                recyclerView.setAdapter(rvAdapter);
+                rvAdapter.watchList = (ArrayList) intent.getParcelableArrayListExtra("watchList");
+                rvAdapter.notifyDataSetChanged();
             }
         }
     };
@@ -95,24 +94,13 @@ public class HeavyGearActivity extends AppCompatActivity {
         List<Acao> watchList = new ArrayList<Acao>();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
-        Gson gson = new Gson();
         String json = sharedPreferences.getString("watchList", "");
 
         if (!json.isEmpty()) {
             Type type = new TypeToken<List<Acao>>(){}.getType();
-            watchList = gson.fromJson(json, type);
+            watchList = new Gson().fromJson(json, type);
         } else if (watchList.size() == 0) {
-            Acao acaoBRFS3 = new Acao("BRFS3.SA", "Brasil Foodas S.A" , "",  51.11, true);
-            Acao acaoITSA4 = new Acao("ITSA4.SA", "Itau SA"           , "",  13.11, true);
-            Acao acaoGGBR3 = new Acao("GGBR4.SA", "Gerdau"            , "",  13.11, true);
-            Acao acaoGOAU4 = new Acao("GOAU4.SA", "Metalurgica Gerdau", "",  13.11, true);
-            Acao acaoJBSS3 = new Acao("JBSS3.SA", "JBS"               , "",  13.11, true);
-
-            watchList.add(acaoBRFS3);
-            watchList.add(acaoITSA4);
-            watchList.add(acaoGGBR3);
-            watchList.add(acaoGOAU4);
-            watchList.add(acaoJBSS3);
+            watchList.add(new Acao("PETR3.SA", "Petrobras" , "",  51.11, true));
         }
 
         // SQLite
@@ -156,22 +144,14 @@ public class HeavyGearActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent.hasExtra("activity") && intent.getStringExtra("activity").equals("PesquisaActivity")) {
             adicionaNoWatchLista(intent.<Acao>getParcelableArrayListExtra("result"));
-            atualizar(findViewById(R.id.atualizar));
         }
-
-        // Inicia Serviço
-        //Intent intent2 = new Intent("HEAVYSERVICE");
-        //intent2.setPackage(".model.service.HeavyService");
-        Intent intent2 = new Intent(this, HeavyService.class);
-        startService(intent2);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         // Bind Serviço
-        Intent intent = new Intent(this, HeavyService.class);
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        bindService(new Intent(this, HeavyService.class), serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -179,8 +159,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         super.onResume();
 
         // Registra o recevier do serviço
-        IntentFilter filter = new IntentFilter(ACTION_HEAVYSERVICE);
-        LocalBroadcastManager.getInstance(this).registerReceiver(this.receiver, filter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(this.receiver, new IntentFilter(ACTION_HEAVYSERVICE));
     }
 
     @Override
@@ -195,12 +174,9 @@ public class HeavyGearActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         // Salva watchList
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
+        String json = new Gson().toJson(rvAdapter.watchList);
 
-        Gson gson   = new Gson();
-        String json = gson.toJson(rvAdapter.watchList);
-
-        SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
+        SharedPreferences.Editor preferencesEditor = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).edit();
         preferencesEditor.putString("watchList", json);
         preferencesEditor.commit();
 
@@ -231,10 +207,10 @@ public class HeavyGearActivity extends AppCompatActivity {
         getMenuInflater().inflate(menu_searchview, menu);
 
         // Configura SearchView
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         MenuItem menuItem = menu.findItem(R.id.action_search);
+
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setSearchableInfo(((SearchManager) getSystemService(Context.SEARCH_SERVICE)).getSearchableInfo(getComponentName()));
 
         return true;
     }
@@ -256,30 +232,10 @@ public class HeavyGearActivity extends AppCompatActivity {
             codigo = intent.getStringExtra("codigo");
 
             rvAdapter.watchList.add(heavyGearAssetsHelper.getAcao(codigo));
-            atualizar((Button) findViewById(R.id.atualizar));
+            rvAdapter.notifyDataSetChanged();
         }
     }
 
-    public void atualizar(View view) {
-        heavyServiceBound.minhaString();
-
-        //apiClient.getQueryValorLista(
-        //ApiClient.QUERY_QUOTE_LISTA.replace("?codigo?", formatCodigo(rvAdapter.watchList)),
-        //ApiClient.ENV,
-        //ApiClient.FORMAT)
-        //.enqueue(new Callback<RespostaSimplesMultipla>() {
-        //    @Override
-        //    public void onResponse(Call<RespostaSimplesMultipla> call,
-        //                           Response<RespostaSimplesMultipla> response) {
-        //        rvAdapter = new RvAdapter().createFromQuote(response.body().getQuery().getResults().getQuote());
-        //        recyclerView.setAdapter(rvAdapter);
-        //   }
-        //    @Override
-        //    public void onFailure(Call<RespostaSimplesMultipla> call, Throwable t) {
-        //        Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
-        //    }
-        //});
-    }
 
     public void adicionaNoWatchLista(List<Acao> selecionados) {
         for (Acao acao : selecionados) {
@@ -287,5 +243,6 @@ public class HeavyGearActivity extends AppCompatActivity {
                 rvAdapter.watchList.add(acao);
             }
         }
+        rvAdapter.notifyDataSetChanged();
     }
 }
