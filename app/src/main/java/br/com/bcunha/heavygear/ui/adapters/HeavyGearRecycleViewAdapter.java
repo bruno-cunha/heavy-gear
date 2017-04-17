@@ -12,13 +12,13 @@ import java.util.List;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.pojo.Acao;
-import br.com.bcunha.heavygear.model.pojo.RespostaSimplesMultipla;
+import br.com.bcunha.heavygear.model.pojo.RespostaQuotes;
 
 /**
  * Created by BRUNO on 18/10/2016.
  */
 
-public class RvAdapter extends RecyclerView.Adapter<RvAdapter.RvViewHolder> {
+public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearRecycleViewAdapter.RvViewHolder> {
 
     public static class RvViewHolder extends RecyclerView.ViewHolder{
 
@@ -36,23 +36,23 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.RvViewHolder> {
 
     public List<Acao> watchList;
 
-    public RvAdapter() {}
+    public HeavyGearRecycleViewAdapter() {}
 
-    public RvAdapter(List<Acao> watchList){
+    public HeavyGearRecycleViewAdapter(List<Acao> watchList){
         this.watchList = watchList;
     }
 
-    public static RvAdapter createFromQuote(List<RespostaSimplesMultipla.Quote> quoteAcoes){
+    public static HeavyGearRecycleViewAdapter createFromQuote(List<RespostaQuotes.Quote> quoteAcoes){
         List<Acao> acoes  = new ArrayList<Acao>();
 
-        for (RespostaSimplesMultipla.Quote quote: quoteAcoes) {
+        for (RespostaQuotes.Quote quote: quoteAcoes) {
             acoes.add(new Acao (quote.getsymbol(),
                                 quote.getName(),
                                 "",
                                 Double.parseDouble(quote.getLastTradePriceOnly())));
         }
 
-        return new RvAdapter(acoes);
+        return new HeavyGearRecycleViewAdapter(acoes);
     }
 
     @Override

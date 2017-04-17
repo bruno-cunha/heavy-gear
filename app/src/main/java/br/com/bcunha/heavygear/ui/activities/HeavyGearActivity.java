@@ -10,7 +10,6 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
@@ -23,9 +22,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -33,32 +29,26 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import br.com.bcunha.heavygear.R;
-import br.com.bcunha.heavygear.model.api.ApiClient;
-import br.com.bcunha.heavygear.model.api.ApiInterface;
 import br.com.bcunha.heavygear.model.db.HeavyGearAssetsHelper;
 import br.com.bcunha.heavygear.model.pojo.Acao;
-import br.com.bcunha.heavygear.model.pojo.RespostaSimplesMultipla;
 import br.com.bcunha.heavygear.model.service.HeavyService;
-import br.com.bcunha.heavygear.ui.adapters.RvAdapter;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import br.com.bcunha.heavygear.ui.adapters.HeavyGearRecycleViewAdapter;
 import br.com.bcunha.heavygear.model.service.HeavyService.HeavyBinder;
+
 import static br.com.bcunha.heavygear.R.menu.menu_searchview;
 
 public class HeavyGearActivity extends AppCompatActivity {
 
-    public  static final String PREF = "Preferences";
+    public static final String PREF = "Preferences";
     private static final String ACTION_HEAVYSERVICE = "ACTION_HEAVYSERVICE";
 
     private HeavyGearAssetsHelper heavyGearAssetsHelper;
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
-    private RvAdapter rvAdapter;
+    private HeavyGearRecycleViewAdapter heavyGearRecycleViewAdapter;
     private HeavyService heavyServiceBound;
     private Boolean isBound;
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -68,6 +58,7 @@ public class HeavyGearActivity extends AppCompatActivity {
             heavyServiceBound = binder.getService();
             isBound = true;
         }
+
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             heavyServiceBound = null;
@@ -78,9 +69,9 @@ public class HeavyGearActivity extends AppCompatActivity {
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(ACTION_HEAVYSERVICE.equals(intent.getAction())) {
-                rvAdapter.watchList = (ArrayList) intent.getParcelableArrayListExtra("watchList");
-                rvAdapter.notifyDataSetChanged();
+            if (ACTION_HEAVYSERVICE.equals(intent.getAction())) {
+                heavyGearRecycleViewAdapter.watchList = (ArrayList) intent.getParcelableArrayListExtra("watchList");
+                heavyGearRecycleViewAdapter.notifyDataSetChanged();
             }
         }
     };
@@ -97,10 +88,11 @@ public class HeavyGearActivity extends AppCompatActivity {
         String json = sharedPreferences.getString("watchList", "");
 
         if (!json.isEmpty()) {
-            Type type = new TypeToken<List<Acao>>(){}.getType();
+            Type type = new TypeToken<List<Acao>>() {
+            }.getType();
             watchList = new Gson().fromJson(json, type);
         } else if (watchList.size() == 0) {
-            watchList.add(new Acao("PETR3.SA", "Petrobras" , "",  51.11, true));
+            watchList.add(new Acao("PETR3.SA", "Petrobras", "", 00.00, true));
         }
 
         // SQLite
@@ -114,10 +106,10 @@ public class HeavyGearActivity extends AppCompatActivity {
 
         // RecyclerView
         layoutManager = new LinearLayoutManager(this);
-        rvAdapter     = new RvAdapter(watchList);
-        recyclerView  = (RecyclerView) findViewById(R.id.recyclerView);
+        heavyGearRecycleViewAdapter = new HeavyGearRecycleViewAdapter(watchList);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(rvAdapter);
+        recyclerView.setAdapter(heavyGearRecycleViewAdapter);
 
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
@@ -128,7 +120,7 @@ public class HeavyGearActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                rvAdapter.remove(viewHolder.getAdapterPosition());
+                heavyGearRecycleViewAdapter.remove(viewHolder.getAdapterPosition());
             }
 
             @Override
@@ -151,7 +143,8 @@ public class HeavyGearActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         // Bind Serviço
-        bindService(new Intent(this, HeavyService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+        Intent intent = new Intent(this, HeavyService.class);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -174,9 +167,9 @@ public class HeavyGearActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         // Salva watchList
-        String json = new Gson().toJson(rvAdapter.watchList);
-
         SharedPreferences.Editor preferencesEditor = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).edit();
+
+        String json = new Gson().toJson(heavyGearRecycleViewAdapter.watchList);
         preferencesEditor.putString("watchList", json);
         preferencesEditor.commit();
 
@@ -197,7 +190,7 @@ public class HeavyGearActivity extends AppCompatActivity {
     public void startActivity(Intent intent) {
         // Envia watchList para activity de pesquisa
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            intent.putParcelableArrayListExtra("watchList", (ArrayList) rvAdapter.watchList);
+            intent.putParcelableArrayListExtra("watchList", (ArrayList) heavyGearRecycleViewAdapter.watchList);
         }
         super.startActivity(intent);
     }
@@ -224,25 +217,24 @@ public class HeavyGearActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         // Carrega ação selecionada na activity de pesquisa
-        String sender;
-        String codigo;
-
         if (intent.getStringExtra("sender").equals("PesquisaActivity")) {
-            sender = intent.getStringExtra("sender");
-            codigo = intent.getStringExtra("codigo");
+            String codigo = intent.getStringExtra("codigo");
 
-            rvAdapter.watchList.add(heavyGearAssetsHelper.getAcao(codigo));
-            rvAdapter.notifyDataSetChanged();
+            heavyGearRecycleViewAdapter.watchList.add(heavyGearAssetsHelper.getAcao(codigo));
+            heavyGearRecycleViewAdapter.notifyDataSetChanged();
         }
     }
 
-
     public void adicionaNoWatchLista(List<Acao> selecionados) {
         for (Acao acao : selecionados) {
-            if (acao.isInWatch() && !rvAdapter.watchList.contains(acao)) {
-                rvAdapter.watchList.add(acao);
+            if (acao.isInWatch() && !heavyGearRecycleViewAdapter.watchList.contains(acao)) {
+                heavyGearRecycleViewAdapter.watchList.add(acao);
             }
         }
-        rvAdapter.notifyDataSetChanged();
+        heavyGearRecycleViewAdapter.notifyDataSetChanged();
+    }
+
+    public void atualizar (View view){
+        heavyServiceBound.buscaTextoTeste();
     }
 }

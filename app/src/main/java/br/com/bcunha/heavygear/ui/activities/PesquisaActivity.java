@@ -20,7 +20,7 @@ import java.util.List;
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.db.HeavyGearAssetsHelper;
 import br.com.bcunha.heavygear.model.pojo.Acao;
-import br.com.bcunha.heavygear.ui.adapters.RvPesquisaAdapter;
+import br.com.bcunha.heavygear.ui.adapters.PesquisaRecycleViewAdapter;
 
 import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 
@@ -29,7 +29,7 @@ public class PesquisaActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
-    private RvPesquisaAdapter rvPesquisaAdapter;
+    private PesquisaRecycleViewAdapter pesquisaRecycleViewAdapter;
     private String query;
     private HeavyGearAssetsHelper heavyGearAssetsHelper;
     private List<Acao> resultados;
@@ -48,7 +48,7 @@ public class PesquisaActivity extends AppCompatActivity {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             query = intent.getStringExtra(SearchManager.QUERY);
             resultados = heavyGearAssetsHelper.pesquisaAcao(query);
-            watchList  = intent.getParcelableArrayListExtra("watchList");
+            watchList = intent.getParcelableArrayListExtra("watchList");
         }
 
         toolbar = (Toolbar) findViewById(R.id.inc_toolbar);
@@ -66,23 +66,23 @@ public class PesquisaActivity extends AppCompatActivity {
         });
         setSupportActionBar(toolbar);
 
-        recyclerView      = (RecyclerView) findViewById(R.id.recyclerView);
-        layoutManager     = new LinearLayoutManager(this);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        layoutManager = new LinearLayoutManager(this);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), VERTICAL);
-        rvPesquisaAdapter = new RvPesquisaAdapter(resultados, watchList);
+        pesquisaRecycleViewAdapter = new PesquisaRecycleViewAdapter(resultados, watchList);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(dividerItemDecoration);
-        recyclerView.setAdapter(rvPesquisaAdapter);
+        recyclerView.setAdapter(pesquisaRecycleViewAdapter);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            query      = intent.getStringExtra(SearchManager.QUERY);
+            query = intent.getStringExtra(SearchManager.QUERY);
             resultados = heavyGearAssetsHelper.pesquisaAcao(query);
             toolbar.setTitle(query);
-            rvPesquisaAdapter.update(resultados);
+            pesquisaRecycleViewAdapter.update(resultados);
         }
     }
 
@@ -92,7 +92,7 @@ public class PesquisaActivity extends AppCompatActivity {
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 
-        MenuItem menuItem     = menu.findItem(R.id.action_search);
+        MenuItem menuItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 

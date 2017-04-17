@@ -100,7 +100,7 @@ public class Acao implements Parcelable {
 
     // Creator
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-        public Acao createFromParcel(Parcel in){
+        public Acao createFromParcel(Parcel in) {
             return new Acao(in);
         }
 
@@ -111,9 +111,9 @@ public class Acao implements Parcelable {
 
     // "De-parcel object
     public Acao(Parcel in) {
-        this.codigo  = in.readString();
+        this.codigo = in.readString();
         this.empresa = in.readString();
-        this.tipo    = in.readString();
+        this.tipo = in.readString();
         this.cotacao = in.readDouble();
         this.inWatch = (in.readInt() == 0) ? false : true;
     }

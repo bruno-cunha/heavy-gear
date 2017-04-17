@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 import java.util.ArrayList;
@@ -17,17 +18,17 @@ import br.com.bcunha.heavygear.model.pojo.Acao;
 public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
 
     public static final String DB_NOME = "heavygear.db";
-    public static final int    VERSAO  = 1;
+    public static final int VERSAO = 1;
 
-    public static final String TABELA_ACOES  = "acoes";
+    public static final String TABELA_ACOES = "acoes";
 
     // Campos comuns
-    public static final String CAMPO_ID      = "_id";
-    public static final String CAMPO_CODIGO  = "codigo";
+    public static final String CAMPO_ID = "_id";
+    public static final String CAMPO_CODIGO = "codigo";
 
     // Campos tabela ACOES
     public static final String CAMPO_EMPRESA = "empresa";
-    public static final String CAMPO_TIPO    = "tipo";
+    public static final String CAMPO_TIPO = "tipo";
     public static final String CAMPO_COTACAO = "cotacao";
 
     SQLiteDatabase heavyGearDB;
@@ -42,12 +43,12 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
     }
 
     public void closeDB() {
-        if (heavyGearDB !=  null && heavyGearDB.isOpen()) {
+        if (heavyGearDB != null && heavyGearDB.isOpen()) {
             heavyGearDB.close();
         }
     }
 
-    public long insertAcoes(int id, String codigo, String empresa, String tipo){
+    public long insertAcoes(int id, String codigo, String empresa, String tipo) {
         ContentValues contentValues = new ContentValues();
         if (id != -1) {
             contentValues.put(CAMPO_ID, id);
@@ -59,7 +60,7 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
         return heavyGearDB.insert(TABELA_ACOES, null, contentValues);
     }
 
-    public long updateAcoes(int id, String codigo, String empresa, String tipo){
+    public long updateAcoes(int id, String codigo, String empresa, String tipo) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(CAMPO_CODIGO, codigo);
         contentValues.put(CAMPO_EMPRESA, empresa);
@@ -70,54 +71,54 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
         return heavyGearDB.update(TABELA_ACOES, contentValues, where, null);
     }
 
-    public long deleteAcoes(int id){
+    public long deleteAcoes(int id) {
         String where = CAMPO_ID + " = " + id;
 
         return heavyGearDB.delete(TABELA_ACOES, where, null);
     }
 
     public Acao getAcao(String codigo) {
-        String query = "SELECT "+
-                         " * " +
-                        "FROM " +
-                          TABELA_ACOES +
-                        " WHERE " +
-                          CAMPO_CODIGO + " = '" + codigo + "'";
+        String query = "SELECT " +
+        " * " +
+        "FROM " +
+        TABELA_ACOES +
+        " WHERE " +
+        CAMPO_CODIGO + " = '" + codigo + "'";
         Cursor cursor = heavyGearDB.rawQuery(query, null);
         cursor.moveToFirst();
         Acao acao = new Acao(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)) + ".SA",
-                             cursor.getString(cursor.getColumnIndex(CAMPO_EMPRESA)),
-                             cursor.getString(cursor.getColumnIndex(CAMPO_TIPO)),
-                             0);
+        cursor.getString(cursor.getColumnIndex(CAMPO_EMPRESA)),
+        cursor.getString(cursor.getColumnIndex(CAMPO_TIPO)),
+        0);
         return acao;
     }
 
-    public Cursor getAcoes(){
+    public Cursor getAcoes() {
         String query = "SELECT * FROM " + TABELA_ACOES;
 
         return heavyGearDB.rawQuery(query, null);
     }
 
-    public Cursor execQuery (String query) {
+    public Cursor execQuery(String query) {
         return heavyGearDB.rawQuery(query, null);
     }
 
-    public List<Acao> pesquisaAcao(String filtro){
+    public List<Acao> pesquisaAcao(String filtro) {
         String query = "SELECT " +
-                        " * "+
-                       " FROM " +
-                          TABELA_ACOES +
-                       " WHERE " +
-                          CAMPO_CODIGO + " LIKE '%" + filtro + "%'";
+        " * " +
+        " FROM " +
+        TABELA_ACOES +
+        " WHERE " +
+        CAMPO_CODIGO + " LIKE '%" + filtro + "%'";
 
         Cursor cursor = heavyGearDB.rawQuery(query, null);
         List<Acao> acoes = new ArrayList<Acao>();
 
         while (cursor.moveToNext()) {
             acoes.add(new Acao(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)) + ".SA",
-                               cursor.getString(cursor.getColumnIndex(CAMPO_EMPRESA)),
-                               cursor.getString(cursor.getColumnIndex(CAMPO_TIPO)),
-                               0));
+            cursor.getString(cursor.getColumnIndex(CAMPO_EMPRESA)),
+            cursor.getString(cursor.getColumnIndex(CAMPO_TIPO)),
+            0));
         }
         return acoes;
     }

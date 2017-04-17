@@ -40,19 +40,10 @@
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT"/>
 
-                <action android:name="HEAVYSERVICE"/>
+                <action android:name="ACTION_HEAVYSERVICE"/>
             </intent-filter>
         </service>
 
-        <receiver
-            android:name=".model.service.HeavyReceiver"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>

@@ -19,7 +19,7 @@ import br.com.bcunha.heavygear.ui.activities.HeavyGearActivity;
  * Created by bruno on 17/11/16.
  */
 
-public class RvPesquisaAdapter extends RecyclerView.Adapter<RvPesquisaAdapter.RvPesquisaViewHolder> {
+public class PesquisaRecycleViewAdapter extends RecyclerView.Adapter<PesquisaRecycleViewAdapter.RvPesquisaViewHolder> {
 
     public static class RvPesquisaViewHolder extends RecyclerView.ViewHolder {
         final TextView textView;
@@ -36,7 +36,7 @@ public class RvPesquisaAdapter extends RecyclerView.Adapter<RvPesquisaAdapter.Rv
 
     private List<Acao> watchList;
 
-    public RvPesquisaAdapter(List<Acao> resultados, List<Acao> watchList) {
+    public PesquisaRecycleViewAdapter(List<Acao> resultados, List<Acao> watchList) {
         this.resultados = resultados;
         this.watchList  = watchList;
         comparaResultadosEWatch();
