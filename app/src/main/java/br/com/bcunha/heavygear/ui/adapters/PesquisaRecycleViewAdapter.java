@@ -38,7 +38,7 @@ public class PesquisaRecycleViewAdapter extends RecyclerView.Adapter<PesquisaRec
 
     public PesquisaRecycleViewAdapter(List<Acao> resultados, List<Acao> watchList) {
         this.resultados = resultados;
-        this.watchList  = watchList;
+        this.watchList = watchList;
         comparaResultadosEWatch();
     }
 
@@ -59,7 +59,7 @@ public class PesquisaRecycleViewAdapter extends RecyclerView.Adapter<PesquisaRec
         rvPesquisaViewHolder.imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (resultados.get(position).isInWatch()){
+                if (resultados.get(position).isInWatch()) {
                     resultados.get(position).setInWatch(false);
                     rvPesquisaViewHolder.imageButton.setImageResource(R.drawable.ic_add);
                 } else {
@@ -87,7 +87,8 @@ public class PesquisaRecycleViewAdapter extends RecyclerView.Adapter<PesquisaRec
 
     }
 
-    public void remove(int position) {}
+    public void remove(int position) {
+    }
 
     public void update(List<Acao> novasAcoes) {
         resultados.clear();

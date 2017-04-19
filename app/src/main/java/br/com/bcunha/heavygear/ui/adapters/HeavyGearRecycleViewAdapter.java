@@ -6,13 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.pojo.Acao;
-import br.com.bcunha.heavygear.model.pojo.RespostaQuotes;
+import br.com.bcunha.heavygear.model.pojo.Quote;
 
 /**
  * Created by BRUNO on 18/10/2016.
@@ -20,7 +19,7 @@ import br.com.bcunha.heavygear.model.pojo.RespostaQuotes;
 
 public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearRecycleViewAdapter.RvViewHolder> {
 
-    public static class RvViewHolder extends RecyclerView.ViewHolder{
+    public static class RvViewHolder extends RecyclerView.ViewHolder {
 
         final TextView codigo;
         final TextView empresa;
@@ -28,7 +27,7 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
 
         public RvViewHolder(View view) {
             super(view);
-            codigo  = (TextView) view.findViewById(R.id.codigo);
+            codigo = (TextView) view.findViewById(R.id.codigo);
             empresa = (TextView) view.findViewById(R.id.empresa);
             cotacao = (TextView) view.findViewById(R.id.cotacao);
         }
@@ -36,20 +35,21 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
 
     public List<Acao> watchList;
 
-    public HeavyGearRecycleViewAdapter() {}
+    public HeavyGearRecycleViewAdapter() {
+    }
 
-    public HeavyGearRecycleViewAdapter(List<Acao> watchList){
+    public HeavyGearRecycleViewAdapter(List<Acao> watchList) {
         this.watchList = watchList;
     }
 
-    public static HeavyGearRecycleViewAdapter createFromQuote(List<RespostaQuotes.Quote> quoteAcoes){
-        List<Acao> acoes  = new ArrayList<Acao>();
+    public static HeavyGearRecycleViewAdapter createFromQuote(List<Quote> quoteAcoes) {
+        List<Acao> acoes = new ArrayList<Acao>();
 
-        for (RespostaQuotes.Quote quote: quoteAcoes) {
-            acoes.add(new Acao (quote.getsymbol(),
-                                quote.getName(),
-                                "",
-                                Double.parseDouble(quote.getLastTradePriceOnly())));
+        for (Quote quote : quoteAcoes) {
+            acoes.add(new Acao(quote.getsymbol(),
+            quote.getName(),
+            "",
+            Double.parseDouble(quote.getLastTradePriceOnly())));
         }
 
         return new HeavyGearRecycleViewAdapter(acoes);

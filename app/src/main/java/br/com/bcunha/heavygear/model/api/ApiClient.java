@@ -3,7 +3,7 @@ package br.com.bcunha.heavygear.model.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import retrofit2.Call;
+import br.com.bcunha.heavygear.model.pojo.RespostaQuote;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -21,9 +21,13 @@ public class ApiClient {
 
     public static Retrofit getRetrofit() {
         if (retrofit == null) {
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.registerTypeAdapter(RespostaQuote.class, new RespostaQuoteDeserializer());
+            Gson gson = gsonBuilder.create();
+
             retrofit = new Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().create()))
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build();
         }
         return retrofit;

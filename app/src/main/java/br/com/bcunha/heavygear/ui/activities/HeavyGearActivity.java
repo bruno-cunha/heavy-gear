@@ -34,8 +34,8 @@ import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.db.HeavyGearAssetsHelper;
 import br.com.bcunha.heavygear.model.pojo.Acao;
 import br.com.bcunha.heavygear.model.service.HeavyService;
-import br.com.bcunha.heavygear.ui.adapters.HeavyGearRecycleViewAdapter;
 import br.com.bcunha.heavygear.model.service.HeavyService.HeavyBinder;
+import br.com.bcunha.heavygear.ui.adapters.HeavyGearRecycleViewAdapter;
 
 import static br.com.bcunha.heavygear.R.menu.menu_searchview;
 
@@ -234,7 +234,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         heavyGearRecycleViewAdapter.notifyDataSetChanged();
     }
 
-    public void atualizar (View view){
+    public void atualizar(View view) {
         heavyServiceBound.buscaTextoTeste();
     }
 }

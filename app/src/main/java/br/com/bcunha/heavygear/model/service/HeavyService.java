@@ -16,7 +16,8 @@ import java.util.List;
 import br.com.bcunha.heavygear.model.api.ApiClient;
 import br.com.bcunha.heavygear.model.api.BuscaCotacaoInterface;
 import br.com.bcunha.heavygear.model.pojo.Acao;
-import br.com.bcunha.heavygear.model.pojo.RespostaQuotes;
+import br.com.bcunha.heavygear.model.pojo.Quote;
+import br.com.bcunha.heavygear.model.pojo.RespostaQuote;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -42,7 +43,7 @@ public class HeavyService extends Service {
         // Buscar watchList  do intent
         watchList = new ArrayList<Acao>();
         watchList.add(new Acao("PETR3.SA", "Petrobras", "", 00.00, true));
-        //watchList.add(new Acao("JBSS3.SA", "JBS", "", 00.00, true));
+        watchList.add(new Acao("JBSS3.SA", "JBS", "", 00.00, true));
         return mBinder;
     }
 
@@ -89,14 +90,14 @@ public class HeavyService extends Service {
             ApiClient.QUERY_QUOTE.replace("?codigo?", formatCodigo(watchList)),
             ApiClient.ENV,
             ApiClient.FORMAT)
-            .enqueue(new Callback<RespostaQuotes>() {
+            .enqueue(new Callback<RespostaQuote>() {
                 @Override
-                public void onResponse(Call<RespostaQuotes> call,
-                                       Response<RespostaQuotes> response) {
-                    List<RespostaQuotes.Quote> quoteAcoes = response.body().getQuery().getResults().getQuote();
+                public void onResponse(Call<RespostaQuote> call,
+                                       Response<RespostaQuote> response) {
+                    List<Quote> quoteAcoes = response.body().getQuery().getResults().getQuote();
                     List<Acao> acoes = new ArrayList<Acao>();
 
-                    for (RespostaQuotes.Quote quote : quoteAcoes) {
+                    for (Quote quote : quoteAcoes) {
                         acoes.add(new Acao(quote.getsymbol(),
                         quote.getName(),
                         "",
@@ -111,8 +112,8 @@ public class HeavyService extends Service {
                 }
 
                 @Override
-                public void onFailure(Call<RespostaQuotes> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
+                public void onFailure(Call<RespostaQuote> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), "Falha", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -129,7 +130,7 @@ public class HeavyService extends Service {
     }
 
     public String formatCodigo(List<Acao> acoes) {
-        if(acoes.size() == 0){
+        if (acoes.size() == 0) {
             return "\"\"";
         }
 
@@ -146,7 +147,7 @@ public class HeavyService extends Service {
         return codigos.toString();
     }
 
-    public String buscaTextoTeste(){
+    public String buscaTextoTeste() {
         return "teste";
     }
 }
