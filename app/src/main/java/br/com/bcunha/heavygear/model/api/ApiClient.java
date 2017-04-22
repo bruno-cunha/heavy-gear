@@ -3,6 +3,9 @@ package br.com.bcunha.heavygear.model.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.List;
+
+import br.com.bcunha.heavygear.model.pojo.Acao;
 import br.com.bcunha.heavygear.model.pojo.RespostaQuote;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -31,5 +34,23 @@ public class ApiClient {
             .build();
         }
         return retrofit;
+    }
+
+    public static String formatCodigo(List<Acao> acoes) {
+        if (acoes.size() == 0) {
+            return "\"\"";
+        }
+
+        StringBuffer codigos = new StringBuffer();
+        boolean primeiro = true;
+        for (Acao acao : acoes) {
+            if (primeiro) {
+                codigos.append("\"").append(acao.getCodigo().toString()).append(".SA").append("\"");
+                primeiro = false;
+            } else {
+                codigos.append(",").append("\"").append(acao.getCodigo().toString()).append(".SA").append("\"");
+            }
+        }
+        return codigos.toString();
     }
 }

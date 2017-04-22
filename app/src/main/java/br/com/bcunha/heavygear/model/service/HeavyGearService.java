@@ -22,28 +22,29 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class HeavyService extends Service {
+public class HeavyGearService extends Service {
 
-    private String LOG_TAG = "HeavyService";
+    private String LOG_TAG = "HeavyGearService";
     private final int timer_WIFI = 10000; // 10sec
     private final int timer_3G = 1000000;
     private IBinder mBinder = new HeavyBinder();
     private BuscaCotacaoInterface apiClient;
-    private Worker worker;
-    private List<Acao> watchList;
-    private Handler handler = new Handler();
+
+    public Worker worker;
+    public Handler handler = new Handler();
+    public List<Acao> watchList;
 
     @Override
     public IBinder onBind(Intent intent) {
         Log.i(LOG_TAG, "onBind");
-        if (worker != null) {
-            handler.postDelayed(worker, timer_WIFI);
-        }
 
         // Buscar watchList  do intent
-        watchList = new ArrayList<Acao>();
-        watchList.add(new Acao("PETR3.SA", "Petrobras", "", 00.00, true));
-        watchList.add(new Acao("JBSS3.SA", "JBS", "", 00.00, true));
+
+        watchList = (ArrayList) intent.getParcelableArrayListExtra("watchList");
+
+        if (worker != null) {
+            handler.post(worker);
+        }
         return mBinder;
     }
 
@@ -87,33 +88,33 @@ public class HeavyService extends Service {
         @Override
         public void run() {
             apiClient.getQuotes(
-            ApiClient.QUERY_QUOTE.replace("?codigo?", formatCodigo(watchList)),
+            ApiClient.QUERY_QUOTE.replace("?codigo?", ApiClient.formatCodigo(watchList)),
             ApiClient.ENV,
             ApiClient.FORMAT)
             .enqueue(new Callback<RespostaQuote>() {
                 @Override
                 public void onResponse(Call<RespostaQuote> call,
                                        Response<RespostaQuote> response) {
-                    List<Quote> quoteAcoes = response.body().getQuery().getResults().getQuote();
-                    List<Acao> acoes = new ArrayList<Acao>();
+                    //List<Quote> quoteAcoes = response.body().getQuery().getResults().getQuote();
 
-                    for (Quote quote : quoteAcoes) {
-                        acoes.add(new Acao(quote.getsymbol(),
-                        quote.getName(),
-                        "",
-                        Double.parseDouble(quote.getLastTradePriceOnly())));
+                    for (Quote quote : response.body().getQuery().getResults().getQuote()) {
+                        int index = watchList.indexOf(new Acao(String.valueOf(quote.getsymbol().toCharArray(),
+                                                                              0,
+                                                                              quote.getsymbol().length()-3)));
+                        if(index >= 0){
+                            watchList.get(index).setCotacao(Double.parseDouble(quote.getLastTradePriceOnly()));
+                        }
                     }
 
                     Intent intent = new Intent(ACTION_HEAVYSERVICE);
-                    intent.putParcelableArrayListExtra("watchList", (ArrayList) acoes);
+                    intent.putParcelableArrayListExtra("watchList", (ArrayList) watchList);
 
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                    Log.i(LOG_TAG, "Manipulando o resultado");
                 }
 
                 @Override
                 public void onFailure(Call<RespostaQuote> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Falha", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Falha", Toast.LENGTH_LONG).show();
                 }
             });
 
@@ -124,30 +125,8 @@ public class HeavyService extends Service {
     }
 
     public class HeavyBinder extends Binder {
-        public HeavyService getService() {
-            return HeavyService.this;
+        public HeavyGearService getService() {
+            return HeavyGearService.this;
         }
-    }
-
-    public String formatCodigo(List<Acao> acoes) {
-        if (acoes.size() == 0) {
-            return "\"\"";
-        }
-
-        StringBuffer codigos = new StringBuffer();
-        boolean primeiro = true;
-        for (Acao acao : acoes) {
-            if (primeiro) {
-                codigos.append("\"").append(acao.getCodigo().toString()).append("\"");
-                primeiro = false;
-            } else {
-                codigos.append(",").append("\"").append(acao.getCodigo().toString()).append("\"");
-            }
-        }
-        return codigos.toString();
-    }
-
-    public String buscaTextoTeste() {
-        return "teste";
     }
 }

@@ -86,7 +86,7 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
         CAMPO_CODIGO + " = '" + codigo + "'";
         Cursor cursor = heavyGearDB.rawQuery(query, null);
         cursor.moveToFirst();
-        Acao acao = new Acao(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)) + ".SA",
+        Acao acao = new Acao(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)),
         cursor.getString(cursor.getColumnIndex(CAMPO_EMPRESA)),
         cursor.getString(cursor.getColumnIndex(CAMPO_TIPO)),
         0);
@@ -115,7 +115,7 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
         List<Acao> acoes = new ArrayList<Acao>();
 
         while (cursor.moveToNext()) {
-            acoes.add(new Acao(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)) + ".SA",
+            acoes.add(new Acao(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)),
             cursor.getString(cursor.getColumnIndex(CAMPO_EMPRESA)),
             cursor.getString(cursor.getColumnIndex(CAMPO_TIPO)),
             0));

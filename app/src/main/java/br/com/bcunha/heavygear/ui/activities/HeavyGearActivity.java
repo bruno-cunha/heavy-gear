@@ -33,8 +33,8 @@ import java.util.List;
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.db.HeavyGearAssetsHelper;
 import br.com.bcunha.heavygear.model.pojo.Acao;
-import br.com.bcunha.heavygear.model.service.HeavyService;
-import br.com.bcunha.heavygear.model.service.HeavyService.HeavyBinder;
+import br.com.bcunha.heavygear.model.service.HeavyGearService;
+import br.com.bcunha.heavygear.model.service.HeavyGearService.HeavyBinder;
 import br.com.bcunha.heavygear.ui.adapters.HeavyGearRecycleViewAdapter;
 
 import static br.com.bcunha.heavygear.R.menu.menu_searchview;
@@ -49,19 +49,19 @@ public class HeavyGearActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private HeavyGearRecycleViewAdapter heavyGearRecycleViewAdapter;
-    private HeavyService heavyServiceBound;
+    private HeavyGearService heavyGearServiceBound;
     private Boolean isBound;
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             HeavyBinder binder = (HeavyBinder) service;
-            heavyServiceBound = binder.getService();
+            heavyGearServiceBound = binder.getService();
             isBound = true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            heavyServiceBound = null;
+            heavyGearServiceBound = null;
             isBound = false;
         }
     };
@@ -88,11 +88,10 @@ public class HeavyGearActivity extends AppCompatActivity {
         String json = sharedPreferences.getString("watchList", "");
 
         if (!json.isEmpty()) {
-            Type type = new TypeToken<List<Acao>>() {
-            }.getType();
+            Type type = new TypeToken<List<Acao>>(){}.getType();
             watchList = new Gson().fromJson(json, type);
         } else if (watchList.size() == 0) {
-            watchList.add(new Acao("PETR3.SA", "Petrobras", "", 00.00, true));
+            watchList.add(new Acao("PETR3", "Petrobras", "", 00.00, true));
         }
 
         // SQLite
@@ -143,7 +142,8 @@ public class HeavyGearActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         // Bind Serviço
-        Intent intent = new Intent(this, HeavyService.class);
+        Intent intent = new Intent(this, HeavyGearService.class);
+        intent.putParcelableArrayListExtra("watchList", (ArrayList)  heavyGearRecycleViewAdapter.watchList);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -168,9 +168,11 @@ public class HeavyGearActivity extends AppCompatActivity {
         super.onStop();
         // Salva watchList
         SharedPreferences.Editor preferencesEditor = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).edit();
-
-        String json = new Gson().toJson(heavyGearRecycleViewAdapter.watchList);
-        preferencesEditor.putString("watchList", json);
+        if (heavyGearRecycleViewAdapter.watchList.size() == 0){
+            preferencesEditor.putString("watchList", "");
+        } else {
+            String json = new Gson().toJson(heavyGearRecycleViewAdapter.watchList);
+        }
         preferencesEditor.commit();
 
         // UnBind Serviço
@@ -217,24 +219,20 @@ public class HeavyGearActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         // Carrega ação selecionada na activity de pesquisa
-        if (intent.getStringExtra("sender").equals("PesquisaActivity")) {
-            String codigo = intent.getStringExtra("codigo");
-
-            heavyGearRecycleViewAdapter.watchList.add(heavyGearAssetsHelper.getAcao(codigo));
-            heavyGearRecycleViewAdapter.notifyDataSetChanged();
-        }
+//        if (intent.getStringExtra("sender").equals("PesquisaActivity")) {
+//            String codigo = intent.getStringExtra("codigo");
+//
+//            heavyGearServiceBound.watchList.add(heavyGearAssetsHelper.getAcao(codigo));
+//            heavyGearServiceBound.handler.post(heavyGearServiceBound.worker);
+//        }
     }
 
     public void adicionaNoWatchLista(List<Acao> selecionados) {
         for (Acao acao : selecionados) {
             if (acao.isInWatch() && !heavyGearRecycleViewAdapter.watchList.contains(acao)) {
-                heavyGearRecycleViewAdapter.watchList.add(acao);
+                heavyGearServiceBound.watchList.add(acao);
             }
         }
-        heavyGearRecycleViewAdapter.notifyDataSetChanged();
-    }
-
-    public void atualizar(View view) {
-        heavyServiceBound.buscaTextoTeste();
+        heavyGearServiceBound.handler.post(heavyGearServiceBound.worker);
     }
 }

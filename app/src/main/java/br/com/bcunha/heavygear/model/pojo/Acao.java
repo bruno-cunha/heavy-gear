@@ -13,6 +13,10 @@ public class Acao implements Parcelable {
     private double cotacao;
     private boolean inWatch;
 
+    public Acao(String codigo){
+        this.codigo = codigo;
+    }
+
     public Acao(String codigo, String empresa, String tipo, double cotacao) {
         this.codigo = codigo;
         this.empresa = empresa;

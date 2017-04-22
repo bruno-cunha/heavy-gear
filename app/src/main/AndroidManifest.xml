@@ -34,7 +34,7 @@
         </activity>
 
         <service
-            android:name=".model.service.HeavyService"
+            android:name=".model.service.HeavyGearService"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
