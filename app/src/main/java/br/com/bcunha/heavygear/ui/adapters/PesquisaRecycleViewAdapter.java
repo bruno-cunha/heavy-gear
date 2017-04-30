@@ -32,9 +32,9 @@ public class PesquisaRecycleViewAdapter extends RecyclerView.Adapter<PesquisaRec
         }
     }
 
-    private List<Acao> resultados;
+    public List<Acao> resultados;
 
-    private List<Acao> watchList;
+    public List<Acao> watchList;
 
     public PesquisaRecycleViewAdapter(List<Acao> resultados, List<Acao> watchList) {
         this.resultados = resultados;
@@ -66,11 +66,13 @@ public class PesquisaRecycleViewAdapter extends RecyclerView.Adapter<PesquisaRec
                     resultados.get(position).setInWatch(true);
                     rvPesquisaViewHolder.imageButton.setImageResource(R.drawable.ic_check);
                 }
-
-                Intent intent = new Intent(view.getContext(), HeavyGearActivity.class);
-                intent.putExtra("activity", "PesquisaActivity");
-                intent.putParcelableArrayListExtra("result", (ArrayList) resultados);
-                view.getContext().startActivity(intent);
+                if (resultados.get(position).isInWatch() && !watchList.contains(resultados.get(position))) {
+                    watchList.add(resultados.get(position));
+                }
+//                Intent intent = new Intent(view.getContext(), HeavyGearActivity.class);
+//                intent.putExtra("activity", "PesquisaActivity");
+//                intent.putParcelableArrayListExtra("result", (ArrayList) resultados);
+//                view.getContext().startActivity(intent);
             }
         });
     }
@@ -103,5 +105,14 @@ public class PesquisaRecycleViewAdapter extends RecyclerView.Adapter<PesquisaRec
                 resultados.get(contador).setInWatch(true);
             }
         }
+    }
+
+    public void adicionaNoWatchLista(List<Acao> selecionados) {
+        for (Acao acao : selecionados) {
+            if (acao.isInWatch() && !watchList.contains(acao)) {
+                watchList.add(acao);
+            }
+        }
+
     }
 }

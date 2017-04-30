@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">HeavyGear</string>
     <string name="moeda">R$</string>
+    <string name="pesquisa_hint">Pesquisa</string>
 </resources>

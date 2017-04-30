@@ -1,9 +1,12 @@
 package br.com.bcunha.heavygear.ui.adapters;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -21,12 +24,15 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
 
     public static class RvViewHolder extends RecyclerView.ViewHolder {
 
+
+        final ImageView logo;
         final TextView codigo;
         final TextView empresa;
         final TextView cotacao;
 
         public RvViewHolder(View view) {
             super(view);
+            logo = (ImageView) view.findViewById(R.id.imgAcao);
             codigo = (TextView) view.findViewById(R.id.codigo);
             empresa = (TextView) view.findViewById(R.id.empresa);
             cotacao = (TextView) view.findViewById(R.id.cotacao);
@@ -34,9 +40,6 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
     }
 
     public List<Acao> watchList;
-
-    public HeavyGearRecycleViewAdapter() {
-    }
 
     public HeavyGearRecycleViewAdapter(List<Acao> watchList) {
         this.watchList = watchList;
@@ -65,6 +68,11 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
 
     @Override
     public void onBindViewHolder(RvViewHolder rvViewHolder, int position) {
+        Context context = rvViewHolder.itemView.getContext();
+        int imgId = context.getResources().getIdentifier(watchList.get(position).getCodigo().replaceAll("\\d", "").toLowerCase(),
+                                                         "drawable",
+                                                         context.getPackageName());
+        rvViewHolder.logo.setImageResource(imgId);
         rvViewHolder.codigo.setText(watchList.get(position).getCodigo());
         rvViewHolder.empresa.setText(watchList.get(position).getEmpresa());
         rvViewHolder.cotacao.setText(String.format("%.2f", watchList.get(position).getCotacao()));

@@ -1,6 +1,5 @@
 package br.com.bcunha.heavygear.ui.activities;
 
-import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -12,16 +11,13 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -37,12 +33,15 @@ import br.com.bcunha.heavygear.model.service.HeavyGearService;
 import br.com.bcunha.heavygear.model.service.HeavyGearService.HeavyBinder;
 import br.com.bcunha.heavygear.ui.adapters.HeavyGearRecycleViewAdapter;
 
-import static br.com.bcunha.heavygear.R.menu.menu_searchview;
+import static br.com.bcunha.heavygear.R.menu.menu_heavy_gear;
+import static br.com.bcunha.heavygear.R.menu.menu_pesquisa;
 
 public class HeavyGearActivity extends AppCompatActivity {
 
     public static final String PREF = "Preferences";
+    public static final int REQUEST_PESQUISA = 1;
     private static final String ACTION_HEAVYSERVICE = "ACTION_HEAVYSERVICE";
+
 
     private HeavyGearAssetsHelper heavyGearAssetsHelper;
     private Toolbar toolbar;
@@ -50,7 +49,7 @@ public class HeavyGearActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private HeavyGearRecycleViewAdapter heavyGearRecycleViewAdapter;
     private HeavyGearService heavyGearServiceBound;
-    private Boolean isBound;
+    private Boolean isBound = false;
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -102,7 +101,8 @@ public class HeavyGearActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.inc_toolbar);
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
-
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(false);
         // RecyclerView
         layoutManager = new LinearLayoutManager(this);
         heavyGearRecycleViewAdapter = new HeavyGearRecycleViewAdapter(watchList);
@@ -130,21 +130,36 @@ public class HeavyGearActivity extends AppCompatActivity {
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
 
-        // Carrega todas as ações selecionadas na activity de pesquisa
-        Intent intent = getIntent();
-        if (intent.hasExtra("activity") && intent.getStringExtra("activity").equals("PesquisaActivity")) {
-            adicionaNoWatchLista(intent.<Acao>getParcelableArrayListExtra("result"));
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(menu_heavy_gear, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if(id == R.id.search){
+            Intent intent = new Intent(this, PesquisaActivity.class);
+            intent.putParcelableArrayListExtra("watchList", (ArrayList) heavyGearRecycleViewAdapter.watchList);
+            startActivityForResult(intent, REQUEST_PESQUISA);
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         // Bind Serviço
-        Intent intent = new Intent(this, HeavyGearService.class);
-        intent.putParcelableArrayListExtra("watchList", (ArrayList)  heavyGearRecycleViewAdapter.watchList);
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        if(!isBound) {
+            Intent intent = new Intent(this, HeavyGearService.class);
+            intent.putParcelableArrayListExtra("watchList", (ArrayList) heavyGearRecycleViewAdapter.watchList);
+            bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        }
     }
 
     @Override
@@ -174,7 +189,6 @@ public class HeavyGearActivity extends AppCompatActivity {
             String json = new Gson().toJson(heavyGearRecycleViewAdapter.watchList);
         }
         preferencesEditor.commit();
-
         // UnBind Serviço
         if (isBound) {
             unbindService(serviceConnection);
@@ -189,50 +203,9 @@ public class HeavyGearActivity extends AppCompatActivity {
     }
 
     @Override
-    public void startActivity(Intent intent) {
-        // Envia watchList para activity de pesquisa
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            intent.putParcelableArrayListExtra("watchList", (ArrayList) heavyGearRecycleViewAdapter.watchList);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == REQUEST_PESQUISA && resultCode == RESULT_OK){
+            heavyGearRecycleViewAdapter.update((ArrayList) data.getParcelableArrayListExtra("watchList"));
         }
-        super.startActivity(intent);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(menu_searchview, menu);
-
-        // Configura SearchView
-        MenuItem menuItem = menu.findItem(R.id.action_search);
-
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
-        searchView.setSearchableInfo(((SearchManager) getSystemService(Context.SEARCH_SERVICE)).getSearchableInfo(getComponentName()));
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        // Carrega ação selecionada na activity de pesquisa
-//        if (intent.getStringExtra("sender").equals("PesquisaActivity")) {
-//            String codigo = intent.getStringExtra("codigo");
-//
-//            heavyGearServiceBound.watchList.add(heavyGearAssetsHelper.getAcao(codigo));
-//            heavyGearServiceBound.handler.post(heavyGearServiceBound.worker);
-//        }
-    }
-
-    public void adicionaNoWatchLista(List<Acao> selecionados) {
-        for (Acao acao : selecionados) {
-            if (acao.isInWatch() && !heavyGearRecycleViewAdapter.watchList.contains(acao)) {
-                heavyGearServiceBound.watchList.add(acao);
-            }
-        }
-        heavyGearServiceBound.handler.post(heavyGearServiceBound.worker);
     }
 }

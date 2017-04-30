@@ -27,6 +27,7 @@ public class HeavyGearService extends Service {
     private String LOG_TAG = "HeavyGearService";
     private final int timer_WIFI = 10000; // 10sec
     private final int timer_3G = 1000000;
+    private boolean ativo = false;
     private IBinder mBinder = new HeavyBinder();
     private BuscaCotacaoInterface apiClient;
 
@@ -39,12 +40,13 @@ public class HeavyGearService extends Service {
         Log.i(LOG_TAG, "onBind");
 
         // Buscar watchList  do intent
-
         watchList = (ArrayList) intent.getParcelableArrayListExtra("watchList");
 
         if (worker != null) {
             handler.post(worker);
         }
+        ativo = true;
+
         return mBinder;
     }
 
@@ -74,7 +76,16 @@ public class HeavyGearService extends Service {
 
     @Override
     public void onDestroy() {
+        Log.i(LOG_TAG, "onDestroy");
+        stopSelf();
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.i(LOG_TAG, "onUnbind");
+        ativo = false;
+        return false;
     }
 
     private class Worker implements Runnable {
@@ -87,6 +98,10 @@ public class HeavyGearService extends Service {
 
         @Override
         public void run() {
+            if(!ativo) {
+                return;
+            }
+
             apiClient.getQuotes(
             ApiClient.QUERY_QUOTE.replace("?codigo?", ApiClient.formatCodigo(watchList)),
             ApiClient.ENV,
@@ -95,13 +110,11 @@ public class HeavyGearService extends Service {
                 @Override
                 public void onResponse(Call<RespostaQuote> call,
                                        Response<RespostaQuote> response) {
-                    //List<Quote> quoteAcoes = response.body().getQuery().getResults().getQuote();
-
                     for (Quote quote : response.body().getQuery().getResults().getQuote()) {
                         int index = watchList.indexOf(new Acao(String.valueOf(quote.getsymbol().toCharArray(),
-                                                                              0,
-                                                                              quote.getsymbol().length()-3)));
-                        if(index >= 0){
+                        0,
+                        quote.getsymbol().length() - 3)));
+                        if (index >= 0) {
                             watchList.get(index).setCotacao(Double.parseDouble(quote.getLastTradePriceOnly()));
                         }
                     }
