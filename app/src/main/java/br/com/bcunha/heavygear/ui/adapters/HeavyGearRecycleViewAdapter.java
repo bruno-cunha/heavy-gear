@@ -72,6 +72,13 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
         int imgId = context.getResources().getIdentifier(watchList.get(position).getCodigo().replaceAll("\\d", "").toLowerCase(),
                                                          "drawable",
                                                          context.getPackageName());
+        if(imgId == 0){
+            imgId = context.getResources().getIdentifier("logo_indisponivel",
+                                                         "drawable",
+                                                         context.getPackageName());
+        }
+
+
         rvViewHolder.logo.setImageResource(imgId);
         rvViewHolder.codigo.setText(watchList.get(position).getCodigo());
         rvViewHolder.empresa.setText(watchList.get(position).getEmpresa());

@@ -112,21 +112,7 @@ public class PesquisaActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-//        if(id == android.R.id.home){
-//            Intent intent = new Intent();
-//            intent.putParcelableArrayListExtra("resultados", (ArrayList) pesquisaRecycleViewAdapter.resultados);
-//            setResult(RESULT_OK, intent);
-//            finish();
-//        }
-        return true;
-        //return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

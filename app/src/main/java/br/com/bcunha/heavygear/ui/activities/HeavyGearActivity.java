@@ -101,8 +101,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.inc_toolbar);
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(false);
+
         // RecyclerView
         layoutManager = new LinearLayoutManager(this);
         heavyGearRecycleViewAdapter = new HeavyGearRecycleViewAdapter(watchList);

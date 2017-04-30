@@ -69,10 +69,6 @@ public class PesquisaRecycleViewAdapter extends RecyclerView.Adapter<PesquisaRec
                 if (resultados.get(position).isInWatch() && !watchList.contains(resultados.get(position))) {
                     watchList.add(resultados.get(position));
                 }
-//                Intent intent = new Intent(view.getContext(), HeavyGearActivity.class);
-//                intent.putExtra("activity", "PesquisaActivity");
-//                intent.putParcelableArrayListExtra("result", (ArrayList) resultados);
-//                view.getContext().startActivity(intent);
             }
         });
     }
