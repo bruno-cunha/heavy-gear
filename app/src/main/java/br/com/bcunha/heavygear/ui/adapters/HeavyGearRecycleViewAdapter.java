@@ -73,7 +73,6 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
                                                          context.getPackageName());
         }
 
-
         heavyGearRecycleViewHolder.logo.setImageResource(imgId);
         heavyGearRecycleViewHolder.codigo.setText(watchList.get(position).getCodigo());
         heavyGearRecycleViewHolder.empresa.setText(watchList.get(position).getEmpresa());

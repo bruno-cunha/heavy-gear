@@ -1,6 +1,11 @@
 package br.com.bcunha.heavygear.ui.adapters;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,7 +57,7 @@ public class PesquisaRecycleViewAdapter extends RecyclerView.Adapter<PesquisaRec
 
     @Override
     public void onBindViewHolder(final PesquisaRecycleViewHolder pesquisaRecycleViewHolder, final int position) {
-        Context context = pesquisaRecycleViewHolder.itemView.getContext();
+        final Context context = pesquisaRecycleViewHolder.itemView.getContext();
         int imgId = context.getResources().getIdentifier(resultados.get(position).getCodigo().replaceAll("\\d", "").toLowerCase(),
                                                          "drawable",
                                                          context.getPackageName());
@@ -65,9 +70,11 @@ public class PesquisaRecycleViewAdapter extends RecyclerView.Adapter<PesquisaRec
         pesquisaRecycleViewHolder.codigo.setText(resultados.get(position).getCodigo());
         pesquisaRecycleViewHolder.empresa.setText(resultados.get(position).getEmpresa());
         if (resultados.get(position).isInWatch()) {
-            pesquisaRecycleViewHolder.btnWatch.setBackgroundResource(R.drawable.ic_check_circle_black_24dp);
+            pesquisaRecycleViewHolder.btnWatch.setBackgroundResource(R.drawable.ic_check_circle_black_36dp);
+            pesquisaRecycleViewHolder.btnWatch.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.verdeClaro)));
         } else {
-            pesquisaRecycleViewHolder.btnWatch.setBackgroundResource(R.drawable.ic_add_circle_black_24dp);
+            pesquisaRecycleViewHolder.btnWatch.setBackgroundResource(R.drawable.ic_add_circle_black_36dp);
+            pesquisaRecycleViewHolder.btnWatch.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.cinza)));
         }
 
         pesquisaRecycleViewHolder.btnWatch.setOnClickListener(new View.OnClickListener() {
@@ -75,10 +82,12 @@ public class PesquisaRecycleViewAdapter extends RecyclerView.Adapter<PesquisaRec
             public void onClick(View view) {
                 if (resultados.get(position).isInWatch()) {
                     resultados.get(position).setInWatch(false);
-                    pesquisaRecycleViewHolder.btnWatch.setBackgroundResource(R.drawable.ic_add_circle_black_24dp);
+                    pesquisaRecycleViewHolder.btnWatch.setBackgroundResource(R.drawable.ic_add_circle_black_36dp);
+                    pesquisaRecycleViewHolder.btnWatch.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(view.getContext(), R.color.cinza)));
                 } else {
                     resultados.get(position).setInWatch(true);
-                    pesquisaRecycleViewHolder.btnWatch.setBackgroundResource(R.drawable.ic_check_circle_black_24dp);
+                    pesquisaRecycleViewHolder.btnWatch.setBackgroundResource(R.drawable.ic_check_circle_black_36dp);
+                    pesquisaRecycleViewHolder.btnWatch.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(view.getContext(), R.color.verdeClaro)));
                 }
                 if (resultados.get(position).isInWatch() && !watchList.contains(resultados.get(position))) {
                     watchList.add(resultados.get(position));
