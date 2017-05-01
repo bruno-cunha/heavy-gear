@@ -1,34 +1,37 @@
 package br.com.bcunha.heavygear.ui.adapters;
 
-import android.content.Intent;
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.pojo.Acao;
-import br.com.bcunha.heavygear.ui.activities.HeavyGearActivity;
 
 /**
  * Created by bruno on 17/11/16.
  */
 
-public class PesquisaRecycleViewAdapter extends RecyclerView.Adapter<PesquisaRecycleViewAdapter.RvPesquisaViewHolder> {
+public class PesquisaRecycleViewAdapter extends RecyclerView.Adapter<PesquisaRecycleViewAdapter.PesquisaRecycleViewHolder> {
 
-    public static class RvPesquisaViewHolder extends RecyclerView.ViewHolder {
-        final TextView textView;
-        final ImageButton imageButton;
+    public static class PesquisaRecycleViewHolder extends RecyclerView.ViewHolder {
+        final ImageView logo;
+        final TextView codigo;
+        final TextView empresa;
+        final ImageButton btnWatch;
 
-        public RvPesquisaViewHolder(View view) {
+        public PesquisaRecycleViewHolder(View view) {
             super(view);
-            textView = (TextView) view.findViewById(R.id.textView);
-            imageButton = (ImageButton) view.findViewById(R.id.imageButton);
+            logo = (ImageView) view.findViewById(R.id.imgAcao);
+            codigo = (TextView) view.findViewById(R.id.codigo);
+            empresa = (TextView) view.findViewById(R.id.empresa);
+            btnWatch = (ImageButton) view.findViewById(R.id.btnWatch);
         }
     }
 
@@ -42,29 +45,40 @@ public class PesquisaRecycleViewAdapter extends RecyclerView.Adapter<PesquisaRec
         comparaResultadosEWatch();
     }
 
-    public RvPesquisaViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.row, parent, false);
-        RvPesquisaViewHolder rvPesquisaViewHolder = new RvPesquisaViewHolder(v);
-        return rvPesquisaViewHolder;
+    public PesquisaRecycleViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_pesquisa, parent, false);
+        return new PesquisaRecycleViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(final RvPesquisaViewHolder rvPesquisaViewHolder, final int position) {
-        rvPesquisaViewHolder.textView.setText(resultados.get(position).getCodigo());
-        if (resultados.get(position).isInWatch()) {
-            rvPesquisaViewHolder.imageButton.setImageResource(R.drawable.ic_check);
-        } else {
-            rvPesquisaViewHolder.imageButton.setImageResource(R.drawable.ic_add);
+    public void onBindViewHolder(final PesquisaRecycleViewHolder pesquisaRecycleViewHolder, final int position) {
+        Context context = pesquisaRecycleViewHolder.itemView.getContext();
+        int imgId = context.getResources().getIdentifier(resultados.get(position).getCodigo().replaceAll("\\d", "").toLowerCase(),
+                                                         "drawable",
+                                                         context.getPackageName());
+        if(imgId == 0){
+            imgId = context.getResources().getIdentifier("logo_indisponivel",
+                                                         "drawable",
+                                                         context.getPackageName());
         }
-        rvPesquisaViewHolder.imageButton.setOnClickListener(new View.OnClickListener() {
+        pesquisaRecycleViewHolder.logo.setImageResource(imgId);
+        pesquisaRecycleViewHolder.codigo.setText(resultados.get(position).getCodigo());
+        pesquisaRecycleViewHolder.empresa.setText(resultados.get(position).getEmpresa());
+        if (resultados.get(position).isInWatch()) {
+            pesquisaRecycleViewHolder.btnWatch.setBackgroundResource(R.drawable.ic_check_circle_black_24dp);
+        } else {
+            pesquisaRecycleViewHolder.btnWatch.setBackgroundResource(R.drawable.ic_add_circle_black_24dp);
+        }
+
+        pesquisaRecycleViewHolder.btnWatch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (resultados.get(position).isInWatch()) {
                     resultados.get(position).setInWatch(false);
-                    rvPesquisaViewHolder.imageButton.setImageResource(R.drawable.ic_add);
+                    pesquisaRecycleViewHolder.btnWatch.setBackgroundResource(R.drawable.ic_add_circle_black_24dp);
                 } else {
                     resultados.get(position).setInWatch(true);
-                    rvPesquisaViewHolder.imageButton.setImageResource(R.drawable.ic_check);
+                    pesquisaRecycleViewHolder.btnWatch.setBackgroundResource(R.drawable.ic_check_circle_black_24dp);
                 }
                 if (resultados.get(position).isInWatch() && !watchList.contains(resultados.get(position))) {
                     watchList.add(resultados.get(position));
@@ -81,12 +95,9 @@ public class PesquisaRecycleViewAdapter extends RecyclerView.Adapter<PesquisaRec
         return resultados.size();
     }
 
-    public void add(Acao acao) {
+    public void add(Acao acao) {}
 
-    }
-
-    public void remove(int position) {
-    }
+    public void remove(int position) {}
 
     public void update(List<Acao> novasAcoes) {
         resultados.clear();

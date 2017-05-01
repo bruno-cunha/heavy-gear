@@ -1,7 +1,6 @@
 package br.com.bcunha.heavygear.ui.adapters;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,17 +19,15 @@ import br.com.bcunha.heavygear.model.pojo.Quote;
  * Created by BRUNO on 18/10/2016.
  */
 
-public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearRecycleViewAdapter.RvViewHolder> {
+public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearRecycleViewAdapter.HeavyGearRecycleViewHolder> {
 
-    public static class RvViewHolder extends RecyclerView.ViewHolder {
-
-
+    public static class HeavyGearRecycleViewHolder extends RecyclerView.ViewHolder {
         final ImageView logo;
         final TextView codigo;
         final TextView empresa;
         final TextView cotacao;
 
-        public RvViewHolder(View view) {
+        public HeavyGearRecycleViewHolder(View view) {
             super(view);
             logo = (ImageView) view.findViewById(R.id.imgAcao);
             codigo = (TextView) view.findViewById(R.id.codigo);
@@ -59,16 +56,14 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
     }
 
     @Override
-    public int getItemCount() {
-        if (watchList == null) {
-            return 0;
-        }
-        return watchList.size();
+    public HeavyGearRecycleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_heavy_gear, parent, false);
+        return new HeavyGearRecycleViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(RvViewHolder rvViewHolder, int position) {
-        Context context = rvViewHolder.itemView.getContext();
+    public void onBindViewHolder(HeavyGearRecycleViewHolder heavyGearRecycleViewHolder, int position) {
+        Context context = heavyGearRecycleViewHolder.itemView.getContext();
         int imgId = context.getResources().getIdentifier(watchList.get(position).getCodigo().replaceAll("\\d", "").toLowerCase(),
                                                          "drawable",
                                                          context.getPackageName());
@@ -79,16 +74,18 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
         }
 
 
-        rvViewHolder.logo.setImageResource(imgId);
-        rvViewHolder.codigo.setText(watchList.get(position).getCodigo());
-        rvViewHolder.empresa.setText(watchList.get(position).getEmpresa());
-        rvViewHolder.cotacao.setText(String.format("%.2f", watchList.get(position).getCotacao()));
+        heavyGearRecycleViewHolder.logo.setImageResource(imgId);
+        heavyGearRecycleViewHolder.codigo.setText(watchList.get(position).getCodigo());
+        heavyGearRecycleViewHolder.empresa.setText(watchList.get(position).getEmpresa());
+        heavyGearRecycleViewHolder.cotacao.setText(String.format("%.2f", watchList.get(position).getCotacao()));
     }
 
     @Override
-    public RvViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview, parent, false);
-        return new RvViewHolder(v);
+    public int getItemCount() {
+        if (watchList == null) {
+            return 0;
+        }
+        return watchList.size();
     }
 
     public void add(Acao acao) {
