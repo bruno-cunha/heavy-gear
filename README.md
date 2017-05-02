@@ -2,7 +2,7 @@
 App Android para monitorar cotação de ações.
 
 # License
-Copyright 2015 Heavy Gear
+Copyright 2017 Heavy Gear
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
