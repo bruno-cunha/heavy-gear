@@ -87,16 +87,27 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
         Cursor cursor = heavyGearDB.rawQuery(query, null);
         cursor.moveToFirst();
         Acao acao = new Acao(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)),
-        cursor.getString(cursor.getColumnIndex(CAMPO_EMPRESA)),
-        cursor.getString(cursor.getColumnIndex(CAMPO_TIPO)),
-        0);
+                             cursor.getString(cursor.getColumnIndex(CAMPO_EMPRESA)),
+                             cursor.getString(cursor.getColumnIndex(CAMPO_TIPO)),
+                             0);
         return acao;
     }
 
-    public Cursor getAcoes() {
+    public List<Acao> getAcoes() {
         String query = "SELECT * FROM " + TABELA_ACOES;
 
-        return heavyGearDB.rawQuery(query, null);
+        List<Acao> acoes = new ArrayList<Acao>();
+
+        Cursor cursor = heavyGearDB.rawQuery(query, null);
+
+        while (cursor.moveToNext()) {
+            acoes.add(new Acao(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)),
+                               cursor.getString(cursor.getColumnIndex(CAMPO_EMPRESA)),
+                               cursor.getString(cursor.getColumnIndex(CAMPO_TIPO)),
+                               0));
+        }
+
+        return acoes;
     }
 
     public Cursor execQuery(String query) {
@@ -116,9 +127,9 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
 
         while (cursor.moveToNext()) {
             acoes.add(new Acao(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)),
-            cursor.getString(cursor.getColumnIndex(CAMPO_EMPRESA)),
-            cursor.getString(cursor.getColumnIndex(CAMPO_TIPO)),
-            0));
+                               cursor.getString(cursor.getColumnIndex(CAMPO_EMPRESA)),
+                               cursor.getString(cursor.getColumnIndex(CAMPO_TIPO)),
+                               0));
         }
         return acoes;
     }

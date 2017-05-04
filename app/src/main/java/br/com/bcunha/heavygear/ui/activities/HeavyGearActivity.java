@@ -18,6 +18,8 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -99,8 +101,15 @@ public class HeavyGearActivity extends AppCompatActivity {
 
         // ToolBar
         toolbar = (Toolbar) findViewById(R.id.inc_toolbar);
-        toolbar.setTitle(R.string.app_name);
+        toolbar.setNavigationIcon(R.drawable.ic_menu_black_36dp);
+
         setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(HeavyGearActivity.this, SobreActivity.class));
+            }
+        });
 
         // RecyclerView
         layoutManager = new LinearLayoutManager(this);

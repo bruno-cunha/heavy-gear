@@ -45,15 +45,17 @@ public class PesquisaActivity extends AppCompatActivity {
 
         List<Acao> resultados = new ArrayList<Acao>();
         List<Acao> watchList = new ArrayList<Acao>();
-        Intent intent = getIntent();
-        if (intent.hasExtra("watchList")) {
-            watchList = intent.getParcelableArrayListExtra("watchList");
-        }
 
+        Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             query = intent.getStringExtra(SearchManager.QUERY);
             resultados = heavyGearAssetsHelper.pesquisaAcao(query);
             watchList = intent.getParcelableArrayListExtra("watchList");
+        } else {
+            resultados = heavyGearAssetsHelper.getAcoes();
+            if (intent.hasExtra("watchList")) {
+                watchList = intent.getParcelableArrayListExtra("watchList");
+            }
         }
 
         toolbar = (Toolbar) findViewById(R.id.inc_toolbar);
