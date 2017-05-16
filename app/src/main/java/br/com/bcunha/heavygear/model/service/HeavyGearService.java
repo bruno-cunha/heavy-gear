@@ -127,7 +127,7 @@ public class HeavyGearService extends Service {
 
                 @Override
                 public void onFailure(Call<RespostaQuote> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Falha", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Serviço Offline", Toast.LENGTH_LONG).show();
                 }
             });
 

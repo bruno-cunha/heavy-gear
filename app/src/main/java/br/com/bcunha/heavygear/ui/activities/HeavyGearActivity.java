@@ -19,7 +19,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -36,7 +35,6 @@ import br.com.bcunha.heavygear.model.service.HeavyGearService.HeavyBinder;
 import br.com.bcunha.heavygear.ui.adapters.HeavyGearRecycleViewAdapter;
 
 import static br.com.bcunha.heavygear.R.menu.menu_heavy_gear;
-import static br.com.bcunha.heavygear.R.menu.menu_pesquisa;
 
 public class HeavyGearActivity extends AppCompatActivity {
 
@@ -107,7 +105,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(HeavyGearActivity.this, SobreActivity.class));
+                startActivity(new Intent(HeavyGearActivity.this, ConfiguracaoActivity.class));
             }
         });
 
@@ -195,6 +193,7 @@ public class HeavyGearActivity extends AppCompatActivity {
             preferencesEditor.putString("watchList", "");
         } else {
             String json = new Gson().toJson(heavyGearRecycleViewAdapter.watchList);
+            preferencesEditor.putString("watchList", json);
         }
         preferencesEditor.commit();
         // UnBind Serviço

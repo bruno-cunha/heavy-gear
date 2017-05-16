@@ -13,8 +13,6 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +30,7 @@ public class PesquisaActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private PesquisaRecycleViewAdapter pesquisaRecycleViewAdapter;
-    private String query;
+    private String pesqQuery;
     private HeavyGearAssetsHelper heavyGearAssetsHelper;
 
     @Override
@@ -48,8 +46,8 @@ public class PesquisaActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            query = intent.getStringExtra(SearchManager.QUERY);
-            resultados = heavyGearAssetsHelper.pesquisaAcao(query);
+            pesqQuery = intent.getStringExtra(SearchManager.QUERY);
+            resultados = heavyGearAssetsHelper.pesquisaAcao(pesqQuery);
             watchList = intent.getParcelableArrayListExtra("watchList");
         } else {
             resultados = heavyGearAssetsHelper.getAcoes();
@@ -59,7 +57,7 @@ public class PesquisaActivity extends AppCompatActivity {
         }
 
         toolbar = (Toolbar) findViewById(R.id.inc_toolbar);
-        toolbar.setTitle(query);
+        toolbar.setTitle(pesqQuery);
         setSupportActionBar(toolbar);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -70,17 +68,7 @@ public class PesquisaActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(pesquisaRecycleViewAdapter);
     }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            query = intent.getStringExtra(SearchManager.QUERY);
-            toolbar.setTitle(query);
-            pesquisaRecycleViewAdapter.update(heavyGearAssetsHelper.pesquisaAcao(query));
-        }
-    }
-
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_pesquisa, menu);
@@ -108,7 +96,29 @@ public class PesquisaActivity extends AppCompatActivity {
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setQueryHint(getResources().getString(R.string.pesquisa_hint));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+//                if (!query.equals(query)) {
+//                    pesqQuery = query;
+//                    toolbar.setTitle(pesqQuery);
+//                    pesquisaRecycleViewAdapter.update(heavyGearAssetsHelper.pesquisaAcao(pesqQuery));
+//                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (!newText.equals(pesqQuery)) {
+                    pesqQuery = newText;
+                    toolbar.setTitle(pesqQuery);
+                    pesquisaRecycleViewAdapter.update(heavyGearAssetsHelper.pesquisaAcao(pesqQuery));
+                }
+                return false;
+            }
+        });
         MenuItemCompat.expandActionView(menuItem);
+        searchView.clearFocus();
         return true;
     }
 

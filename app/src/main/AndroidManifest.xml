@@ -42,7 +42,7 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".ui.activities.SobreActivity">
+        <activity android:name=".ui.activities.ConfiguracaoActivity">
         </activity>
     </application>
 
