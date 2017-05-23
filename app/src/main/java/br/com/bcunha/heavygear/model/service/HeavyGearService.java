@@ -101,7 +101,6 @@ public class HeavyGearService extends Service {
             if(!ativo) {
                 return;
             }
-
             apiClient.getQuotes(
             ApiClient.QUERY_QUOTE.replace("?codigo?", ApiClient.formatCodigo(watchList)),
             ApiClient.ENV,
@@ -112,10 +111,10 @@ public class HeavyGearService extends Service {
                                        Response<RespostaQuote> response) {
                     for (Quote quote : response.body().getQuery().getResults().getQuote()) {
                         int index = watchList.indexOf(new Acao(String.valueOf(quote.getsymbol().toCharArray(),
-                        0,
-                        quote.getsymbol().length() - 3)));
+                                                               0,
+                                                               quote.getsymbol().length() - 3)));
                         if (index >= 0) {
-                            watchList.get(index).setCotacao(Double.parseDouble(quote.getLastTradePriceOnly()));
+                            watchList.get(index).setCotacao(quote.getLastTradePriceOnly() != null ? Double.parseDouble(quote.getLastTradePriceOnly()): 0);
                         }
                     }
 

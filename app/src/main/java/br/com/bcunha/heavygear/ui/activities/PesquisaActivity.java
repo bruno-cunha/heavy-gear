@@ -135,6 +135,7 @@ public class PesquisaActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        pesquisaRecycleViewAdapter.comparaResultadosEWatch();
     }
 
     @Override

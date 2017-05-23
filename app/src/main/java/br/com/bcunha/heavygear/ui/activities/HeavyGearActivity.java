@@ -38,16 +38,18 @@ import static br.com.bcunha.heavygear.R.menu.menu_heavy_gear;
 
 public class HeavyGearActivity extends AppCompatActivity {
 
-    public static final String PREF = "Preferences";
     public static final int REQUEST_PESQUISA = 1;
+    public static final int REQUEST_CONFIGURACAO = 2;
     private static final String ACTION_HEAVYSERVICE = "ACTION_HEAVYSERVICE";
 
+    private boolean todasAcoesInicio;
 
     private HeavyGearAssetsHelper heavyGearAssetsHelper;
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private HeavyGearRecycleViewAdapter heavyGearRecycleViewAdapter;
+    private SharedPreferences sharedPreferences;
     private HeavyGearService heavyGearServiceBound;
     private Boolean isBound = false;
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -69,8 +71,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (ACTION_HEAVYSERVICE.equals(intent.getAction())) {
-                heavyGearRecycleViewAdapter.watchList = (ArrayList) intent.getParcelableArrayListExtra("watchList");
-                heavyGearRecycleViewAdapter.notifyDataSetChanged();
+                heavyGearRecycleViewAdapter.update((ArrayList) intent.getParcelableArrayListExtra("watchList"));
             }
         }
     };
@@ -80,10 +81,12 @@ public class HeavyGearActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_heavy_gear);
 
+        // SharedPreferences
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
+
         // Carrega watchList
         List<Acao> watchList = new ArrayList<Acao>();
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
         String json = sharedPreferences.getString("watchList", "");
 
         if (!json.isEmpty()) {
@@ -105,7 +108,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(HeavyGearActivity.this, ConfiguracaoActivity.class));
+                startActivityForResult(new Intent(HeavyGearActivity.this, ConfiguracaoActivity.class), REQUEST_CONFIGURACAO);
             }
         });
 
@@ -160,6 +163,7 @@ public class HeavyGearActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
         // Bind Serviço
         if(!isBound) {
             Intent intent = new Intent(this, HeavyGearService.class);
@@ -213,6 +217,19 @@ public class HeavyGearActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == REQUEST_PESQUISA && resultCode == RESULT_OK){
             heavyGearRecycleViewAdapter.update((ArrayList) data.getParcelableArrayListExtra("watchList"));
+        } else if (requestCode == REQUEST_CONFIGURACAO && resultCode == RESULT_OK) {
+            atualizaConfiguracoes();
+        }
+    }
+
+    private void atualizaConfiguracoes(){
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
+        Boolean oldTodasAcoesInicio = todasAcoesInicio;
+        todasAcoesInicio = sharedPreferences.getBoolean(ConfiguracaoActivity.PREF_TODAS_ACOES_INICIO, false);
+        if (todasAcoesInicio){
+            heavyGearRecycleViewAdapter.update(heavyGearAssetsHelper.getAcoes());
+        } else if (todasAcoesInicio != oldTodasAcoesInicio) {
+            heavyGearRecycleViewAdapter.update(heavyGearAssetsHelper.pesquisaAcao("PETR3"));
         }
     }
 }

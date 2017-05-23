@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <CheckBoxPreference
-        android:key="tpref_odas_acoes_inicio"
+        android:key="pref_todas_acoes_inicio"
         android:title="Carrega todas as ações na tela inicial"
-        android:defaultValue="false"/>
+        android:defaultValue="true"/>
     <CheckBoxPreference
         android:key="pref_todas_acoes_pesquisa"
         android:title="Carrega todas ações no inicio da pesquisa"
@@ -11,7 +11,7 @@
     <ListPreference
         android:key="pref_frequencia_atualizacao"
         android:title="Frequência de atualização"
-        android:summary="Intervalo de tempo para atualizar ações"
+        android:summary="Intervalo de tempo para atualizar ações %s"
         android:dialogTitle="Seleciona intervalo de tempo"
         android:entries="@array/pref_frequencia_atualizacao_entries"
         android:entryValues="@array/pref_frequencia_atualizacao_values"
