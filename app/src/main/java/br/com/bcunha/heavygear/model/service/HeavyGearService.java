@@ -3,9 +3,11 @@ package br.com.bcunha.heavygear.model.service;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -24,9 +26,10 @@ import retrofit2.Response;
 
 public class HeavyGearService extends Service {
 
-    private String LOG_TAG = "HeavyGearService";
-    private final int timer_WIFI = 10000; // 10sec
-    private final int timer_3G = 1000000;
+    private static final String LOG_TAG = "HeavyGearService";
+    private static final String PREF_FREQUENCIA_ATUALIZACAO = "pref_frequencia_atualizacao";
+    private int frequenciaAtualizacao;
+
     private boolean ativo = false;
     private IBinder mBinder = new HeavyBinder();
     private BuscaCotacaoInterface apiClient;
@@ -53,7 +56,7 @@ public class HeavyGearService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (worker != null) {
-            handler.postDelayed(worker, timer_WIFI);
+            handler.postDelayed(worker, frequenciaAtualizacao);
         }
 
         // Buscar watchList  do intent
@@ -70,6 +73,7 @@ public class HeavyGearService extends Service {
 
         apiClient = ApiClient.getRetrofit().create(BuscaCotacaoInterface.class);
         worker = new Worker(this);
+        atualizaTimer();
 
         Log.i(LOG_TAG, "onCreate");
     }
@@ -88,6 +92,10 @@ public class HeavyGearService extends Service {
         return false;
     }
 
+    public void atualizaTimer() {
+        frequenciaAtualizacao = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString(PREF_FREQUENCIA_ATUALIZACAO, "10000"));
+    }
+
     private class Worker implements Runnable {
         public Context context;
         private static final String ACTION_HEAVYSERVICE = "ACTION_HEAVYSERVICE";
@@ -98,41 +106,43 @@ public class HeavyGearService extends Service {
 
         @Override
         public void run() {
-            if(!ativo) {
+            if (!ativo) {
                 return;
             }
-            apiClient.getQuotes(
-            ApiClient.QUERY_QUOTE.replace("?codigo?", ApiClient.formatCodigo(watchList)),
-            ApiClient.ENV,
-            ApiClient.FORMAT)
-            .enqueue(new Callback<RespostaQuote>() {
-                @Override
-                public void onResponse(Call<RespostaQuote> call,
-                                       Response<RespostaQuote> response) {
-                    for (Quote quote : response.body().getQuery().getResults().getQuote()) {
-                        int index = watchList.indexOf(new Acao(String.valueOf(quote.getsymbol().toCharArray(),
-                                                               0,
-                                                               quote.getsymbol().length() - 3)));
-                        if (index >= 0) {
-                            watchList.get(index).setCotacao(quote.getLastTradePriceOnly() != null ? Double.parseDouble(quote.getLastTradePriceOnly()): 0);
+            if(watchList.size() > 1) {
+                apiClient.getQuotes(
+                ApiClient.QUERY_QUOTE.replace("?codigo?", ApiClient.formatCodigo(watchList)),
+                ApiClient.ENV,
+                ApiClient.FORMAT)
+                .enqueue(new Callback<RespostaQuote>() {
+                    @Override
+                    public void onResponse(Call<RespostaQuote> call,
+                                           Response<RespostaQuote> response) {
+                        for (Quote quote : response.body().getQuery().getResults().getQuote()) {
+                            int index = watchList.indexOf(new Acao(String.valueOf(quote.getsymbol().toCharArray(),
+                            0,
+                            quote.getsymbol().length() - 3)));
+                            if (index >= 0) {
+                                watchList.get(index).setCotacao(quote.getLastTradePriceOnly() != null ? Double.parseDouble(quote.getLastTradePriceOnly()) : 0);
+                            }
                         }
+
+                        Intent intent = new Intent(ACTION_HEAVYSERVICE);
+                        intent.putParcelableArrayListExtra("watchList", (ArrayList) watchList);
+
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                     }
 
-                    Intent intent = new Intent(ACTION_HEAVYSERVICE);
-                    intent.putParcelableArrayListExtra("watchList", (ArrayList) watchList);
+                    @Override
+                    public void onFailure(Call<RespostaQuote> call, Throwable t) {
+                        Toast.makeText(getApplicationContext(), "Serviço Offline", Toast.LENGTH_LONG).show();
+                    }
+                });
 
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                }
+                Log.i(LOG_TAG, "Consulta Executada");
+            }
 
-                @Override
-                public void onFailure(Call<RespostaQuote> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Serviço Offline", Toast.LENGTH_LONG).show();
-                }
-            });
-
-            Log.i(LOG_TAG, "Consulta Executada");
-
-            handler.postDelayed(this, timer_WIFI);
+            handler.postDelayed(this, frequenciaAtualizacao);
         }
     }
 

@@ -115,6 +115,11 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
     }
 
     public List<Acao> pesquisaAcao(String filtro) {
+        List<Acao> acoes = new ArrayList<Acao>();
+        if (filtro.equals("")) {
+            return acoes;
+        }
+
         String query = "SELECT " +
         " * " +
         " FROM " +
@@ -123,7 +128,6 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
         CAMPO_CODIGO + " LIKE '%" + filtro + "%'";
 
         Cursor cursor = heavyGearDB.rawQuery(query, null);
-        List<Acao> acoes = new ArrayList<Acao>();
 
         while (cursor.moveToNext()) {
             acoes.add(new Acao(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)),

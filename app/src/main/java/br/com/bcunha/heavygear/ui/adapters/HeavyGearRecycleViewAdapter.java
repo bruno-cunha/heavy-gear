@@ -98,8 +98,7 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
     }
 
     public void update(List<Acao> novasAcoes) {
-        watchList.clear();
-        watchList.addAll(novasAcoes);
+        watchList = novasAcoes;
         notifyDataSetChanged();
     }
 }

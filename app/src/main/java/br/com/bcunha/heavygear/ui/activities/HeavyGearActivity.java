@@ -192,14 +192,8 @@ public class HeavyGearActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         // Salva watchList
-        SharedPreferences.Editor preferencesEditor = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).edit();
-        if (heavyGearRecycleViewAdapter.watchList.size() == 0){
-            preferencesEditor.putString("watchList", "");
-        } else {
-            String json = new Gson().toJson(heavyGearRecycleViewAdapter.watchList);
-            preferencesEditor.putString("watchList", json);
-        }
-        preferencesEditor.commit();
+        salvaWatchList();
+
         // UnBind Serviço
         if (isBound) {
             unbindService(serviceConnection);
@@ -222,7 +216,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         }
     }
 
-    private void atualizaConfiguracoes(){
+    private void atualizaConfiguracoes() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
         Boolean oldTodasAcoesInicio = todasAcoesInicio;
         todasAcoesInicio = sharedPreferences.getBoolean(ConfiguracaoActivity.PREF_TODAS_ACOES_INICIO, false);
@@ -231,5 +225,20 @@ public class HeavyGearActivity extends AppCompatActivity {
         } else if (todasAcoesInicio != oldTodasAcoesInicio) {
             heavyGearRecycleViewAdapter.update(heavyGearAssetsHelper.pesquisaAcao("PETR3"));
         }
+        if (isBound) {
+            heavyGearServiceBound.atualizaTimer();
+        }
+        salvaWatchList();
+    }
+
+    private void salvaWatchList() {
+        SharedPreferences.Editor preferencesEditor = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).edit();
+        if (heavyGearRecycleViewAdapter.watchList.size() == 0){
+            preferencesEditor.putString("watchList", "");
+        } else {
+            String json = new Gson().toJson(heavyGearRecycleViewAdapter.watchList);
+            preferencesEditor.putString("watchList", json);
+        }
+        preferencesEditor.commit();
     }
 }

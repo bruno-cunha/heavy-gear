@@ -3,7 +3,9 @@ package br.com.bcunha.heavygear.ui.activities;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -26,11 +28,14 @@ import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 
 public class PesquisaActivity extends AppCompatActivity {
 
+    public static final String PREF_TODAS_ACOES_PESQUISA = "pref_todas_acoes_pesquisa";
+
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private PesquisaRecycleViewAdapter pesquisaRecycleViewAdapter;
-    private String pesqQuery;
+    private String pesqQuery = "";
+    private Boolean todasAcoesPesquisa;
     private HeavyGearAssetsHelper heavyGearAssetsHelper;
 
     @Override
@@ -41,6 +46,9 @@ public class PesquisaActivity extends AppCompatActivity {
         heavyGearAssetsHelper = new HeavyGearAssetsHelper(this);
         heavyGearAssetsHelper.openDB();
 
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
+        todasAcoesPesquisa = sharedPreferences.getBoolean(PREF_TODAS_ACOES_PESQUISA, false);
+
         List<Acao> resultados = new ArrayList<Acao>();
         List<Acao> watchList = new ArrayList<Acao>();
 
@@ -50,7 +58,9 @@ public class PesquisaActivity extends AppCompatActivity {
             resultados = heavyGearAssetsHelper.pesquisaAcao(pesqQuery);
             watchList = intent.getParcelableArrayListExtra("watchList");
         } else {
-            resultados = heavyGearAssetsHelper.getAcoes();
+            if (todasAcoesPesquisa){
+                resultados = heavyGearAssetsHelper.getAcoes();
+            }
             if (intent.hasExtra("watchList")) {
                 watchList = intent.getParcelableArrayListExtra("watchList");
             }
@@ -118,7 +128,9 @@ public class PesquisaActivity extends AppCompatActivity {
             }
         });
         MenuItemCompat.expandActionView(menuItem);
-        searchView.clearFocus();
+        if (todasAcoesPesquisa) {
+            searchView.clearFocus();
+        }
         return true;
     }
 
@@ -135,7 +147,6 @@ public class PesquisaActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        pesquisaRecycleViewAdapter.comparaResultadosEWatch();
     }
 
     @Override
