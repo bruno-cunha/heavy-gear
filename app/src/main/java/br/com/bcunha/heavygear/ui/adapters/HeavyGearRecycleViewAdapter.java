@@ -1,6 +1,8 @@
 package br.com.bcunha.heavygear.ui.adapters;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +27,7 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
         final ImageView logo;
         final TextView codigo;
         final TextView empresa;
+        final TextView moeda;
         final TextView cotacao;
 
         public HeavyGearRecycleViewHolder(View view) {
@@ -32,6 +35,7 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
             logo = (ImageView) view.findViewById(R.id.imgAcao);
             codigo = (TextView) view.findViewById(R.id.codigo);
             empresa = (TextView) view.findViewById(R.id.empresa);
+            moeda = (TextView) view.findViewById(R.id.moeda);
             cotacao = (TextView) view.findViewById(R.id.cotacao);
         }
     }
@@ -77,6 +81,16 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
         heavyGearRecycleViewHolder.codigo.setText(watchList.get(position).getCodigo());
         heavyGearRecycleViewHolder.empresa.setText(watchList.get(position).getEmpresa());
         heavyGearRecycleViewHolder.cotacao.setText(String.format("%.2f", watchList.get(position).getCotacao()));
+        if (watchList.get(position).getVariacao() > 0) {
+            heavyGearRecycleViewHolder.moeda.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.verde)));
+            heavyGearRecycleViewHolder.cotacao.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.verde)));
+        } else if (watchList.get(position).getVariacao() < 0) {
+            heavyGearRecycleViewHolder.moeda.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.vermelho)));
+            heavyGearRecycleViewHolder.cotacao.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.vermelho)));
+        } else {
+            heavyGearRecycleViewHolder.moeda.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.textoSecundario)));
+            heavyGearRecycleViewHolder.cotacao.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.textoSecundario)));
+        }
     }
 
     @Override

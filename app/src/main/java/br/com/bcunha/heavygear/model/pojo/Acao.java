@@ -11,6 +11,7 @@ public class Acao implements Parcelable {
     private String empresa;
     private String tipo;
     private double cotacao;
+    private double variacao;
     private boolean inWatch;
 
     public Acao(String codigo){
@@ -29,6 +30,15 @@ public class Acao implements Parcelable {
         this.empresa = empresa;
         this.tipo = tipo;
         this.cotacao = cotacao;
+        this.inWatch = inWatch;
+    }
+
+    public Acao(String codigo, String empresa, String tipo, double cotacao, double variacao, boolean inWatch) {
+        this.codigo = codigo;
+        this.empresa = empresa;
+        this.tipo = tipo;
+        this.cotacao = cotacao;
+        this.variacao = variacao;
         this.inWatch = inWatch;
     }
 
@@ -62,6 +72,14 @@ public class Acao implements Parcelable {
 
     public void setCotacao(double cotacao) {
         this.cotacao = cotacao;
+    }
+
+    public double getVariacao() {
+        return variacao;
+    }
+
+    public void setVariacao(double variacao) {
+        this.variacao = variacao;
     }
 
     public boolean isInWatch() {
@@ -99,6 +117,7 @@ public class Acao implements Parcelable {
         parcel.writeString(empresa);
         parcel.writeString(tipo);
         parcel.writeDouble(cotacao);
+        parcel.writeDouble(variacao);
         parcel.writeInt(inWatch ? 1 : 0);
     }
 
@@ -119,6 +138,7 @@ public class Acao implements Parcelable {
         this.empresa = in.readString();
         this.tipo = in.readString();
         this.cotacao = in.readDouble();
+        this.variacao = in.readDouble();
         this.inWatch = (in.readInt() == 0) ? false : true;
     }
 }

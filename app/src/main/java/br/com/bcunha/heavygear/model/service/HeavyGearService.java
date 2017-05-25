@@ -120,10 +120,11 @@ public class HeavyGearService extends Service {
                                            Response<RespostaQuote> response) {
                         for (Quote quote : response.body().getQuery().getResults().getQuote()) {
                             int index = watchList.indexOf(new Acao(String.valueOf(quote.getsymbol().toCharArray(),
-                            0,
-                            quote.getsymbol().length() - 3)));
+                                                                   0,
+                                                                   quote.getsymbol().length() - 3)));
                             if (index >= 0) {
-                                watchList.get(index).setCotacao(quote.getLastTradePriceOnly() != null ? Double.parseDouble(quote.getLastTradePriceOnly()) : 0);
+                                watchList.get(index).setVariacao(quote.getChange() != null ? Double.parseDouble(quote.getChange()) : 0);
+                                watchList.get(index).setCotacao(quote.getLastTradePriceOnly() != null ? Double.parseDouble(quote.getLastTradePriceOnly()) : 0.00);
                             }
                         }
 
@@ -135,7 +136,7 @@ public class HeavyGearService extends Service {
 
                     @Override
                     public void onFailure(Call<RespostaQuote> call, Throwable t) {
-                        Toast.makeText(getApplicationContext(), "Serviço Offline", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Serviço Sem Resposta", Toast.LENGTH_LONG).show();
                     }
                 });
 
