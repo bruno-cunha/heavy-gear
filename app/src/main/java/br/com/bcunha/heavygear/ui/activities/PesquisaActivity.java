@@ -46,39 +46,13 @@ public class PesquisaActivity extends AppCompatActivity {
         heavyGearAssetsHelper = new HeavyGearAssetsHelper(this);
         heavyGearAssetsHelper.openDB();
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
-        todasAcoesPesquisa = sharedPreferences.getBoolean(PREF_TODAS_ACOES_PESQUISA, false);
-
-        List<Acao> resultados = new ArrayList<Acao>();
-        List<Acao> watchList = new ArrayList<Acao>();
-
-        Intent intent = getIntent();
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            pesqQuery = intent.getStringExtra(SearchManager.QUERY);
-            resultados = heavyGearAssetsHelper.pesquisaAcao(pesqQuery);
-            watchList = intent.getParcelableArrayListExtra("watchList");
-        } else {
-            if (todasAcoesPesquisa){
-                resultados = heavyGearAssetsHelper.getAcoes();
-            }
-            if (intent.hasExtra("watchList")) {
-                watchList = intent.getParcelableArrayListExtra("watchList");
-            }
-        }
+        iniciaRecycleView();
 
         toolbar = (Toolbar) findViewById(R.id.inc_toolbar);
         toolbar.setTitle(pesqQuery);
         setSupportActionBar(toolbar);
-
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        layoutManager = new LinearLayoutManager(this);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), VERTICAL);
-        pesquisaRecycleViewAdapter = new PesquisaRecycleViewAdapter(resultados, watchList);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(dividerItemDecoration);
-        recyclerView.setAdapter(pesquisaRecycleViewAdapter);
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_pesquisa, menu);
@@ -153,5 +127,35 @@ public class PesquisaActivity extends AppCompatActivity {
     protected void onDestroy() {
         heavyGearAssetsHelper.closeDB();
         super.onDestroy();
+    }
+
+    private void iniciaRecycleView() {
+        todasAcoesPesquisa = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext())
+                                              .getBoolean(PREF_TODAS_ACOES_PESQUISA, false);
+
+        List<Acao> resultados = new ArrayList<Acao>();
+        List<Acao> watchList = new ArrayList<Acao>();
+
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            pesqQuery = intent.getStringExtra(SearchManager.QUERY);
+            resultados = heavyGearAssetsHelper.pesquisaAcao(pesqQuery);
+            watchList = intent.getParcelableArrayListExtra("watchList");
+        } else {
+            if (todasAcoesPesquisa) {
+                resultados = heavyGearAssetsHelper.getAcoes();
+            }
+            if (intent.hasExtra("watchList")) {
+                watchList = intent.getParcelableArrayListExtra("watchList");
+            }
+        }
+
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        layoutManager = new LinearLayoutManager(this);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), VERTICAL);
+        pesquisaRecycleViewAdapter = new PesquisaRecycleViewAdapter(resultados, watchList);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+        recyclerView.setAdapter(pesquisaRecycleViewAdapter);
     }
 }

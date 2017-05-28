@@ -3,6 +3,8 @@
     <string name="moeda">R$</string>
     <string name="pesquisa_hint">Pesquisa</string>
     <string name="title_activity_config">ConfigActivity</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
 
     <string-array name="pref_frequencia_atualizacao_entries">
         <item>10 sec</item>

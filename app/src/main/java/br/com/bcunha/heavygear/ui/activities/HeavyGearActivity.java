@@ -10,7 +10,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.design.widget.NavigationView;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +22,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -46,6 +50,7 @@ public class HeavyGearActivity extends AppCompatActivity {
 
     private HeavyGearAssetsHelper heavyGearAssetsHelper;
     private Toolbar toolbar;
+    private DrawerLayout drawerLayout;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private HeavyGearRecycleViewAdapter heavyGearRecycleViewAdapter;
@@ -81,21 +86,6 @@ public class HeavyGearActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_heavy_gear);
 
-        // SharedPreferences
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
-
-        // Carrega watchList
-        List<Acao> watchList = new ArrayList<Acao>();
-        String json = sharedPreferences.getString("watchList", "");
-
-        if (!json.isEmpty()) {
-            Type type = new TypeToken<List<Acao>>(){}.getType();
-            watchList = new Gson().fromJson(json, type);
-        } else if (watchList.size() == 0) {
-            watchList.add(new Acao("PETR3", "Petrobras", "", 00.00, true));
-        }
-
         // SQLite
         heavyGearAssetsHelper = new HeavyGearAssetsHelper(this);
         heavyGearAssetsHelper.openDB();
@@ -112,33 +102,10 @@ public class HeavyGearActivity extends AppCompatActivity {
             }
         });
 
-        // RecyclerView
-        layoutManager = new LinearLayoutManager(this);
-        heavyGearRecycleViewAdapter = new HeavyGearRecycleViewAdapter(watchList);
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(heavyGearRecycleViewAdapter);
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                heavyGearRecycleViewAdapter.remove(viewHolder.getAdapterPosition());
-            }
-
-            @Override
-            public void onMoved(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, int fromPos, RecyclerView.ViewHolder target, int toPos, int x, int y) {
-                super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y);
-            }
-        };
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+        iniciaRecycleView();
+        iniciatNavigationDrawer();
     }
 
 
@@ -214,6 +181,88 @@ public class HeavyGearActivity extends AppCompatActivity {
         } else if (requestCode == REQUEST_CONFIGURACAO && resultCode == RESULT_OK) {
             atualizaConfiguracoes();
         }
+    }
+
+    private void iniciaRecycleView() {
+        // Carrega watchList
+        List<Acao> watchList = new ArrayList<Acao>();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
+        String json = sharedPreferences.getString("watchList", "");
+
+        if (!json.isEmpty()) {
+            Type type = new TypeToken<List<Acao>>(){}.getType();
+            watchList = new Gson().fromJson(json, type);
+        } else if (watchList.size() == 0) {
+            watchList.add(new Acao("PETR3", "Petrobras", "", 00.00, true));
+        }
+
+        // RecyclerView
+        layoutManager = new LinearLayoutManager(this);
+        heavyGearRecycleViewAdapter = new HeavyGearRecycleViewAdapter(watchList);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(heavyGearRecycleViewAdapter);
+
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                heavyGearRecycleViewAdapter.remove(viewHolder.getAdapterPosition());
+            }
+
+            @Override
+            public void onMoved(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, int fromPos, RecyclerView.ViewHolder target, int toPos, int x, int y) {
+                super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y);
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    private void iniciatNavigationDrawer() {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+                int id = menuItem.getItemId();
+
+                switch (id){
+                    case R.id.configuracoes:
+                        startActivity(new Intent(HeavyGearActivity.this, ConfiguracaoActivity.class));
+                        drawerLayout.closeDrawers();
+                        break;
+                    case R.id.sobre:
+                        startActivity(new Intent(HeavyGearActivity.this, SobreActivity.class));
+                        drawerLayout.closeDrawers();
+                        break;
+                }
+                return true;
+            }
+        });
+        View header = navigationView.getHeaderView(0);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close){
+
+            @Override
+            public void onDrawerClosed(View v){
+                super.onDrawerClosed(v);
+            }
+
+            @Override
+            public void onDrawerOpened(View v) {
+                super.onDrawerOpened(v);
+            }
+        };
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
     }
 
     private void atualizaConfiguracoes() {
