@@ -7,10 +7,24 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,14 +36,22 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.db.HeavyGearAssetsHelper;
@@ -44,6 +66,7 @@ public class HeavyGearActivity extends AppCompatActivity {
 
     public static final int REQUEST_PESQUISA = 1;
     public static final int REQUEST_CONFIGURACAO = 2;
+
     private static final String ACTION_HEAVYSERVICE = "ACTION_HEAVYSERVICE";
 
     private boolean todasAcoesInicio;
@@ -98,7 +121,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(HeavyGearActivity.this, ConfiguracaoActivity.class), REQUEST_CONFIGURACAO);
+                drawerLayout.openDrawer(1);
             }
         });
 
@@ -235,7 +258,7 @@ public class HeavyGearActivity extends AppCompatActivity {
 
                 switch (id){
                     case R.id.configuracoes:
-                        startActivity(new Intent(HeavyGearActivity.this, ConfiguracaoActivity.class));
+                        startActivityForResult(new Intent(HeavyGearActivity.this, ConfiguracaoActivity.class), REQUEST_CONFIGURACAO);
                         drawerLayout.closeDrawers();
                         break;
                     case R.id.sobre:
@@ -289,5 +312,18 @@ public class HeavyGearActivity extends AppCompatActivity {
             preferencesEditor.putString("watchList", json);
         }
         preferencesEditor.commit();
+    }
+
+    private Bitmap carregaBitmapAsset(String strName)
+    {
+        AssetManager assetManager = getAssets();
+        InputStream istr = null;
+        try {
+            istr = assetManager.open(strName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Bitmap bitmap = BitmapFactory.decodeStream(istr);
+        return bitmap;
     }
 }
