@@ -10,21 +10,10 @@ import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -36,10 +25,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -47,11 +33,10 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.Calendar;
 import java.util.List;
-import java.util.ListIterator;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.db.HeavyGearAssetsHelper;
@@ -71,15 +56,18 @@ public class HeavyGearActivity extends AppCompatActivity {
 
     private boolean todasAcoesInicio;
 
+    private final SimpleDateFormat formatDate = new SimpleDateFormat("dd/mm/yyyy HH:mm:ss");
     private HeavyGearAssetsHelper heavyGearAssetsHelper;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
+    private TextView ultimaSincronizacao;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private HeavyGearRecycleViewAdapter heavyGearRecycleViewAdapter;
     private SharedPreferences sharedPreferences;
     private HeavyGearService heavyGearServiceBound;
     private Boolean isBound = false;
+
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -100,6 +88,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if (ACTION_HEAVYSERVICE.equals(intent.getAction())) {
                 heavyGearRecycleViewAdapter.update((ArrayList) intent.getParcelableArrayListExtra("watchList"));
+                atualizaUltimaSincronizacao();
             }
         }
     };
@@ -270,6 +259,7 @@ public class HeavyGearActivity extends AppCompatActivity {
             }
         });
         View header = navigationView.getHeaderView(0);
+        ultimaSincronizacao = (TextView) header.findViewById(R.id.ultima_sincronizacao_datahora);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
 
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close){
@@ -304,7 +294,7 @@ public class HeavyGearActivity extends AppCompatActivity {
     }
 
     private void salvaWatchList() {
-        SharedPreferences.Editor preferencesEditor = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).edit();
+        SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
         if (heavyGearRecycleViewAdapter.watchList.size() == 0){
             preferencesEditor.putString("watchList", "");
         } else {
@@ -325,5 +315,13 @@ public class HeavyGearActivity extends AppCompatActivity {
         }
         Bitmap bitmap = BitmapFactory.decodeStream(istr);
         return bitmap;
+    }
+
+    private void atualizaUltimaSincronizacao() {
+        String ultimaSincronizacao = formatDate.format(Calendar.getInstance().getTime());
+        this.ultimaSincronizacao.setText(ultimaSincronizacao.toString());
+        SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
+        preferencesEditor.putString("ultimaSincronizacao", ultimaSincronizacao);
+        preferencesEditor.commit();
     }
 }
