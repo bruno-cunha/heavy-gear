@@ -5,6 +5,7 @@
     <string name="title_activity_config">ConfigActivity</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
+    <string name="ordem">Selecione a ordem de exibição</string>
 
     <string-array name="pref_frequencia_atualizacao_entries">
         <item>10 sec</item>
@@ -24,5 +25,12 @@
         <item>1</item>
         <item>2</item>
         <item>3</item>
+    </string-array>
+
+    <string-array name="ordem">
+        <item>Altas</item>
+        <item>Baixas</item>
+        <item>Alfabética</item>
+        <item>Volume de negociação</item>
     </string-array>
 </resources>

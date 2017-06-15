@@ -109,7 +109,7 @@ public class HeavyGearService extends Service {
             if (!ativo) {
                 return;
             }
-            if(watchList.size() > 1) {
+            if(watchList.size() >= 1) {
                 apiClient.getQuotes(
                 ApiClient.QUERY_QUOTE.replace("?codigo?", ApiClient.formatCodigo(watchList)),
                 ApiClient.ENV,
@@ -125,6 +125,11 @@ public class HeavyGearService extends Service {
                             if (index >= 0) {
                                 watchList.get(index).setVariacao(quote.getChange() != null ? Double.parseDouble(quote.getChange()) : 0);
                                 watchList.get(index).setCotacao(quote.getLastTradePriceOnly() != null ? Double.parseDouble(quote.getLastTradePriceOnly()) : 0.00);
+                                watchList.get(index).setMaximaDia(quote.getDaysHigh() != null ? Double.parseDouble(quote.getDaysHigh()) : 0.00);
+                                watchList.get(index).setMaximaAno(quote.getYearHigh() != null ? Double.parseDouble(quote.getYearHigh()) : 0.00);
+                                watchList.get(index).setMinimaDia(quote.getDaysLow() != null ? Double.parseDouble(quote.getDaysLow()) : 0.00);
+                                watchList.get(index).setMinimaAno(quote.getYearLow() != null ? Double.parseDouble(quote.getYearLow()) : 0.00);
+                                watchList.get(index).setVolumeNegociacao(quote.getVolume() != null ? Integer.parseInt(quote.getVolume()) : 0);
                             }
                         }
 

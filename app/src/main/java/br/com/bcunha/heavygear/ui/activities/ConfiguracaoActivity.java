@@ -17,6 +17,7 @@ public class ConfiguracaoActivity extends AppCompatActivity implements SharedPre
     public static final String PREF_TODAS_ACOES_INICIO = "pref_todas_acoes_inicio";
     public static final String PREF_TODAS_ACOES_PESQUISA = "pref_todas_acoes_pesquisa";
     public static final String PREF_FREQUENCIA_ATUALIZACAO = "pref_frequencia_atualizacao";
+    public static final String PREF_ID_ORDEM = "pref_id_ordem";
 
     private Toolbar toolbar;
     private SharedPreferences sharedPreferences;

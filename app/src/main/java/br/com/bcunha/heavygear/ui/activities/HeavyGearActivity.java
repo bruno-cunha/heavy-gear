@@ -1,5 +1,6 @@
 package br.com.bcunha.heavygear.ui.activities;
 
+import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -36,14 +37,19 @@ import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.db.HeavyGearAssetsHelper;
 import br.com.bcunha.heavygear.model.pojo.Acao;
+import br.com.bcunha.heavygear.model.pojo.ordem.OrdemAlfabetica;
+import br.com.bcunha.heavygear.model.pojo.ordem.OrdemAlta;
+import br.com.bcunha.heavygear.model.pojo.ordem.OrdemBaixa;
 import br.com.bcunha.heavygear.model.service.HeavyGearService;
 import br.com.bcunha.heavygear.model.service.HeavyGearService.HeavyBinder;
 import br.com.bcunha.heavygear.ui.adapters.HeavyGearRecycleViewAdapter;
+import br.com.bcunha.heavygear.ui.fragment.OrdemDialogFragment;
 
 import static br.com.bcunha.heavygear.R.menu.menu_heavy_gear;
 
@@ -54,7 +60,8 @@ public class HeavyGearActivity extends AppCompatActivity {
 
     private static final String ACTION_HEAVYSERVICE = "ACTION_HEAVYSERVICE";
 
-    private boolean todasAcoesInicio;
+    public boolean prefTodasAcoesInicio;
+    public int prefIdOrdem;
 
     private final SimpleDateFormat formatDate = new SimpleDateFormat("dd/mm/yyyy HH:mm:ss");
     private HeavyGearAssetsHelper heavyGearAssetsHelper;
@@ -120,7 +127,6 @@ public class HeavyGearActivity extends AppCompatActivity {
         iniciatNavigationDrawer();
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(menu_heavy_gear, menu);
@@ -135,6 +141,9 @@ public class HeavyGearActivity extends AppCompatActivity {
             Intent intent = new Intent(this, PesquisaActivity.class);
             intent.putParcelableArrayListExtra("watchList", (ArrayList) heavyGearRecycleViewAdapter.watchList);
             startActivityForResult(intent, REQUEST_PESQUISA);
+        } else if (id == R.id.ordem) {
+            DialogFragment dialogFragment = new OrdemDialogFragment();
+            dialogFragment.show(getFragmentManager(), "ordem_exibicao");
         }
         return super.onOptionsItemSelected(item);
     }
@@ -200,13 +209,14 @@ public class HeavyGearActivity extends AppCompatActivity {
         List<Acao> watchList = new ArrayList<Acao>();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
         String json = sharedPreferences.getString("watchList", "");
+        prefIdOrdem = sharedPreferences.getInt(ConfiguracaoActivity.PREF_ID_ORDEM, 2);
 
-        if (!json.isEmpty()) {
-            Type type = new TypeToken<List<Acao>>(){}.getType();
-            watchList = new Gson().fromJson(json, type);
-        } else if (watchList.size() == 0) {
+//        if (!json.isEmpty()) {
+//            Type type = new TypeToken<List<Acao>>(){}.getType();
+//            watchList = new Gson().fromJson(json, type);
+//        } else if (watchList.size() == 0) {
             watchList.add(new Acao("PETR3", "Petrobras", "", 00.00, true));
-        }
+        //}
 
         // RecyclerView
         layoutManager = new LinearLayoutManager(this);
@@ -280,17 +290,38 @@ public class HeavyGearActivity extends AppCompatActivity {
 
     private void atualizaConfiguracoes() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
-        Boolean oldTodasAcoesInicio = todasAcoesInicio;
-        todasAcoesInicio = sharedPreferences.getBoolean(ConfiguracaoActivity.PREF_TODAS_ACOES_INICIO, false);
-        if (todasAcoesInicio){
+        Boolean oldTodasAcoesInicio = prefTodasAcoesInicio;
+        prefIdOrdem = sharedPreferences.getInt(ConfiguracaoActivity.PREF_ID_ORDEM, 2);
+        prefTodasAcoesInicio = sharedPreferences.getBoolean(ConfiguracaoActivity.PREF_TODAS_ACOES_INICIO, false);
+        if (prefTodasAcoesInicio){
             heavyGearRecycleViewAdapter.update(heavyGearAssetsHelper.getAcoes());
-        } else if (todasAcoesInicio != oldTodasAcoesInicio) {
+        } else if (prefTodasAcoesInicio != oldTodasAcoesInicio) {
             heavyGearRecycleViewAdapter.update(heavyGearAssetsHelper.pesquisaAcao("PETR3"));
         }
         if (isBound) {
             heavyGearServiceBound.atualizaTimer();
         }
         salvaWatchList();
+    }
+
+    public void atualizaOrdemExibicao() {
+        if (prefIdOrdem == 0) {
+            Collections.sort(heavyGearRecycleViewAdapter.watchList, new OrdemAlta());
+        } else if (prefIdOrdem == 1) {
+            Collections.sort(heavyGearRecycleViewAdapter.watchList, new OrdemBaixa());
+        } else if (prefIdOrdem == 2) {
+            Collections.sort(heavyGearRecycleViewAdapter.watchList, new OrdemAlfabetica());
+        }
+        heavyGearRecycleViewAdapter.notifyDataSetChanged();
+        salvaOrdem();
+    }
+
+    private void atualizaUltimaSincronizacao() {
+        String ultimaSincronizacao = formatDate.format(Calendar.getInstance().getTime());
+        this.ultimaSincronizacao.setText(ultimaSincronizacao);
+        SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
+        preferencesEditor.putString("ultimaSincronizacao", ultimaSincronizacao);
+        preferencesEditor.commit();
     }
 
     private void salvaWatchList() {
@@ -301,6 +332,12 @@ public class HeavyGearActivity extends AppCompatActivity {
             String json = new Gson().toJson(heavyGearRecycleViewAdapter.watchList);
             preferencesEditor.putString("watchList", json);
         }
+        preferencesEditor.commit();
+    }
+
+    private void salvaOrdem() {
+        SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
+        preferencesEditor.putInt("pref_id_ordem", prefIdOrdem);
         preferencesEditor.commit();
     }
 
@@ -315,13 +352,5 @@ public class HeavyGearActivity extends AppCompatActivity {
         }
         Bitmap bitmap = BitmapFactory.decodeStream(istr);
         return bitmap;
-    }
-
-    private void atualizaUltimaSincronizacao() {
-        String ultimaSincronizacao = formatDate.format(Calendar.getInstance().getTime());
-        this.ultimaSincronizacao.setText(ultimaSincronizacao.toString());
-        SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
-        preferencesEditor.putString("ultimaSincronizacao", ultimaSincronizacao);
-        preferencesEditor.commit();
     }
 }
