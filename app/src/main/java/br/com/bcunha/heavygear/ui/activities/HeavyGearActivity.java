@@ -211,12 +211,12 @@ public class HeavyGearActivity extends AppCompatActivity {
         String json = sharedPreferences.getString("watchList", "");
         prefIdOrdem = sharedPreferences.getInt(ConfiguracaoActivity.PREF_ID_ORDEM, 2);
 
-//        if (!json.isEmpty()) {
-//            Type type = new TypeToken<List<Acao>>(){}.getType();
-//            watchList = new Gson().fromJson(json, type);
-//        } else if (watchList.size() == 0) {
+        if (!json.isEmpty()) {
+            Type type = new TypeToken<List<Acao>>(){}.getType();
+            watchList = new Gson().fromJson(json, type);
+        } else if (watchList.size() == 0) {
             watchList.add(new Acao("PETR3", "Petrobras", "", 00.00, true));
-        //}
+        }
 
         // RecyclerView
         layoutManager = new LinearLayoutManager(this);
@@ -304,18 +304,6 @@ public class HeavyGearActivity extends AppCompatActivity {
         salvaWatchList();
     }
 
-    public void atualizaOrdemExibicao() {
-        if (prefIdOrdem == 0) {
-            Collections.sort(heavyGearRecycleViewAdapter.watchList, new OrdemAlta());
-        } else if (prefIdOrdem == 1) {
-            Collections.sort(heavyGearRecycleViewAdapter.watchList, new OrdemBaixa());
-        } else if (prefIdOrdem == 2) {
-            Collections.sort(heavyGearRecycleViewAdapter.watchList, new OrdemAlfabetica());
-        }
-        heavyGearRecycleViewAdapter.notifyDataSetChanged();
-        salvaOrdem();
-    }
-
     private void atualizaUltimaSincronizacao() {
         String ultimaSincronizacao = formatDate.format(Calendar.getInstance().getTime());
         this.ultimaSincronizacao.setText(ultimaSincronizacao);
@@ -341,8 +329,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         preferencesEditor.commit();
     }
 
-    private Bitmap carregaBitmapAsset(String strName)
-    {
+    private Bitmap carregaBitmapAsset(String strName) {
         AssetManager assetManager = getAssets();
         InputStream istr = null;
         try {
@@ -352,5 +339,17 @@ public class HeavyGearActivity extends AppCompatActivity {
         }
         Bitmap bitmap = BitmapFactory.decodeStream(istr);
         return bitmap;
+    }
+
+    public void atualizaOrdemExibicao() {
+        if (prefIdOrdem == 0) {
+            Collections.sort(heavyGearRecycleViewAdapter.watchList, new OrdemAlta());
+        } else if (prefIdOrdem == 1) {
+            Collections.sort(heavyGearRecycleViewAdapter.watchList, new OrdemBaixa());
+        } else if (prefIdOrdem == 2) {
+            Collections.sort(heavyGearRecycleViewAdapter.watchList, new OrdemAlfabetica());
+        }
+        heavyGearRecycleViewAdapter.notifyDataSetChanged();
+        salvaOrdem();
     }
 }

@@ -1,5 +1,6 @@
 package br.com.bcunha.heavygear.model.pojo;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -100,6 +101,7 @@ public class Acao implements Parcelable {
     public void setVariacao(double variacao) {
         this.variacao = variacao;
     }
+
     public double getMaximaDia() {
         return maximaDia;
     }
@@ -140,13 +142,24 @@ public class Acao implements Parcelable {
         this.volumeNegociacao = volumeNegociacao;
     }
 
-
     public boolean isInWatch() {
         return inWatch;
     }
 
     public void setInWatch(boolean inWatch) {
         this.inWatch = inWatch;
+    }
+
+    public int getImgId(Context context) {
+        int imgId = context.getResources().getIdentifier(getCodigo().replaceAll("\\d", "").toLowerCase(),
+                                                         "drawable",
+                                                         context.getPackageName());
+        if(imgId == 0){
+            imgId = context.getResources().getIdentifier("logo_indisponivel",
+                                                         "drawable",
+                                                         context.getPackageName());
+        }
+        return imgId;
     }
 
     @Override

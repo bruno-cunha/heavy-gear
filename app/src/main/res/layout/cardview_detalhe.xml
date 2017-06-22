@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardView_heavy_gear"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="2dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    android:layout_marginTop="5dp"
+    card_view:contentPadding="20dp">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/imgAcao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:src="@drawable/brfs"/>
+
+        <TextView
+            android:id="@+id/codigo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/imgAcao"
+            android:layout_centerHorizontal="true"
+            android:text="BRFS3"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+
+        <TextView
+            android:id="@+id/empresa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/codigo"
+            android:layout_centerHorizontal="true"
+            android:text="Br\sil Foods"
+            android:layout_marginBottom="20dp"/>
+
+        <TextView
+            android:id="@+id/txtMinimaDia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/empresa"
+            android:text="Mínima do Dia"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+        <TextView
+            android:id="@+id/moedaMinimaDia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/txtMinimaDia"
+            android:text="@string/moeda"/>
+        <TextView
+            android:id="@+id/MinimaDia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtMinimaDia"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/moedaMinimaDia"
+            android:text="00.00"/>
+
+
+
+        <TextView
+            android:id="@+id/txtCotacao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/empresa"
+            android:layout_centerHorizontal="true"
+            android:text="Cotação"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+
+
+
+        <TextView
+            android:id="@+id/cotacao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@id/txtCotacao"
+            android:layout_below="@id/txtCotacao"
+            android:layout_marginLeft="5dp"
+            android:text="00.00"/>
+        <TextView
+            android:id="@+id/moeda"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtCotacao"
+            android:layout_toLeftOf="@id/cotacao"
+            android:text="@string/moeda"/>
+
+        <TextView
+            android:id="@+id/txtMaximaDia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/empresa"
+            android:text="Máxima do Dia"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+
+        <TextView
+            android:id="@+id/MaximaDia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/txtMaximaDia"
+            android:layout_marginLeft="5dp"
+            android:text="00.00"/>
+
+        <TextView
+            android:id="@+id/moedaMaximaDia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtMaximaDia"
+            android:layout_toLeftOf="@id/MaximaDia"
+            android:text="@string/moeda"/>
+
+        <TextView
+            android:id="@+id/txtMinimaAno"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/MinimaDia"
+            android:layout_marginTop="20dp"
+            android:text="Mínima do Ano"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+        <TextView
+            android:id="@+id/moedaMinimaAno"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/txtMinimaAno"
+            android:text="@string/moeda"/>
+        <TextView
+            android:id="@+id/MinimaAno"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtMinimaAno"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/moedaMinimaAno"
+            android:text="00.00"/>
+
+        <TextView
+            android:id="@+id/txtMaximaAno"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/MinimaDia"
+            android:layout_marginTop="20dp"
+            android:text="Máxima do Ano"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+
+        <TextView
+            android:id="@+id/MaximaAno"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/txtMaximaAno"
+            android:layout_marginLeft="5dp"
+            android:text="00.00"/>
+
+        <TextView
+            android:id="@+id/moedaMaximaAno"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtMaximaAno"
+            android:layout_toLeftOf="@id/MaximaAno"
+            android:text="@string/moeda"/>
+
+
+
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

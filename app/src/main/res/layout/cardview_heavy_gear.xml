@@ -10,7 +10,8 @@
     android:layout_marginLeft="5dp"
     android:layout_marginRight="5dp"
     android:layout_marginBottom="2dp"
-    card_view:contentPadding="20dp">
+    card_view:contentPadding="20dp"
+    android:foreground="?android:attr/selectableItemBackground">
 
     <RelativeLayout
         android:layout_width="match_parent"

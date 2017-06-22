@@ -1,8 +1,10 @@
 package br.com.bcunha.heavygear.ui.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,7 @@ import java.util.List;
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.pojo.Acao;
 import br.com.bcunha.heavygear.model.pojo.Quote;
+import br.com.bcunha.heavygear.ui.activities.DetalheActivity;
 
 /**
  * Created by BRUNO on 18/10/2016.
@@ -24,19 +27,31 @@ import br.com.bcunha.heavygear.model.pojo.Quote;
 public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearRecycleViewAdapter.HeavyGearRecycleViewHolder> {
 
     public static class HeavyGearRecycleViewHolder extends RecyclerView.ViewHolder {
+        final CardView cardView;
         final ImageView logo;
         final TextView codigo;
         final TextView empresa;
         final TextView moeda;
         final TextView cotacao;
+        Acao acao;
 
         public HeavyGearRecycleViewHolder(View view) {
             super(view);
+            cardView = (CardView) view.findViewById(R.id.cardView_heavy_gear);
             logo = (ImageView) view.findViewById(R.id.imgAcao);
             codigo = (TextView) view.findViewById(R.id.codigo);
             empresa = (TextView) view.findViewById(R.id.empresa);
             moeda = (TextView) view.findViewById(R.id.moeda);
             cotacao = (TextView) view.findViewById(R.id.cotacao);
+
+            cardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(v.getContext(), DetalheActivity.class);
+                    intent.putExtra("acao", acao);
+                    v.getContext().startActivity(intent);
+                }
+            });
         }
     }
 
@@ -68,23 +83,25 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
     @Override
     public void onBindViewHolder(HeavyGearRecycleViewHolder heavyGearRecycleViewHolder, int position) {
         Context context = heavyGearRecycleViewHolder.itemView.getContext();
-        int imgId = context.getResources().getIdentifier(watchList.get(position).getCodigo().replaceAll("\\d", "").toLowerCase(),
-                                                         "drawable",
-                                                         context.getPackageName());
-        if(imgId == 0){
-            imgId = context.getResources().getIdentifier("logo_indisponivel",
-                                                         "drawable",
-                                                         context.getPackageName());
-        }
+        heavyGearRecycleViewHolder.acao = watchList.get(position);
 
-        heavyGearRecycleViewHolder.logo.setImageResource(imgId);
-        heavyGearRecycleViewHolder.codigo.setText(watchList.get(position).getCodigo());
-        heavyGearRecycleViewHolder.empresa.setText(watchList.get(position).getEmpresa());
-        heavyGearRecycleViewHolder.cotacao.setText(String.format("%.2f", watchList.get(position).getCotacao()));
-        if (watchList.get(position).getVariacao() > 0) {
+//        int imgId = context.getResources().getIdentifier(heavyGearRecycleViewHolder.acao.getCodigo().replaceAll("\\d", "").toLowerCase(),
+//                                                         "drawable",
+//                                                         context.getPackageName());
+//        if(imgId == 0){
+//            imgId = context.getResources().getIdentifier("logo_indisponivel",
+//                                                         "drawable",
+//                                                         context.getPackageName());
+//        }
+
+        heavyGearRecycleViewHolder.logo.setImageResource(heavyGearRecycleViewHolder.acao.getImgId(context));
+        heavyGearRecycleViewHolder.codigo.setText(heavyGearRecycleViewHolder.acao.getCodigo());
+        heavyGearRecycleViewHolder.empresa.setText(heavyGearRecycleViewHolder.acao.getEmpresa());
+        heavyGearRecycleViewHolder.cotacao.setText(String.format("%.2f", heavyGearRecycleViewHolder.acao.getCotacao()));
+        if (heavyGearRecycleViewHolder.acao.getVariacao() > 0) {
             heavyGearRecycleViewHolder.moeda.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.verde)));
             heavyGearRecycleViewHolder.cotacao.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.verde)));
-        } else if (watchList.get(position).getVariacao() < 0) {
+        } else if (heavyGearRecycleViewHolder.acao.getVariacao() < 0) {
             heavyGearRecycleViewHolder.moeda.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.vermelho)));
             heavyGearRecycleViewHolder.cotacao.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.vermelho)));
         } else {

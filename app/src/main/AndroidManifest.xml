@@ -46,6 +46,8 @@
         </activity>
         <activity android:name=".ui.activities.SobreActivity">
         </activity>
+        <activity android:name=".ui.activities.DetalheActivity">
+        </activity>
     </application>
 
 </manifest>
