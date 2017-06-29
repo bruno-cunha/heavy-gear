@@ -1,8 +1,12 @@
 package br.com.bcunha.heavygear.model.pojo;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.content.ContextCompat;
+
+import br.com.bcunha.heavygear.R;
 
 /**
  * Created by BRUNO on 18/09/2016.
@@ -160,6 +164,16 @@ public class Acao implements Parcelable {
                                                          context.getPackageName());
         }
         return imgId;
+    }
+
+    public ColorStateList getCor(Context context){
+        if (getVariacao() > 0) {
+            return ColorStateList.valueOf(ContextCompat.getColor(context, R.color.verde));
+        } else if (getVariacao() < 0) {
+            return ColorStateList.valueOf(ContextCompat.getColor(context, R.color.vermelho));
+        } else {
+            return ColorStateList.valueOf(ContextCompat.getColor(context, R.color.textoSecundario));
+        }
     }
 
     @Override
