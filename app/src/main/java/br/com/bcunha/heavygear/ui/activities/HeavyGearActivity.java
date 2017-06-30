@@ -61,6 +61,7 @@ public class HeavyGearActivity extends AppCompatActivity {
     private static final String ACTION_HEAVYSERVICE = "ACTION_HEAVYSERVICE";
 
     public boolean prefTodasAcoesInicio;
+    public boolean prefExibeVaricao;
     public int prefIdOrdem;
 
     private final SimpleDateFormat formatDate = new SimpleDateFormat("dd/mm/yyyy HH:mm:ss");
@@ -207,10 +208,9 @@ public class HeavyGearActivity extends AppCompatActivity {
     private void iniciaRecycleView() {
         // Carrega watchList
         List<Acao> watchList = new ArrayList<Acao>();
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
-        String json = sharedPreferences.getString("watchList", "");
-        prefIdOrdem = sharedPreferences.getInt(ConfiguracaoActivity.PREF_ID_ORDEM, 2);
+        initPrefs();
 
+        String json = sharedPreferences.getString("watchList", "");
         if (!json.isEmpty()) {
             Type type = new TypeToken<List<Acao>>(){}.getType();
             watchList = new Gson().fromJson(json, type);
@@ -220,7 +220,7 @@ public class HeavyGearActivity extends AppCompatActivity {
 
         // RecyclerView
         layoutManager = new LinearLayoutManager(this);
-        heavyGearRecycleViewAdapter = new HeavyGearRecycleViewAdapter(watchList);
+        heavyGearRecycleViewAdapter = new HeavyGearRecycleViewAdapter(getApplicationContext(), watchList);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(heavyGearRecycleViewAdapter);
@@ -288,16 +288,22 @@ public class HeavyGearActivity extends AppCompatActivity {
         actionBarDrawerToggle.syncState();
     }
 
-    private void atualizaConfiguracoes() {
+    public void initPrefs(){
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
-        Boolean oldTodasAcoesInicio = prefTodasAcoesInicio;
-        prefIdOrdem = sharedPreferences.getInt(ConfiguracaoActivity.PREF_ID_ORDEM, 2);
         prefTodasAcoesInicio = sharedPreferences.getBoolean(ConfiguracaoActivity.PREF_TODAS_ACOES_INICIO, false);
+        prefExibeVaricao = sharedPreferences.getBoolean(ConfiguracaoActivity.PREF_EXIBE_VARIACAO, false);
+        prefIdOrdem = sharedPreferences.getInt(ConfiguracaoActivity.PREF_ID_ORDEM, 2);
+    }
+
+    private void atualizaConfiguracoes() {
+        Boolean oldTodasAcoesInicio = prefTodasAcoesInicio;
+        initPrefs();
         if (prefTodasAcoesInicio){
             heavyGearRecycleViewAdapter.update(heavyGearAssetsHelper.getAcoes());
         } else if (prefTodasAcoesInicio != oldTodasAcoesInicio) {
             heavyGearRecycleViewAdapter.update(heavyGearAssetsHelper.pesquisaAcao("PETR3"));
         }
+        heavyGearRecycleViewAdapter.updateExibeVariacao(sharedPreferences.getBoolean(ConfiguracaoActivity.PREF_EXIBE_VARIACAO, false));
         if (isBound) {
             heavyGearServiceBound.atualizaTimer();
         }

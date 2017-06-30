@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +24,7 @@ import java.util.List;
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.pojo.Acao;
 import br.com.bcunha.heavygear.model.pojo.Quote;
+import br.com.bcunha.heavygear.ui.activities.ConfiguracaoActivity;
 
 /**
  * Created by BRUNO on 18/10/2016.
@@ -37,6 +39,7 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
         final TextView empresa;
         final TextView moeda;
         final TextView cotacao;
+        final TextView variacao;
         final TextView minimaDia;
         final TextView maximaDia;
         final TextView minimaAno;
@@ -55,6 +58,7 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
             empresa = (TextView) view.findViewById(R.id.empresa);
             moeda = (TextView) view.findViewById(R.id.moeda);
             cotacao = (TextView) view.findViewById(R.id.cotacao);
+            variacao = (TextView) view.findViewById(R.id.variacao);
             relativeSecundario = (RelativeLayout) view.findViewById(R.id.relativeSecundario);
             minimaDia = (TextView) view.findViewById(R.id.MinimaDia);
             maximaDia = (TextView) view.findViewById(R.id.MaximaDia);
@@ -119,14 +123,17 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
             }
         }
     }
-
+    private Context context;
+    public boolean prefExibeVaricao;
     public List<Acao> watchList;
 
-    public HeavyGearRecycleViewAdapter(List<Acao> watchList) {
+    public HeavyGearRecycleViewAdapter(Context context,List<Acao> watchList) {
+        this.context = context;
         this.watchList = watchList;
+        this.prefExibeVaricao = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ConfiguracaoActivity.PREF_EXIBE_VARIACAO, false);
     }
 
-    public static HeavyGearRecycleViewAdapter createFromQuote(List<Quote> quoteAcoes) {
+    public static HeavyGearRecycleViewAdapter createFromQuote(Context context, List<Quote> quoteAcoes) {
         List<Acao> acoes = new ArrayList<Acao>();
 
         for (Quote quote : quoteAcoes) {
@@ -136,7 +143,7 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
             Double.parseDouble(quote.getLastTradePriceOnly())));
         }
 
-        return new HeavyGearRecycleViewAdapter(acoes);
+        return new HeavyGearRecycleViewAdapter(context, acoes);
     }
 
     @Override
@@ -147,7 +154,7 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
 
     @Override
     public void onBindViewHolder(HeavyGearRecycleViewHolder heavyGearRecycleViewHolder, int position) {
-        Context context = heavyGearRecycleViewHolder.itemView.getContext();
+        // = heavyGearRecycleViewHolder.itemView.getContext();
         heavyGearRecycleViewHolder.acao = watchList.get(position);
 
         heavyGearRecycleViewHolder.logo.setImageResource(heavyGearRecycleViewHolder.acao.getImgId(context));
@@ -156,10 +163,18 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
         heavyGearRecycleViewHolder.moeda.setTextColor(heavyGearRecycleViewHolder.acao.getCor(context));
         heavyGearRecycleViewHolder.cotacao.setText(String.format("%.2f", heavyGearRecycleViewHolder.acao.getCotacao()));
         heavyGearRecycleViewHolder.cotacao.setTextColor(heavyGearRecycleViewHolder.acao.getCor(context));
+        heavyGearRecycleViewHolder.variacao.setText("(" + String.format("%.2f" ,heavyGearRecycleViewHolder.acao.getVariacao()) + ")");
+        heavyGearRecycleViewHolder.variacao.setTextColor(heavyGearRecycleViewHolder.acao.getCor(context));
         heavyGearRecycleViewHolder.minimaDia.setText(String.format("%.2f", heavyGearRecycleViewHolder.acao.getMinimaDia()));
         heavyGearRecycleViewHolder.maximaDia.setText(String.format("%.2f", heavyGearRecycleViewHolder.acao.getMaximaDia()));
         heavyGearRecycleViewHolder.minimaAno.setText(String.format("%.2f", heavyGearRecycleViewHolder.acao.getMinimaAno()));
         heavyGearRecycleViewHolder.maximaAno.setText(String.format("%.2f", heavyGearRecycleViewHolder.acao.getMaximaAno()));
+
+        if (prefExibeVaricao) {
+            heavyGearRecycleViewHolder.variacao.setVisibility(View.VISIBLE);
+        } else {
+            heavyGearRecycleViewHolder.variacao.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -182,6 +197,11 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
 
     public void update(List<Acao> novasAcoes) {
         watchList = novasAcoes;
+        notifyDataSetChanged();
+    }
+
+    public void updateExibeVariacao(Boolean prefExibeVaricao) {
+        this.prefExibeVaricao = prefExibeVaricao;
         notifyDataSetChanged();
     }
 }

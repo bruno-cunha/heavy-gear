@@ -9,6 +9,7 @@ import br.com.bcunha.heavygear.model.pojo.Acao;
  */
 
 public class OrdemBaixa implements Comparator<Acao> {
+
     @Override
     public int compare(Acao o1, Acao o2) {
         if (o1.getVariacao() == o2.getVariacao()) {

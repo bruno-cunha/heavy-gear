@@ -12,6 +12,6 @@ public class OrdemAlfabetica implements Comparator<Acao> {
 
     @Override
     public int compare(Acao o1, Acao o2) {
-        return o2.getCodigo().compareToIgnoreCase(o2.getCodigo());
+        return o1.getCodigo().compareToIgnoreCase(o2.getCodigo());
     }
 }
