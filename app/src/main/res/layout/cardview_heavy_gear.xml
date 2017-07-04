@@ -21,6 +21,39 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <RelativeLayout
+                android:id="@+id/valores"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true">
+
+                <TextView
+                    android:id="@+id/moeda"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/moeda"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+
+                <TextView
+                    android:id="@+id/cotacao"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_toRightOf="@id/moeda"
+                    android:text="00.00"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+
+                <TextView
+                    android:id="@+id/variacao"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/cotacao"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignEnd="@id/cotacao"
+                    android:text="(+0.05)"/>
+            </RelativeLayout>
+
             <ImageView
                 android:id="@+id/imgAcao"
                 android:layout_width="wrap_content"
@@ -34,6 +67,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_toRightOf="@id/imgAcao"
+                android:layout_toLeftOf="@id/valores"
                 android:text="BRFS3"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
 
@@ -44,40 +78,8 @@
                 android:layout_below="@id/codigo"
                 android:layout_marginLeft="20dp"
                 android:layout_toRightOf="@+id/imgAcao"
+                android:layout_toLeftOf="@id/valores"
                 android:text="Brsil Foods S.A"/>
-
-            <RelativeLayout
-                android:id="@+id/valores"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/empresa">
-
-                <TextView
-                    android:id="@+id/cotacao"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginLeft="5dp"
-                    android:text="00.00"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
-
-                <TextView
-                    android:id="@+id/moeda"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toStartOf="@id/cotacao"
-                    android:text="@string/moeda"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
-
-                <TextView
-                    android:id="@+id/variacao"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_below="@+id/cotacao"
-                    android:text="(+0.05)"/>
-            </RelativeLayout>
         </RelativeLayout>
 
         <RelativeLayout
@@ -86,48 +88,38 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/relativePrincipal"
             android:layout_marginTop="20dp"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/txtMinimaDia"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:text="Mínima do Dia"/>
+            android:visibility="visible">
 
             <TextView
                 android:id="@+id/moedaMinimaDia"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/txtMinimaDia"
                 android:text="@string/moeda"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
 
             <TextView
-                android:id="@+id/MinimaDia"
+                android:id="@+id/minimaDia"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/txtMinimaDia"
                 android:layout_marginLeft="5dp"
                 android:layout_toRightOf="@id/moedaMinimaDia"
                 android:text="00.00"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
 
+            <TextView
+                android:id="@+id/txtMinimaDia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/minimaDia"
+                android:text="Mínima do Dia"/>
 
             <TextView
-                android:id="@+id/txtMaximaDia"
+                android:id="@+id/maximaDia"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:text="Máxima do Dia"/>
-
-            <TextView
-                android:id="@+id/MaximaDia"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@id/txtMaximaDia"
                 android:layout_marginLeft="5dp"
                 android:text="00.00"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
@@ -136,9 +128,37 @@
                 android:id="@+id/moedaMaximaDia"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/txtMaximaDia"
-                android:layout_toLeftOf="@id/MaximaDia"
+                android:layout_toLeftOf="@id/maximaDia"
                 android:text="@string/moeda"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+
+            <TextView
+                android:id="@+id/txtMaximaDia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@id/maximaDia"
+                android:text="Máxima do Dia"/>
+
+            <TextView
+                android:id="@+id/moedaMinimaAno"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="20dp"
+                android:layout_below="@id/txtMinimaDia"
+                android:text="@string/moeda"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+
+            <TextView
+                android:id="@+id/minimaAno"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/txtMinimaDia"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@id/moedaMinimaAno"
+                android:text="00.00"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
 
             <TextView
@@ -146,44 +166,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/MinimaDia"
-                android:layout_marginTop="20dp"
+                android:layout_below="@id/minimaAno"
                 android:text="Mínima do Ano"/>
 
             <TextView
-                android:id="@+id/moedaMinimaAno"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@id/txtMinimaAno"
-                android:text="@string/moeda"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
-
-            <TextView
-                android:id="@+id/MinimaAno"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/txtMinimaAno"
-                android:layout_marginLeft="5dp"
-                android:layout_toRightOf="@id/moedaMinimaAno"
-                android:text="00.00"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
-
-            <TextView
-                android:id="@+id/txtMaximaAno"
+                android:id="@+id/maximaAno"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:layout_below="@id/MinimaDia"
+                android:layout_below="@id/txtMaximaDia"
                 android:layout_marginTop="20dp"
-                android:text="Máxima do Ano"/>
-
-            <TextView
-                android:id="@+id/MaximaAno"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@id/txtMaximaAno"
                 android:layout_marginLeft="5dp"
                 android:text="00.00"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
@@ -192,10 +184,20 @@
                 android:id="@+id/moedaMaximaAno"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/txtMaximaAno"
-                android:layout_toLeftOf="@id/MaximaAno"
+                android:layout_below="@id/txtMaximaDia"
+                android:layout_toLeftOf="@id/maximaDia"
+                android:layout_marginTop="20dp"
                 android:text="@string/moeda"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+
+            <TextView
+                android:id="@+id/txtMaximaAno"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@id/maximaAno"
+                android:text="Máxima do Ano"/>
+
         </RelativeLayout>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

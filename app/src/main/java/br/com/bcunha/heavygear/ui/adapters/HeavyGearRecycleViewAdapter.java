@@ -2,10 +2,7 @@ package br.com.bcunha.heavygear.ui.adapters;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.preference.PreferenceManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -60,10 +57,10 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
             cotacao = (TextView) view.findViewById(R.id.cotacao);
             variacao = (TextView) view.findViewById(R.id.variacao);
             relativeSecundario = (RelativeLayout) view.findViewById(R.id.relativeSecundario);
-            minimaDia = (TextView) view.findViewById(R.id.MinimaDia);
-            maximaDia = (TextView) view.findViewById(R.id.MaximaDia);
-            minimaAno = (TextView) view.findViewById(R.id.MinimaAno);
-            maximaAno = (TextView) view.findViewById(R.id.MaximaAno);
+            minimaDia = (TextView) view.findViewById(R.id.minimaDia);
+            maximaDia = (TextView) view.findViewById(R.id.maximaDia);
+            minimaAno = (TextView) view.findViewById(R.id.minimaAno);
+            maximaAno = (TextView) view.findViewById(R.id.maximaAno);
 
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -163,7 +160,7 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
         heavyGearRecycleViewHolder.moeda.setTextColor(heavyGearRecycleViewHolder.acao.getCor(context));
         heavyGearRecycleViewHolder.cotacao.setText(String.format("%.2f", heavyGearRecycleViewHolder.acao.getCotacao()));
         heavyGearRecycleViewHolder.cotacao.setTextColor(heavyGearRecycleViewHolder.acao.getCor(context));
-        heavyGearRecycleViewHolder.variacao.setText("(" + String.format("%.2f" ,heavyGearRecycleViewHolder.acao.getVariacao()) + ")");
+        heavyGearRecycleViewHolder.variacao.setText(heavyGearRecycleViewHolder.acao.getVariacaoFormat());
         heavyGearRecycleViewHolder.variacao.setTextColor(heavyGearRecycleViewHolder.acao.getCor(context));
         heavyGearRecycleViewHolder.minimaDia.setText(String.format("%.2f", heavyGearRecycleViewHolder.acao.getMinimaDia()));
         heavyGearRecycleViewHolder.maximaDia.setText(String.format("%.2f", heavyGearRecycleViewHolder.acao.getMaximaDia()));

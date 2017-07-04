@@ -102,6 +102,17 @@ public class Acao implements Parcelable {
         return variacao;
     }
 
+    public String getVariacaoFormat() {
+        String sinal = "";
+        if(getVariacao() > 0) {
+            return "(+" + String.format("%.2f", getVariacao()) + ")";
+        } else if(getVariacao() > 0) {
+            return "(-" + String.format("%.2f", getVariacao() * 1) + ")";
+        } else {
+            return "(" + String.format("%.2f", getVariacao()) + ")";
+        }
+    }
+
     public void setVariacao(double variacao) {
         this.variacao = variacao;
     }
