@@ -42,9 +42,6 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
         final TextView minimaAno;
         final TextView maximaAno;
         Acao acao;
-
-        private int originalHeight = 0;
-        private boolean isViewExpanded = false;
         private RelativeLayout relativeSecundario;
 
         public HeavyGearRecycleViewHolder(final View view) {
@@ -65,41 +62,25 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
-                    if (originalHeight == 0) {
-                        originalHeight = view.getHeight();
+                    if (acao.getOriginalHeight() == 0) {
+                        if(acao.isViewExpanded()) {
+                            acao.setOriginalHeight((int) (view.getHeight() / 2.5));
+                        } else {
+                            acao.setOriginalHeight(view.getHeight());
+                        }
                     }
 
                     ValueAnimator valueAnimator;
-                    if (!isViewExpanded) {
+                    if (acao.isViewExpanded()) {
+                        relativeSecundario.setVisibility(View.GONE);
+                        relativeSecundario.setEnabled(false);
+                        acao.setViewExpanded(false);
+                        valueAnimator = ValueAnimator.ofInt(acao.getOriginalHeight() + (int) (acao.getOriginalHeight() * 1.5), acao.getOriginalHeight());
+                    } else {
                         relativeSecundario.setVisibility(View.VISIBLE);
                         relativeSecundario.setEnabled(true);
-                        isViewExpanded = true;
-                        valueAnimator = ValueAnimator.ofInt(originalHeight, originalHeight + (int) (originalHeight * 1.5));
-                    } else {
-                        isViewExpanded = false;
-                        valueAnimator = ValueAnimator.ofInt(originalHeight + (int) (originalHeight * 1.5), originalHeight);
-
-                        Animation animation = new AlphaAnimation(1.00f, 0.00f);
-                        animation.setDuration(200);
-                        animation.setAnimationListener(new Animation.AnimationListener() {
-                            @Override
-                            public void onAnimationStart(Animation animation) {
-
-                            }
-
-                            @Override
-                            public void onAnimationEnd(Animation animation) {
-                                relativeSecundario.setVisibility(View.INVISIBLE);
-                                relativeSecundario.setEnabled(false);
-                            }
-
-                            @Override
-                            public void onAnimationRepeat(Animation animation) {
-
-                            }
-                        });
-
-                        relativeSecundario.startAnimation(animation);
+                        acao.setViewExpanded(true);
+                        valueAnimator = ValueAnimator.ofInt(acao.getOriginalHeight(), acao.getOriginalHeight() + (int) (acao.getOriginalHeight() * 1.5));
                     }
                     valueAnimator.setDuration(200);
                     valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -113,11 +94,6 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
                     valueAnimator.start();
                 }
             });
-
-            if (isViewExpanded == false) {
-                relativeSecundario.setVisibility(View.GONE);
-                relativeSecundario.setEnabled(false);
-            }
         }
     }
     private Context context;
@@ -151,9 +127,7 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
 
     @Override
     public void onBindViewHolder(HeavyGearRecycleViewHolder heavyGearRecycleViewHolder, int position) {
-        // = heavyGearRecycleViewHolder.itemView.getContext();
         heavyGearRecycleViewHolder.acao = watchList.get(position);
-
         heavyGearRecycleViewHolder.logo.setImageResource(heavyGearRecycleViewHolder.acao.getImgId(context));
         heavyGearRecycleViewHolder.codigo.setText(heavyGearRecycleViewHolder.acao.getCodigo());
         heavyGearRecycleViewHolder.empresa.setText(heavyGearRecycleViewHolder.acao.getEmpresa());
@@ -171,6 +145,18 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
             heavyGearRecycleViewHolder.variacao.setVisibility(View.VISIBLE);
         } else {
             heavyGearRecycleViewHolder.variacao.setVisibility(View.GONE);
+        }
+
+        if (heavyGearRecycleViewHolder.acao.isViewExpanded()) {
+            heavyGearRecycleViewHolder.relativeSecundario.setVisibility(View.VISIBLE);
+            heavyGearRecycleViewHolder.relativeSecundario.setEnabled(true);
+        } else {
+            heavyGearRecycleViewHolder.relativeSecundario.setVisibility(View.GONE);
+            heavyGearRecycleViewHolder.relativeSecundario.setEnabled(false);
+            if (heavyGearRecycleViewHolder.acao.getOriginalHeight() > 0){
+                heavyGearRecycleViewHolder.cardView.getLayoutParams().height = heavyGearRecycleViewHolder.acao.getOriginalHeight();
+                heavyGearRecycleViewHolder.cardView.requestLayout();
+            }
         }
     }
 
@@ -192,7 +178,20 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
         notifyItemRemoved(position);
     }
 
-    public void update(List<Acao> novasAcoes) {
+    public void update(List<Acao> novasAcoes, Boolean carregaExtras) {
+        if(carregaExtras) {
+            for (Acao acao : novasAcoes) {
+                if (watchList.contains(acao)) {
+                    int indexNovasAcao = novasAcoes.indexOf(acao);
+                    int indexWatch = watchList.indexOf(acao);
+                    if (watchList.get(indexWatch).isViewExpanded()) {
+                        novasAcoes.get(indexNovasAcao).setViewExpanded(true);
+                    }
+                    novasAcoes.get(indexNovasAcao).setOriginalHeight(watchList.get(indexWatch).getOriginalHeight());
+                }
+            }
+        }
+
         watchList = novasAcoes;
         notifyDataSetChanged();
     }
