@@ -3,6 +3,7 @@ package br.com.bcunha.heavygear.ui.adapters;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import java.util.List;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.pojo.Acao;
+import br.com.bcunha.heavygear.model.pojo.AcaoDiffCallBack;
 import br.com.bcunha.heavygear.model.pojo.Quote;
 import br.com.bcunha.heavygear.ui.activities.ConfiguracaoActivity;
 
@@ -99,11 +101,18 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
     private Context context;
     public boolean prefExibeVaricao;
     public List<Acao> watchList;
+    public Animation animation;
 
     public HeavyGearRecycleViewAdapter(Context context,List<Acao> watchList) {
         this.context = context;
         this.watchList = watchList;
         this.prefExibeVaricao = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ConfiguracaoActivity.PREF_EXIBE_VARIACAO, false);
+
+        animation = new AlphaAnimation(0.0f, 1.0f);
+        animation.setDuration(100);
+        animation.setStartOffset(20);
+        animation.setRepeatMode(Animation.REVERSE);
+        animation.setRepeatCount(5);
     }
 
     public static HeavyGearRecycleViewAdapter createFromQuote(Context context, List<Quote> quoteAcoes) {
@@ -155,9 +164,11 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
             heavyGearRecycleViewHolder.relativeSecundario.setEnabled(false);
             if (heavyGearRecycleViewHolder.acao.getOriginalHeight() > 0){
                 heavyGearRecycleViewHolder.cardView.getLayoutParams().height = heavyGearRecycleViewHolder.acao.getOriginalHeight();
-                heavyGearRecycleViewHolder.cardView.requestLayout();
             }
         }
+        heavyGearRecycleViewHolder.cotacao.startAnimation(animation);
+        heavyGearRecycleViewHolder.variacao.startAnimation(animation);
+        heavyGearRecycleViewHolder.cardView.requestLayout();
     }
 
     @Override
@@ -179,7 +190,7 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
     }
 
     public void update(List<Acao> novasAcoes, Boolean carregaExtras) {
-        if(carregaExtras) {
+        /*if(carregaExtras) {
             for (Acao acao : novasAcoes) {
                 if (watchList.contains(acao)) {
                     int indexNovasAcao = novasAcoes.indexOf(acao);
@@ -193,7 +204,14 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
         }
 
         watchList = novasAcoes;
-        notifyDataSetChanged();
+        notifyDataSetChanged();*/
+
+        final AcaoDiffCallBack diffCallback = new AcaoDiffCallBack(this.watchList, novasAcoes);
+        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
+
+        this.watchList.clear();
+        this.watchList.addAll(novasAcoes);
+        diffResult.dispatchUpdatesTo(this);
     }
 
     public void updateExibeVariacao(Boolean prefExibeVaricao) {
