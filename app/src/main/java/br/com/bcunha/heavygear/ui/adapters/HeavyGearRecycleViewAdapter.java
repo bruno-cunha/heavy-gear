@@ -166,6 +166,7 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
                 heavyGearRecycleViewHolder.cardView.getLayoutParams().height = heavyGearRecycleViewHolder.acao.getOriginalHeight();
             }
         }
+        heavyGearRecycleViewHolder.moeda.startAnimation(animation);
         heavyGearRecycleViewHolder.cotacao.startAnimation(animation);
         heavyGearRecycleViewHolder.variacao.startAnimation(animation);
         heavyGearRecycleViewHolder.cardView.requestLayout();
@@ -202,9 +203,7 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
                 }
             }
         }
-
-        watchList = novasAcoes;
-        notifyDataSetChanged();*/
+       */
 
         final AcaoDiffCallBack diffCallback = new AcaoDiffCallBack(this.watchList, novasAcoes);
         final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
