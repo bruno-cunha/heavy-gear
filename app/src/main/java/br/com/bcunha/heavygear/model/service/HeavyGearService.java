@@ -3,7 +3,6 @@ package br.com.bcunha.heavygear.model.service;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -45,9 +44,7 @@ public class HeavyGearService extends Service {
         // Buscar watchList  do intent
         watchList = (ArrayList) intent.getParcelableArrayListExtra("watchList");
 
-        if (worker != null) {
-            handler.post(worker);
-        }
+        executar();
         ativo = true;
 
         return mBinder;
@@ -150,6 +147,22 @@ public class HeavyGearService extends Service {
 
             handler.postDelayed(this, frequenciaAtualizacao);
         }
+    }
+
+    public void executar(){
+        if (worker != null) {
+            handler.post(worker);
+        }
+    }
+
+    public void removeItem(int index) {
+        watchList.remove(index);
+        executar();
+    }
+
+    public void atualizaWatchList(List<Acao> acoes){
+        this.watchList = acoes;
+        executar();
     }
 
     public class HeavyBinder extends Binder {

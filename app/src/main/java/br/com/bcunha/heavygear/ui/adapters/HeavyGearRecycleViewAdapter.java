@@ -65,7 +65,7 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
                 @Override
                 public void onClick(final View view) {
                     if (acao.getOriginalHeight() == 0) {
-                        if(acao.isViewExpanded()) {
+                        if (acao.isViewExpanded()) {
                             acao.setOriginalHeight((int) (view.getHeight() / 2.5));
                         } else {
                             acao.setOriginalHeight(view.getHeight());
@@ -98,12 +98,13 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
             });
         }
     }
+
     private Context context;
     public boolean prefExibeVaricao;
     public List<Acao> watchList;
     public Animation animation;
 
-    public HeavyGearRecycleViewAdapter(Context context,List<Acao> watchList) {
+    public HeavyGearRecycleViewAdapter(Context context, List<Acao> watchList) {
         this.context = context;
         this.watchList = watchList;
         this.prefExibeVaricao = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ConfiguracaoActivity.PREF_EXIBE_VARIACAO, false);
@@ -162,7 +163,7 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
         } else {
             heavyGearRecycleViewHolder.relativeSecundario.setVisibility(View.GONE);
             heavyGearRecycleViewHolder.relativeSecundario.setEnabled(false);
-            if (heavyGearRecycleViewHolder.acao.getOriginalHeight() > 0){
+            if (heavyGearRecycleViewHolder.acao.getOriginalHeight() > 0) {
                 heavyGearRecycleViewHolder.cardView.getLayoutParams().height = heavyGearRecycleViewHolder.acao.getOriginalHeight();
             }
         }
@@ -187,30 +188,18 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
 
     public void remove(int position) {
         watchList.remove(position);
+
         notifyItemRemoved(position);
     }
 
-    public void update(List<Acao> novasAcoes, Boolean carregaExtras) {
-        /*if(carregaExtras) {
-            for (Acao acao : novasAcoes) {
-                if (watchList.contains(acao)) {
-                    int indexNovasAcao = novasAcoes.indexOf(acao);
-                    int indexWatch = watchList.indexOf(acao);
-                    if (watchList.get(indexWatch).isViewExpanded()) {
-                        novasAcoes.get(indexNovasAcao).setViewExpanded(true);
-                    }
-                    novasAcoes.get(indexNovasAcao).setOriginalHeight(watchList.get(indexWatch).getOriginalHeight());
-                }
-            }
-        }
-       */
-
-        final AcaoDiffCallBack diffCallback = new AcaoDiffCallBack(this.watchList, novasAcoes);
+    public void update(final List<Acao> novasAcoes, Boolean carregaExtras) {
+        final AcaoDiffCallBack diffCallback = new AcaoDiffCallBack(novasAcoes, watchList);
         final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
 
-        this.watchList.clear();
-        this.watchList.addAll(novasAcoes);
+        watchList.clear();
+        watchList.addAll(diffCallback.newAcoes);
         diffResult.dispatchUpdatesTo(this);
+
     }
 
     public void updateExibeVariacao(Boolean prefExibeVaricao) {

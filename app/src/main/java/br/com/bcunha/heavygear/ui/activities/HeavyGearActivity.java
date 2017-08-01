@@ -200,6 +200,7 @@ public class HeavyGearActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == REQUEST_PESQUISA && resultCode == RESULT_OK){
             heavyGearRecycleViewAdapter.update((ArrayList) data.getParcelableArrayListExtra("watchList"), false);
+            heavyGearServiceBound.atualizaWatchList(heavyGearRecycleViewAdapter.watchList);
         } else if (requestCode == REQUEST_CONFIGURACAO && resultCode == RESULT_OK) {
             atualizaConfiguracoes();
         }
@@ -234,7 +235,9 @@ public class HeavyGearActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                heavyGearRecycleViewAdapter.remove(viewHolder.getAdapterPosition());
+                int index = viewHolder.getAdapterPosition();
+                heavyGearRecycleViewAdapter.remove(index);
+                heavyGearServiceBound.removeItem(index);
             }
 
             @Override
@@ -349,13 +352,13 @@ public class HeavyGearActivity extends AppCompatActivity {
 
     public void atualizaOrdemExibicao() {
         if (prefIdOrdem == 0) {
-            Collections.sort(heavyGearRecycleViewAdapter.watchList, new OrdemAlta());
+            Collections.sort(heavyGearServiceBound.watchList, new OrdemAlta());
         } else if (prefIdOrdem == 1) {
-            Collections.sort(heavyGearRecycleViewAdapter.watchList, new OrdemBaixa());
+            Collections.sort(heavyGearServiceBound.watchList, new OrdemBaixa());
         } else if (prefIdOrdem == 2) {
-            Collections.sort(heavyGearRecycleViewAdapter.watchList, new OrdemAlfabetica());
+            Collections.sort(heavyGearServiceBound.watchList, new OrdemAlfabetica());
         }
-        heavyGearRecycleViewAdapter.notifyDataSetChanged();
+        heavyGearServiceBound.executar();
         salvaOrdem();
     }
 }

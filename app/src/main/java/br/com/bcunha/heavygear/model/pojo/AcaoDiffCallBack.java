@@ -39,6 +39,10 @@ public class AcaoDiffCallBack extends DiffUtil.Callback {
         final Acao oldAcao = oldAcoes.get(oldItemPosition);
         final Acao newAcao = newAcoes.get(newItemPosition);
 
+        if (oldAcao.isViewExpanded()) {
+            newAcoes.get(newItemPosition).setViewExpanded(true);
+        }
+
         return oldAcao.getCotacao() == newAcao.getCotacao();
     }
 
@@ -47,4 +51,5 @@ public class AcaoDiffCallBack extends DiffUtil.Callback {
     public Object getChangePayload(int oldItemPosition, int newItemPosition) {
         return super.getChangePayload(oldItemPosition, newItemPosition);
     }
+
 }
