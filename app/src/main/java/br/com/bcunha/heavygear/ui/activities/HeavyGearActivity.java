@@ -201,6 +201,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         if(requestCode == REQUEST_PESQUISA && resultCode == RESULT_OK){
             heavyGearRecycleViewAdapter.update((ArrayList) data.getParcelableArrayListExtra("watchList"), false);
             heavyGearServiceBound.atualizaWatchList(heavyGearRecycleViewAdapter.watchList);
+            atualizaOrdemExibicao();
         } else if (requestCode == REQUEST_CONFIGURACAO && resultCode == RESULT_OK) {
             atualizaConfiguracoes();
         }
