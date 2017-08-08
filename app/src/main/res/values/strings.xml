@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">HeavyGear</string>
+    <string name="app_name">heavy gear</string>
     <string name="moeda">R$</string>
     <string name="pesquisa_hint">Pesquisa</string>
     <string name="title_activity_config">ConfigActivity</string>

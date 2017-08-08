@@ -2,12 +2,14 @@ package br.com.bcunha.heavygear.ui.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.ui.fragment.ConfiguracaoFragment;
@@ -21,6 +23,8 @@ public class ConfiguracaoActivity extends AppCompatActivity implements SharedPre
     public static final String PREF_ID_ORDEM = "pref_id_ordem";
 
     private Toolbar toolbar;
+    private Typeface typeFace;
+    private TextView toolbarTitle;
     private SharedPreferences sharedPreferences;
     private boolean prefAtualizar = false;
 
@@ -33,6 +37,11 @@ public class ConfiguracaoActivity extends AppCompatActivity implements SharedPre
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        typeFace = Typeface.createFromAsset(getAssets(),"fonts/Arizonia-Regular.ttf");
+        toolbarTitle = (TextView) toolbar.findViewById(R.id.toolbarTitle);
+        toolbarTitle.setTypeface(typeFace);
 
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, new ConfiguracaoFragment()).commit();
 

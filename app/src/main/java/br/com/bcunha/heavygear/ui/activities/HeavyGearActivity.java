@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -26,6 +27,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -66,7 +68,10 @@ public class HeavyGearActivity extends AppCompatActivity {
 
     private final SimpleDateFormat formatDate = new SimpleDateFormat("dd/mm/yyyy HH:mm:ss");
     private HeavyGearAssetsHelper heavyGearAssetsHelper;
+    private Typeface typeFace;
     private Toolbar toolbar;
+    private TextView appNome;
+    private TextView toolbarTitle;
     private DrawerLayout drawerLayout;
     private TextView ultimaSincronizacao;
     private RecyclerView recyclerView;
@@ -115,12 +120,16 @@ public class HeavyGearActivity extends AppCompatActivity {
         toolbar.setNavigationIcon(R.drawable.ic_menu_black_36dp);
 
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 drawerLayout.openDrawer(1);
             }
         });
+        typeFace = Typeface.createFromAsset(getAssets(),"fonts/Arizonia-Regular.ttf");
+        toolbarTitle = (TextView) toolbar.findViewById(R.id.toolbarTitle);
+        toolbarTitle.setTypeface(typeFace);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
@@ -273,6 +282,8 @@ public class HeavyGearActivity extends AppCompatActivity {
             }
         });
         View header = navigationView.getHeaderView(0);
+        appNome = (TextView) header.findViewById(R.id.app_nome);
+        appNome.setTypeface(typeFace);
         ultimaSincronizacao = (TextView) header.findViewById(R.id.ultima_sincronizacao_datahora);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
 
