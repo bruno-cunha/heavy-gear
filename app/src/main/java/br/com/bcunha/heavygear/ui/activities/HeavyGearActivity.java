@@ -100,7 +100,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (ACTION_HEAVYSERVICE.equals(intent.getAction())) {
-                heavyGearRecycleViewAdapter.update((ArrayList) intent.getParcelableArrayListExtra("watchList"), true);
+                heavyGearRecycleViewAdapter.update((ArrayList) intent.getParcelableArrayListExtra("watchList"));
                 atualizaUltimaSincronizacao();
             }
         }
@@ -208,7 +208,7 @@ public class HeavyGearActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == REQUEST_PESQUISA && resultCode == RESULT_OK){
-            heavyGearRecycleViewAdapter.update((ArrayList) data.getParcelableArrayListExtra("watchList"), false);
+            heavyGearRecycleViewAdapter.update((ArrayList) data.getParcelableArrayListExtra("watchList"));
             heavyGearServiceBound.atualizaWatchList(heavyGearRecycleViewAdapter.watchList);
             atualizaOrdemExibicao();
         } else if (requestCode == REQUEST_CONFIGURACAO && resultCode == RESULT_OK) {
@@ -314,9 +314,9 @@ public class HeavyGearActivity extends AppCompatActivity {
         Boolean oldTodasAcoesInicio = prefTodasAcoesInicio;
         initPrefs();
         if (prefTodasAcoesInicio){
-            heavyGearRecycleViewAdapter.update(heavyGearAssetsHelper.getAcoes(), false);
+            heavyGearRecycleViewAdapter.update(heavyGearAssetsHelper.getAcoes());
         } else if (prefTodasAcoesInicio != oldTodasAcoesInicio) {
-            heavyGearRecycleViewAdapter.update(heavyGearAssetsHelper.pesquisaAcao("PETR3"), false);
+            heavyGearRecycleViewAdapter.update(heavyGearAssetsHelper.pesquisaAcao("PETR3"));
         }
         heavyGearRecycleViewAdapter.updateExibeVariacao(sharedPreferences.getBoolean(ConfiguracaoActivity.PREF_EXIBE_VARIACAO, false));
         if (isBound) {

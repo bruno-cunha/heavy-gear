@@ -192,7 +192,7 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
         notifyItemRemoved(position);
     }
 
-    public void update(final List<Acao> novasAcoes, Boolean carregaExtras) {
+    public void update(final List<Acao> novasAcoes) {
         final AcaoDiffCallBack diffCallback = new AcaoDiffCallBack(novasAcoes, watchList);
         final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
 
