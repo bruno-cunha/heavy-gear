@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.pojo.Acao;
@@ -102,7 +103,7 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
     private Context context;
     public boolean prefExibeVaricao;
     public List<Acao> watchList;
-    public Animation animation;
+    private Animation animation;
 
     public HeavyGearRecycleViewAdapter(Context context, List<Acao> watchList) {
         this.context = context;
@@ -192,14 +193,26 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
         notifyItemRemoved(position);
     }
 
-    public void update(final List<Acao> novasAcoes) {
-        final AcaoDiffCallBack diffCallback = new AcaoDiffCallBack(novasAcoes, watchList);
-        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
+    public void update(List<Acao> novasAcoes) {
+        if (novasAcoes.size() != watchList.size()){
+            return;
+        }
 
+        List<Acao> oldAcoes = new ArrayList<Acao>();
+        oldAcoes.addAll(watchList);
         watchList.clear();
-        watchList.addAll(diffCallback.newAcoes);
-        diffResult.dispatchUpdatesTo(this);
+        watchList.addAll(novasAcoes);
+        for(int contador = 0; contador < novasAcoes.size(); contador++) {
+            if (novasAcoes.get(contador).getCotacao() != oldAcoes.get(contador).getCotacao()) {
+                notifyItemChanged(contador);
+            }
+        }
+    }
 
+    public void updateAll(List<Acao> novasAcoes){
+        watchList.clear();
+        watchList.addAll(novasAcoes);
+        notifyDataSetChanged();
     }
 
     public void updateExibeVariacao(Boolean prefExibeVaricao) {

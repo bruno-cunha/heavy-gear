@@ -70,7 +70,7 @@ public class PesquisaActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 Intent intent = new Intent();
-                intent.putParcelableArrayListExtra("watchList", (ArrayList) pesquisaRecycleViewAdapter.watchList);
+                intent.putParcelableArrayListExtra("watchListService", (ArrayList) pesquisaRecycleViewAdapter.watchList);
                 setResult(RESULT_OK, intent);
                 finish();
                 return false;
@@ -140,13 +140,13 @@ public class PesquisaActivity extends AppCompatActivity {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             pesqQuery = intent.getStringExtra(SearchManager.QUERY);
             resultados = heavyGearAssetsHelper.pesquisaAcao(pesqQuery);
-            watchList = intent.getParcelableArrayListExtra("watchList");
+            watchList = intent.getParcelableArrayListExtra("watchListService");
         } else {
             if (todasAcoesPesquisa) {
                 resultados = heavyGearAssetsHelper.getAcoes();
             }
-            if (intent.hasExtra("watchList")) {
-                watchList = intent.getParcelableArrayListExtra("watchList");
+            if (intent.hasExtra("watchListService")) {
+                watchList = intent.getParcelableArrayListExtra("watchListService");
             }
         }
 

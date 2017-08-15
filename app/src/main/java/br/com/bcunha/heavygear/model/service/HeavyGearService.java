@@ -35,14 +35,14 @@ public class HeavyGearService extends Service {
 
     public Worker worker;
     public Handler handler = new Handler();
-    public List<Acao> watchList;
+    public List<Acao> watchListService;
 
     @Override
     public IBinder onBind(Intent intent) {
         Log.i(LOG_TAG, "onBind");
 
-        // Buscar watchList  do intent
-        watchList = (ArrayList) intent.getParcelableArrayListExtra("watchList");
+        // Buscar watchListService  do intent
+        watchListService = (ArrayList) intent.getParcelableArrayListExtra("watchListService");
 
         executar();
         ativo = true;
@@ -56,8 +56,8 @@ public class HeavyGearService extends Service {
             handler.postDelayed(worker, frequenciaAtualizacao);
         }
 
-        // Buscar watchList  do intent
-        watchList = new ArrayList<Acao>();
+        // Buscar watchListService  do intent
+        watchListService = new ArrayList<Acao>();
 
         Log.i(LOG_TAG, "onStartCommand");
         //return(START_STICKY);
@@ -106,9 +106,9 @@ public class HeavyGearService extends Service {
             if (!ativo) {
                 return;
             }
-            if(watchList.size() >= 1) {
+            if(watchListService.size() >= 1) {
                 apiClient.getQuotes(
-                ApiClient.QUERY_QUOTE.replace("?codigo?", ApiClient.formatCodigo(watchList)),
+                ApiClient.QUERY_QUOTE.replace("?codigo?", ApiClient.formatCodigo(watchListService)),
                 ApiClient.ENV,
                 ApiClient.FORMAT)
                 .enqueue(new Callback<RespostaQuote>() {
@@ -116,22 +116,22 @@ public class HeavyGearService extends Service {
                     public void onResponse(Call<RespostaQuote> call,
                                            Response<RespostaQuote> response) {
                         for (Quote quote : response.body().getQuery().getResults().getQuote()) {
-                            int index = watchList.indexOf(new Acao(String.valueOf(quote.getsymbol().toCharArray(),
+                            int index = watchListService.indexOf(new Acao(String.valueOf(quote.getsymbol().toCharArray(),
                                                                    0,
                                                                    quote.getsymbol().length() - 3)));
                             if (index >= 0) {
-                                watchList.get(index).setVariacao(quote.getChange() != null ? Double.parseDouble(quote.getChange()) : 0);
-                                watchList.get(index).setCotacao(quote.getLastTradePriceOnly() != null ? Double.parseDouble(quote.getLastTradePriceOnly()) : 0.00);
-                                watchList.get(index).setMaximaDia(quote.getDaysHigh() != null ? Double.parseDouble(quote.getDaysHigh()) : 0.00);
-                                watchList.get(index).setMaximaAno(quote.getYearHigh() != null ? Double.parseDouble(quote.getYearHigh()) : 0.00);
-                                watchList.get(index).setMinimaDia(quote.getDaysLow() != null ? Double.parseDouble(quote.getDaysLow()) : 0.00);
-                                watchList.get(index).setMinimaAno(quote.getYearLow() != null ? Double.parseDouble(quote.getYearLow()) : 0.00);
-                                watchList.get(index).setVolumeNegociacao(quote.getVolume() != null ? Integer.parseInt(quote.getVolume()) : 0);
+                                watchListService.get(index).setVariacao(quote.getChange() != null ? Double.parseDouble(quote.getChange()) : 0);
+                                watchListService.get(index).setCotacao(quote.getLastTradePriceOnly() != null ? Double.parseDouble(quote.getLastTradePriceOnly()) : 0.00);
+                                watchListService.get(index).setMaximaDia(quote.getDaysHigh() != null ? Double.parseDouble(quote.getDaysHigh()) : 0.00);
+                                watchListService.get(index).setMaximaAno(quote.getYearHigh() != null ? Double.parseDouble(quote.getYearHigh()) : 0.00);
+                                watchListService.get(index).setMinimaDia(quote.getDaysLow() != null ? Double.parseDouble(quote.getDaysLow()) : 0.00);
+                                watchListService.get(index).setMinimaAno(quote.getYearLow() != null ? Double.parseDouble(quote.getYearLow()) : 0.00);
+                                watchListService.get(index).setVolumeNegociacao(quote.getVolume() != null ? Integer.parseInt(quote.getVolume()) : 0);
                             }
                         }
 
                         Intent intent = new Intent(ACTION_HEAVYSERVICE);
-                        intent.putParcelableArrayListExtra("watchList", (ArrayList) watchList);
+                        intent.putParcelableArrayListExtra("watchListService", (ArrayList) watchListService);
 
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                     }
@@ -156,12 +156,12 @@ public class HeavyGearService extends Service {
     }
 
     public void removeItem(int index) {
-        watchList.remove(index);
+        watchListService.remove(index);
         executar();
     }
 
     public void atualizaWatchList(List<Acao> acoes){
-        this.watchList = acoes;
+        this.watchListService = acoes;
         executar();
     }
 

@@ -27,7 +27,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -100,7 +99,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (ACTION_HEAVYSERVICE.equals(intent.getAction())) {
-                heavyGearRecycleViewAdapter.update((ArrayList) intent.getParcelableArrayListExtra("watchList"));
+                heavyGearRecycleViewAdapter.update((ArrayList) intent.getParcelableArrayListExtra("watchListService"));
                 atualizaUltimaSincronizacao();
             }
         }
@@ -149,7 +148,7 @@ public class HeavyGearActivity extends AppCompatActivity {
 
         if(id == R.id.search){
             Intent intent = new Intent(this, PesquisaActivity.class);
-            intent.putParcelableArrayListExtra("watchList", (ArrayList) heavyGearRecycleViewAdapter.watchList);
+            intent.putParcelableArrayListExtra("watchListService", (ArrayList) heavyGearRecycleViewAdapter.watchList);
             startActivityForResult(intent, REQUEST_PESQUISA);
         } else if (id == R.id.ordem) {
             DialogFragment dialogFragment = new OrdemDialogFragment();
@@ -165,7 +164,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         // Bind Serviço
         if(!isBound) {
             Intent intent = new Intent(this, HeavyGearService.class);
-            intent.putParcelableArrayListExtra("watchList", (ArrayList) heavyGearRecycleViewAdapter.watchList);
+            intent.putParcelableArrayListExtra("watchListService", (ArrayList) heavyGearRecycleViewAdapter.watchList);
             bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
         }
     }
@@ -189,7 +188,7 @@ public class HeavyGearActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        // Salva watchList
+        // Salva watchListService
         salvaWatchList();
 
         // UnBind Serviço
@@ -208,7 +207,7 @@ public class HeavyGearActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == REQUEST_PESQUISA && resultCode == RESULT_OK){
-            heavyGearRecycleViewAdapter.update((ArrayList) data.getParcelableArrayListExtra("watchList"));
+            heavyGearRecycleViewAdapter.updateAll((ArrayList) data.getParcelableArrayListExtra("watchListService"));
             heavyGearServiceBound.atualizaWatchList(heavyGearRecycleViewAdapter.watchList);
             atualizaOrdemExibicao();
         } else if (requestCode == REQUEST_CONFIGURACAO && resultCode == RESULT_OK) {
@@ -217,11 +216,11 @@ public class HeavyGearActivity extends AppCompatActivity {
     }
 
     private void iniciaRecycleView() {
-        // Carrega watchList
+        // Carrega watchListService
         List<Acao> watchList = new ArrayList<Acao>();
         initPrefs();
 
-        String json = sharedPreferences.getString("watchList", "");
+        String json = sharedPreferences.getString("watchListService", "");
         if (!json.isEmpty()) {
             Type type = new TypeToken<List<Acao>>(){}.getType();
             watchList = new Gson().fromJson(json, type);
@@ -231,7 +230,7 @@ public class HeavyGearActivity extends AppCompatActivity {
 
         // RecyclerView
         layoutManager = new LinearLayoutManager(this);
-        heavyGearRecycleViewAdapter = new HeavyGearRecycleViewAdapter(getApplicationContext(), watchList);
+        heavyGearRecycleViewAdapter = new HeavyGearRecycleViewAdapter(this, watchList);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(heavyGearRecycleViewAdapter);
@@ -314,9 +313,9 @@ public class HeavyGearActivity extends AppCompatActivity {
         Boolean oldTodasAcoesInicio = prefTodasAcoesInicio;
         initPrefs();
         if (prefTodasAcoesInicio){
-            heavyGearRecycleViewAdapter.update(heavyGearAssetsHelper.getAcoes());
+            heavyGearRecycleViewAdapter.updateAll(heavyGearAssetsHelper.getAcoes());
         } else if (prefTodasAcoesInicio != oldTodasAcoesInicio) {
-            heavyGearRecycleViewAdapter.update(heavyGearAssetsHelper.pesquisaAcao("PETR3"));
+            heavyGearRecycleViewAdapter.updateAll(heavyGearAssetsHelper.pesquisaAcao("PETR3"));
         }
         heavyGearRecycleViewAdapter.updateExibeVariacao(sharedPreferences.getBoolean(ConfiguracaoActivity.PREF_EXIBE_VARIACAO, false));
         if (isBound) {
@@ -336,10 +335,10 @@ public class HeavyGearActivity extends AppCompatActivity {
     private void salvaWatchList() {
         SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
         if (heavyGearRecycleViewAdapter.watchList.size() == 0){
-            preferencesEditor.putString("watchList", "");
+            preferencesEditor.putString("watchListService", "");
         } else {
             String json = new Gson().toJson(heavyGearRecycleViewAdapter.watchList);
-            preferencesEditor.putString("watchList", json);
+            preferencesEditor.putString("watchListService", json);
         }
         preferencesEditor.commit();
     }
@@ -364,11 +363,11 @@ public class HeavyGearActivity extends AppCompatActivity {
 
     public void atualizaOrdemExibicao() {
         if (prefIdOrdem == 0) {
-            Collections.sort(heavyGearServiceBound.watchList, new OrdemAlta());
+            Collections.sort(heavyGearServiceBound.watchListService, new OrdemAlta());
         } else if (prefIdOrdem == 1) {
-            Collections.sort(heavyGearServiceBound.watchList, new OrdemBaixa());
+            Collections.sort(heavyGearServiceBound.watchListService, new OrdemBaixa());
         } else if (prefIdOrdem == 2) {
-            Collections.sort(heavyGearServiceBound.watchList, new OrdemAlfabetica());
+            Collections.sort(heavyGearServiceBound.watchListService, new OrdemAlfabetica());
         }
         heavyGearServiceBound.executar();
         salvaOrdem();
