@@ -8,9 +8,8 @@ android {
         applicationId "br.com.bcunha.heavygear"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        versionCode 2
     }
     buildTypes {
         release {
@@ -22,6 +21,8 @@ android {
         main {
             assets.srcDirs = ['src/main/assets', 'src/main/assets/databases', 'src/main/assets/fonts']
         }
+    }
+    productFlavors {
     }
 }
 

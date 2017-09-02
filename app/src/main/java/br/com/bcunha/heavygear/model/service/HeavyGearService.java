@@ -115,6 +115,10 @@ public class HeavyGearService extends Service {
                     @Override
                     public void onResponse(Call<RespostaQuote> call,
                                            Response<RespostaQuote> response) {
+                        if (response.body() == null) {
+                            handler.post(worker);
+                            return;
+                        }
                         for (Quote quote : response.body().getQuery().getResults().getQuote()) {
                             int index = watchListService.indexOf(new Acao(String.valueOf(quote.getsymbol().toCharArray(),
                                                                    0,
