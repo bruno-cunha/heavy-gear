@@ -12,6 +12,9 @@ Funcionalidades:
 
 ![alt text](https://github.com/bruno-cunha/heavy-gear/blob/master/app/src/main/assets/2.jpg)
 
+<a href="https://play.google.com/store/apps/details?id=br.com.bcunha.heavygear" target="_blank">
+<img src="https://play.google.com/intl/en_us/badges/images/generic/pt-br_badge_web_generic.png" alt="Disponível no Google Play" height="90"/></a>
+
 # License
 Copyright 2017 Heavy Gear
 
