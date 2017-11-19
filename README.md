@@ -1,5 +1,19 @@
 # Heavy Gear
-App Android para monitorar cotação de ações.
+Aplicativo para acompanhar a cotação do dia das ações na Bovespa.
+Dispõe de imagem das empresas com informações do desempenho durante o dia e ano.
+É possível ordenar por maiores altas ou baixas e encontrar os papeis que tiveram melhor performance durante o dia.
+
+Funcionalidades:
+- Pesquisa ações presentes na bolsa.
+- Visualize a cotação do dia.
+- Visualize a cotação máxima do dia e do ano.
+- Visualize a cotação mínima do dia e do ano. 
+- Encontre as ações com maiores altas ou baixas.
+
+![alt text](https://github.com/bruno-cunha/heavy-gear/blob/master/app/src/main/assets/2.jpg)
+
+<a href="https://play.google.com/store/apps/details?id=br.com.bcunha.heavygear" target="_blank">
+<img src="https://play.google.com/intl/en_us/badges/images/generic/pt-br_badge_web_generic.png" alt="Disponível no Google Play" height="90"/></a>
 
 # License
 Copyright 2017 Heavy Gear
