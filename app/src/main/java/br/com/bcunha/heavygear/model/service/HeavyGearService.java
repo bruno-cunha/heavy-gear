@@ -11,14 +11,22 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.JsonElement;
+
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import br.com.bcunha.heavygear.model.api.ApiClient;
 import br.com.bcunha.heavygear.model.api.BuscaCotacaoInterface;
+import br.com.bcunha.heavygear.model.api.alphavantage.ApiAlphaVantage;
+import br.com.bcunha.heavygear.model.api.alphavantage.ApiAlphaVantageKey;
+import br.com.bcunha.heavygear.model.api.alphavantage.BuscaStockInterface;
 import br.com.bcunha.heavygear.model.pojo.Acao;
 import br.com.bcunha.heavygear.model.pojo.Quote;
 import br.com.bcunha.heavygear.model.pojo.RespostaQuote;
+import br.com.bcunha.heavygear.model.pojo.alphavantage.RespostaStock;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,7 +39,7 @@ public class HeavyGearService extends Service {
 
     private boolean ativo = false;
     private IBinder mBinder = new HeavyBinder();
-    private BuscaCotacaoInterface apiClient;
+    private BuscaStockInterface apiAlphaVantageClient;
 
     public Worker worker;
     public Handler handler = new Handler();
@@ -68,7 +76,7 @@ public class HeavyGearService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        apiClient = ApiClient.getRetrofit().create(BuscaCotacaoInterface.class);
+        apiAlphaVantageClient = ApiAlphaVantage.getRetrofit().create(BuscaStockInterface.class);
         worker = new Worker(this);
         atualizaTimer();
 
@@ -107,47 +115,47 @@ public class HeavyGearService extends Service {
                 return;
             }
             if(watchListService.size() >= 1) {
-                apiClient.getQuotes(
-                ApiClient.QUERY_QUOTE.replace("?codigo?", ApiClient.formatCodigo(watchListService)),
-                ApiClient.ENV,
-                ApiClient.FORMAT)
-                .enqueue(new Callback<RespostaQuote>() {
-                    @Override
-                    public void onResponse(Call<RespostaQuote> call,
-                                           Response<RespostaQuote> response) {
-                        if (response.body() == null) {
-                            handler.post(worker);
-                            return;
-                        }
-                        for (Quote quote : response.body().getQuery().getResults().getQuote()) {
-                            int index = watchListService.indexOf(new Acao(String.valueOf(quote.getsymbol().toCharArray(),
-                                                                   0,
-                                                                   quote.getsymbol().length() - 3)));
+                for (final Acao acao : watchListService) {
+                    apiAlphaVantageClient.getStock(ApiAlphaVantage.FUNCTION,
+                    acao.getCodigo() + ".SA",
+                    ApiAlphaVantage.INTERVAL,
+                    ApiAlphaVantageKey.ApiKey)
+                    .enqueue(new Callback<RespostaStock>() {
+                        @Override
+                        public void onResponse(Call<RespostaStock> call, Response<RespostaStock> response) {
+                            if (response.body() == null) {
+                                handler.post(worker);
+                                return;
+                            }
+
+                            int index = watchListService.indexOf(acao);
+
                             if (index >= 0) {
-                                watchListService.get(index).setVariacao(quote.getChange() != null ? Double.parseDouble(quote.getChange()) : 0);
-                                watchListService.get(index).setCotacao(quote.getLastTradePriceOnly() != null ? Double.parseDouble(quote.getLastTradePriceOnly()) : 0.00);
-                                watchListService.get(index).setMaximaDia(quote.getDaysHigh() != null ? Double.parseDouble(quote.getDaysHigh()) : 0.00);
-                                watchListService.get(index).setMaximaAno(quote.getYearHigh() != null ? Double.parseDouble(quote.getYearHigh()) : 0.00);
-                                watchListService.get(index).setMinimaDia(quote.getDaysLow() != null ? Double.parseDouble(quote.getDaysLow()) : 0.00);
-                                watchListService.get(index).setMinimaAno(quote.getYearLow() != null ? Double.parseDouble(quote.getYearLow()) : 0.00);
-                                watchListService.get(index).setVolumeNegociacao(quote.getVolume() != null ? Integer.parseInt(quote.getVolume()) : 0);
+                                Double cotacao = parseDouble(response.body().getTimeSeries1min().getLastRefreshed().get4Close());
+
+                                watchListService.get(index).setVariacao(calculaVariacao(watchListService.get(index).getCotacao(), cotacao));
+                                watchListService.get(index).setCotacao(cotacao);
+                                watchListService.get(index).setMaximaDia(0.00);
+                                watchListService.get(index).setMaximaAno(0.00);
+                                watchListService.get(index).setMinimaDia(0.00);
+                                watchListService.get(index).setMinimaAno(0.00);
+                                watchListService.get(index).setVolumeNegociacao(parseInteger(response.body().getTimeSeries1min().getLastRefreshed().get5Volume()));
+
+                                Intent intent = new Intent(ACTION_HEAVYSERVICE);
+                                intent.putExtra("acao", watchListService.get(index));
+                                intent.putExtra("index", index);
+                                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                             }
                         }
 
-                        Intent intent = new Intent(ACTION_HEAVYSERVICE);
-                        intent.putParcelableArrayListExtra("watchListService", (ArrayList) watchListService);
-
-                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                    }
-
-                    @Override
-                    public void onFailure(Call<RespostaQuote> call, Throwable t) {
-                        Toast.makeText(getApplicationContext(), "Serviço Sem Resposta", Toast.LENGTH_LONG).show();
-                    }
-                });
-
-                Log.i(LOG_TAG, "Consulta Executada");
+                        @Override
+                        public void onFailure(Call<RespostaStock> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(), "Serviço Sem Resposta", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
             }
+            Log.i(LOG_TAG, "Consulta Executada");
 
             handler.postDelayed(this, frequenciaAtualizacao);
         }
@@ -167,6 +175,21 @@ public class HeavyGearService extends Service {
     public void atualizaWatchList(List<Acao> acoes){
         this.watchListService = acoes;
         executar();
+    }
+
+    public Double parseDouble(String valor){
+        return valor != null ? Double.parseDouble(valor) : 0.00;
+    }
+
+    public Integer parseInteger(String valor){
+        return valor != null ? Integer.parseInt(valor) : 0;
+    }
+
+    public Double calculaVariacao(Double cotacaoAntiga, Double novaCotacao){
+        if (cotacaoAntiga == 0) {
+            return 0.00;
+        }
+        return (novaCotacao - cotacaoAntiga) * cotacaoAntiga / 100;
     }
 
     public class HeavyBinder extends Binder {

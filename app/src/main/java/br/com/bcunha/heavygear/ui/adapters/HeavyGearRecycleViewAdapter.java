@@ -215,6 +215,13 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
         notifyDataSetChanged();
     }
 
+    public void updateItem(Acao acao, Integer index){
+        if(acao != null) {
+            watchList.set(index, acao);
+            notifyItemChanged(index);
+        }
+    }
+
     public void updateExibeVariacao(Boolean prefExibeVaricao) {
         this.prefExibeVaricao = prefExibeVaricao;
         notifyDataSetChanged();

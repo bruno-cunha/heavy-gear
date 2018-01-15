@@ -25,6 +25,7 @@ public class Acao implements Parcelable {
     private boolean inWatch;
     private boolean isViewExpanded = false;
     private int originalHeight;
+    private int index;
 
     public Acao(String codigo){
         this.codigo = codigo;
@@ -183,6 +184,14 @@ public class Acao implements Parcelable {
         this.originalHeight = originalHeight;
     }
 
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
     public int getImgId(Context context) {
         int imgId = context.getResources().getIdentifier(getCodigo().replaceAll("\\d", "").toLowerCase(),
                                                          "drawable",
@@ -241,6 +250,7 @@ public class Acao implements Parcelable {
         parcel.writeInt(inWatch ? 1 : 0);
         parcel.writeInt(isViewExpanded ? 1 : 0);
         parcel.writeInt(originalHeight);
+        parcel.writeInt(index);
     }
 
     // Creator
@@ -254,7 +264,7 @@ public class Acao implements Parcelable {
         }
     };
 
-    // Objecto
+    // Objeto
     public Acao(Parcel in) {
         this.codigo = in.readString();
         this.empresa = in.readString();
@@ -269,5 +279,6 @@ public class Acao implements Parcelable {
         this.inWatch = (in.readInt() == 0) ? false : true;
         this.isViewExpanded = (in.readInt() == 0) ? false : true;
         this.originalHeight = in.readInt();
+        this.index = in.readInt();
     }
 }

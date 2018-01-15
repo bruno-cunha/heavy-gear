@@ -99,7 +99,9 @@ public class HeavyGearActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (ACTION_HEAVYSERVICE.equals(intent.getAction())) {
-                heavyGearRecycleViewAdapter.update((ArrayList) intent.getParcelableArrayListExtra("watchListService"));
+
+                heavyGearRecycleViewAdapter.updateItem((Acao) intent.getParcelableExtra("acao"),
+                                                       intent.getExtras().getInt("index"));
                 atualizaUltimaSincronizacao();
             }
         }
