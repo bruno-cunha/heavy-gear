@@ -17,6 +17,7 @@ public class Acao implements Parcelable {
     private String tipo;
     private double cotacao;
     private double variacao;
+    private double abertura;
     private double maximaDia;
     private double minimaDia;
     private double maximaAno;
@@ -119,6 +120,10 @@ public class Acao implements Parcelable {
     public void setVariacao(double variacao) {
         this.variacao = variacao;
     }
+
+    public double getAbertura() { return abertura; }
+
+    public void setAbertura(double abertura) { this.abertura = abertura; }
 
     public double getMaximaDia() {
         return maximaDia;

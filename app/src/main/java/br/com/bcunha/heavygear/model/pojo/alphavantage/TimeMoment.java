@@ -4,7 +4,7 @@ package br.com.bcunha.heavygear.model.pojo.alphavantage;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class LastRefreshed {
+public class TimeMoment {
 
     @SerializedName("1. open")
     @Expose

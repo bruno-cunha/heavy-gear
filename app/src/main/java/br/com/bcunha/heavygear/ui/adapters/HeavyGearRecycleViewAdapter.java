@@ -3,7 +3,6 @@ package br.com.bcunha.heavygear.ui.adapters;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.preference.PreferenceManager;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,13 +15,14 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
-import java.util.Random;
+import java.util.Locale;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.pojo.Acao;
-import br.com.bcunha.heavygear.model.pojo.AcaoDiffCallBack;
 import br.com.bcunha.heavygear.model.pojo.Quote;
 import br.com.bcunha.heavygear.ui.activities.ConfiguracaoActivity;
 
@@ -42,8 +42,8 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
         final TextView variacao;
         final TextView minimaDia;
         final TextView maximaDia;
-        final TextView minimaAno;
-        final TextView maximaAno;
+        final TextView abertura;
+        final TextView volume;
         Acao acao;
         private RelativeLayout relativeSecundario;
 
@@ -59,8 +59,8 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
             relativeSecundario = (RelativeLayout) view.findViewById(R.id.relativeSecundario);
             minimaDia = (TextView) view.findViewById(R.id.minimaDia);
             maximaDia = (TextView) view.findViewById(R.id.maximaDia);
-            minimaAno = (TextView) view.findViewById(R.id.minimaAno);
-            maximaAno = (TextView) view.findViewById(R.id.maximaAno);
+            abertura = (TextView) view.findViewById(R.id.abertura);
+            volume = (TextView) view.findViewById(R.id.volume);
 
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -149,8 +149,8 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
         heavyGearRecycleViewHolder.variacao.setTextColor(heavyGearRecycleViewHolder.acao.getCor(context));
         heavyGearRecycleViewHolder.minimaDia.setText(String.format("%.2f", heavyGearRecycleViewHolder.acao.getMinimaDia()));
         heavyGearRecycleViewHolder.maximaDia.setText(String.format("%.2f", heavyGearRecycleViewHolder.acao.getMaximaDia()));
-        heavyGearRecycleViewHolder.minimaAno.setText(String.format("%.2f", heavyGearRecycleViewHolder.acao.getMinimaAno()));
-        heavyGearRecycleViewHolder.maximaAno.setText(String.format("%.2f", heavyGearRecycleViewHolder.acao.getMaximaAno()));
+        heavyGearRecycleViewHolder.abertura.setText(String.format("%.2f", heavyGearRecycleViewHolder.acao.getAbertura()));
+        heavyGearRecycleViewHolder.volume.setText(String.format("%d", heavyGearRecycleViewHolder.acao.getVolumeNegociacao()));
 
         if (prefExibeVaricao) {
             heavyGearRecycleViewHolder.variacao.setVisibility(View.VISIBLE);

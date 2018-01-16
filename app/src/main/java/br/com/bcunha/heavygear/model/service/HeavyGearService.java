@@ -11,22 +11,14 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.gson.JsonElement;
-
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.bcunha.heavygear.model.api.ApiClient;
-import br.com.bcunha.heavygear.model.api.BuscaCotacaoInterface;
 import br.com.bcunha.heavygear.model.api.alphavantage.ApiAlphaVantage;
 import br.com.bcunha.heavygear.model.api.alphavantage.ApiAlphaVantageKey;
-import br.com.bcunha.heavygear.model.api.alphavantage.BuscaStockInterface;
+import br.com.bcunha.heavygear.model.api.alphavantage.BuscaAcaoInterface;
 import br.com.bcunha.heavygear.model.pojo.Acao;
-import br.com.bcunha.heavygear.model.pojo.Quote;
-import br.com.bcunha.heavygear.model.pojo.RespostaQuote;
-import br.com.bcunha.heavygear.model.pojo.alphavantage.RespostaStock;
+import br.com.bcunha.heavygear.model.pojo.alphavantage.RespostaAcao;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -39,7 +31,7 @@ public class HeavyGearService extends Service {
 
     private boolean ativo = false;
     private IBinder mBinder = new HeavyBinder();
-    private BuscaStockInterface apiAlphaVantageClient;
+    private BuscaAcaoInterface apiAlphaVantageClient;
 
     public Worker worker;
     public Handler handler = new Handler();
@@ -76,7 +68,7 @@ public class HeavyGearService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        apiAlphaVantageClient = ApiAlphaVantage.getRetrofit().create(BuscaStockInterface.class);
+        apiAlphaVantageClient = ApiAlphaVantage.getRetrofit().create(BuscaAcaoInterface.class);
         worker = new Worker(this);
         atualizaTimer();
 
@@ -116,30 +108,28 @@ public class HeavyGearService extends Service {
             }
             if(watchListService.size() >= 1) {
                 for (final Acao acao : watchListService) {
-                    apiAlphaVantageClient.getStock(ApiAlphaVantage.FUNCTION,
+                    final int index = watchListService.indexOf(acao);
+
+                    apiAlphaVantageClient.getStock(ApiAlphaVantage.TIME_SERIES_DAILY,
                     acao.getCodigo() + ".SA",
                     ApiAlphaVantage.INTERVAL,
                     ApiAlphaVantageKey.ApiKey)
-                    .enqueue(new Callback<RespostaStock>() {
+                    .enqueue(new Callback<RespostaAcao>() {
                         @Override
-                        public void onResponse(Call<RespostaStock> call, Response<RespostaStock> response) {
+                        public void onResponse(Call<RespostaAcao> call, Response<RespostaAcao> response) {
                             if (response.body() == null) {
                                 handler.post(worker);
                                 return;
                             }
 
-                            int index = watchListService.indexOf(acao);
-
                             if (index >= 0) {
-                                Double cotacao = parseDouble(response.body().getTimeSeries1min().getLastRefreshed().get4Close());
-
-                                watchListService.get(index).setVariacao(calculaVariacao(watchListService.get(index).getCotacao(), cotacao));
+                                Double cotacao = parseDouble(response.body().getTimeSeries().getTimeMoment().get4Close());
+                                watchListService.get(index).setVariacao(calculaVariacao(parseDouble(response.body().getTimeSeries().getTimeMoment().get1Open()), cotacao));
                                 watchListService.get(index).setCotacao(cotacao);
-                                watchListService.get(index).setMaximaDia(0.00);
-                                watchListService.get(index).setMaximaAno(0.00);
-                                watchListService.get(index).setMinimaDia(0.00);
-                                watchListService.get(index).setMinimaAno(0.00);
-                                watchListService.get(index).setVolumeNegociacao(parseInteger(response.body().getTimeSeries1min().getLastRefreshed().get5Volume()));
+                                watchListService.get(index).setMinimaDia(parseDouble(response.body().getTimeSeries().getTimeMoment().get3Low()));
+                                watchListService.get(index).setMaximaDia(parseDouble(response.body().getTimeSeries().getTimeMoment().get2High()));
+                                watchListService.get(index).setAbertura(parseDouble(response.body().getTimeSeries().getTimeMoment().get1Open()));
+                                watchListService.get(index).setVolumeNegociacao(parseInteger(response.body().getTimeSeries().getTimeMoment().get5Volume()));
 
                                 Intent intent = new Intent(ACTION_HEAVYSERVICE);
                                 intent.putExtra("acao", watchListService.get(index));
@@ -149,12 +139,13 @@ public class HeavyGearService extends Service {
                         }
 
                         @Override
-                        public void onFailure(Call<RespostaStock> call, Throwable t) {
+                        public void onFailure(Call<RespostaAcao> call, Throwable t) {
                             Toast.makeText(getApplicationContext(), "Serviço Sem Resposta", Toast.LENGTH_LONG).show();
                         }
                     });
                 }
             }
+
             Log.i(LOG_TAG, "Consulta Executada");
 
             handler.postDelayed(this, frequenciaAtualizacao);
@@ -189,7 +180,7 @@ public class HeavyGearService extends Service {
         if (cotacaoAntiga == 0) {
             return 0.00;
         }
-        return (novaCotacao - cotacaoAntiga) * cotacaoAntiga / 100;
+        return novaCotacao - cotacaoAntiga;
     }
 
     public class HeavyBinder extends Binder {

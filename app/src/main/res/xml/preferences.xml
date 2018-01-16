@@ -3,7 +3,7 @@
     <CheckBoxPreference
         android:key="pref_todas_acoes_inicio"
         android:title="Carregar todas ações na tela inicial"
-        android:defaultValue="true"/>
+        android:defaultValue="false"/>
     <CheckBoxPreference
         android:key="pref_todas_acoes_pesquisa"
         android:title="Carregar todas ações na pesquisa"
@@ -19,5 +19,5 @@
         android:dialogTitle="Seleciona intervalo de tempo"
         android:entries="@array/pref_frequencia_atualizacao_entries"
         android:entryValues="@array/pref_frequencia_atualizacao_values"
-        android:defaultValue="10000" />
+        android:defaultValue="30000"/>
 </PreferenceScreen>
