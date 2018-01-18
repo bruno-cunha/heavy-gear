@@ -4,21 +4,21 @@ package br.com.bcunha.heavygear.model.pojo.alphavantage;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class RespostaAcao {
+public class RespostaAcao{
 
     @SerializedName("Meta Data")
     @Expose
-    private MetaData metaData;
+    private MetaDataAcao metaDataAcao;
     @SerializedName("Time Series (Daily)")
     @Expose
     private TimeSeries timeSeries;
 
-    public MetaData getMetaData() {
-        return metaData;
+    public MetaDataAcao getMetaDataAcao() {
+        return metaDataAcao;
     }
 
-    public void setMetaData(MetaData metaData) {
-        this.metaData = metaData;
+    public void setMetaDataAcao(MetaDataAcao metaDataAcao) {
+        this.metaDataAcao = metaDataAcao;
     }
 
     public TimeSeries getTimeSeries() {

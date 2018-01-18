@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 
 import java.util.List;
 
-import br.com.bcunha.heavygear.model.pojo.Acao;
+import br.com.bcunha.heavygear.model.pojo.Ativo;
 import br.com.bcunha.heavygear.model.pojo.RespostaQuote;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -36,19 +36,19 @@ public class ApiClient {
         return retrofit;
     }
 
-    public static String formatCodigo(List<Acao> acoes) {
+    public static String formatCodigo(List<Ativo> acoes) {
         if (acoes.size() == 0) {
             return "\"\"";
         }
 
         StringBuffer codigos = new StringBuffer();
         boolean primeiro = true;
-        for (Acao acao : acoes) {
+        for (Ativo ativo : acoes) {
             if (primeiro) {
-                codigos.append("\"").append(acao.getCodigo().toString()).append(".SA").append("\"");
+                codigos.append("\"").append(ativo.getCodigo().toString()).append(".SA").append("\"");
                 primeiro = false;
             } else {
-                codigos.append(",").append("\"").append(acao.getCodigo().toString()).append(".SA").append("\"");
+                codigos.append(",").append("\"").append(ativo.getCodigo().toString()).append(".SA").append("\"");
             }
         }
         return codigos.toString();

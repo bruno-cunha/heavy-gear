@@ -2,10 +2,7 @@ package br.com.bcunha.heavygear.ui.adapters;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +14,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import br.com.bcunha.heavygear.R;
-import br.com.bcunha.heavygear.model.pojo.Acao;
+import br.com.bcunha.heavygear.model.pojo.Ativo;
 
 /**
  * Created by bruno on 17/11/16.
@@ -40,11 +37,11 @@ public class PesquisaRecycleViewAdapter extends RecyclerView.Adapter<PesquisaRec
         }
     }
 
-    public List<Acao> resultados;
+    public List<Ativo> resultados;
 
-    public List<Acao> watchList;
+    public List<Ativo> watchList;
 
-    public PesquisaRecycleViewAdapter(List<Acao> resultados, List<Acao> watchList) {
+    public PesquisaRecycleViewAdapter(List<Ativo> resultados, List<Ativo> watchList) {
         this.resultados = resultados;
         this.watchList = watchList;
         comparaResultadosEWatch();
@@ -106,11 +103,11 @@ public class PesquisaRecycleViewAdapter extends RecyclerView.Adapter<PesquisaRec
         return resultados.size();
     }
 
-    public void add(Acao acao) {}
+    public void add(Ativo ativo) {}
 
     public void remove(int position) {}
 
-    public void update(List<Acao> novasAcoes) {
+    public void update(List<Ativo> novasAcoes) {
         resultados.clear();
         resultados.addAll(novasAcoes);
         comparaResultadosEWatch();
@@ -125,10 +122,10 @@ public class PesquisaRecycleViewAdapter extends RecyclerView.Adapter<PesquisaRec
         }
     }
 
-    public void adicionaNoWatchLista(List<Acao> selecionados) {
-        for (Acao acao : selecionados) {
-            if (acao.isInWatch() && !watchList.contains(acao)) {
-                watchList.add(acao);
+    public void adicionaNoWatchLista(List<Ativo> selecionados) {
+        for (Ativo ativo : selecionados) {
+            if (ativo.isInWatch() && !watchList.contains(ativo)) {
+                watchList.add(ativo);
             }
         }
 

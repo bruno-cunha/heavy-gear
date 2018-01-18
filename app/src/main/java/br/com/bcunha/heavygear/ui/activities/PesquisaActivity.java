@@ -3,7 +3,6 @@ package br.com.bcunha.heavygear.ui.activities;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
@@ -21,14 +20,14 @@ import java.util.List;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.db.HeavyGearAssetsHelper;
-import br.com.bcunha.heavygear.model.pojo.Acao;
+import br.com.bcunha.heavygear.model.pojo.Ativo;
 import br.com.bcunha.heavygear.ui.adapters.PesquisaRecycleViewAdapter;
 
 import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 
 public class PesquisaActivity extends AppCompatActivity {
 
-    public static final String PREF_TODAS_ACOES_PESQUISA = "pref_todas_acoes_pesquisa";
+    public static final String PREF_TODOS_ATIVOS_PESQUISA = "pref_todos_ativos_pesquisa";
 
     private Toolbar toolbar;
     private RecyclerView recyclerView;
@@ -86,7 +85,7 @@ public class PesquisaActivity extends AppCompatActivity {
 //                if (!query.equals(query)) {
 //                    pesqQuery = query;
 //                    toolbar.setTitle(pesqQuery);
-//                    pesquisaRecycleViewAdapter.update(heavyGearAssetsHelper.pesquisaAcao(pesqQuery));
+//                    pesquisaRecycleViewAdapter.update(heavyGearAssetsHelper.pesquisaAtivo(pesqQuery));
 //                }
                 return false;
             }
@@ -96,7 +95,7 @@ public class PesquisaActivity extends AppCompatActivity {
                 if (!newText.equals(pesqQuery)) {
                     pesqQuery = newText;
                     toolbar.setTitle(pesqQuery);
-                    pesquisaRecycleViewAdapter.update(heavyGearAssetsHelper.pesquisaAcao(pesqQuery));
+                    pesquisaRecycleViewAdapter.update(heavyGearAssetsHelper.pesquisaAtivo(pesqQuery));
                 }
                 return false;
             }
@@ -131,19 +130,19 @@ public class PesquisaActivity extends AppCompatActivity {
 
     private void iniciaRecycleView() {
         todasAcoesPesquisa = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext())
-                                              .getBoolean(PREF_TODAS_ACOES_PESQUISA, false);
+                                              .getBoolean(PREF_TODOS_ATIVOS_PESQUISA, false);
 
-        List<Acao> resultados = new ArrayList<Acao>();
-        List<Acao> watchList = new ArrayList<Acao>();
+        List<Ativo> resultados = new ArrayList<Ativo>();
+        List<Ativo> watchList = new ArrayList<Ativo>();
 
         Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             pesqQuery = intent.getStringExtra(SearchManager.QUERY);
-            resultados = heavyGearAssetsHelper.pesquisaAcao(pesqQuery);
+            resultados = heavyGearAssetsHelper.pesquisaAtivo(pesqQuery);
             watchList = intent.getParcelableArrayListExtra("watchListService");
         } else {
             if (todasAcoesPesquisa) {
-                resultados = heavyGearAssetsHelper.getAcoes();
+                resultados = heavyGearAssetsHelper.getAtivos();
             }
             if (intent.hasExtra("watchListService")) {
                 watchList = intent.getParcelableArrayListExtra("watchListService");

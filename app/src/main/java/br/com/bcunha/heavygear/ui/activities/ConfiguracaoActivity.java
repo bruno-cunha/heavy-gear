@@ -16,7 +16,7 @@ import br.com.bcunha.heavygear.ui.fragment.ConfiguracaoFragment;
 
 public class ConfiguracaoActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    public static final String PREF_TODAS_ACOES_INICIO = "pref_todas_acoes_inicio";
+    //public static final String PREF_TODAS_ACOES_INICIO = "pref_todas_acoes_inicio";
     public static final String PREF_TODAS_ACOES_PESQUISA = "pref_todas_acoes_pesquisa";
     public static final String PREF_EXIBE_VARIACAO = "pref_exibe_variacao";
     public static final String PREF_FREQUENCIA_ATUALIZACAO = "pref_frequencia_atualizacao";

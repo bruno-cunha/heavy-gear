@@ -3,13 +3,23 @@ package br.com.bcunha.heavygear.model.pojo.alphavantage;
 
 public class TimeSeries {
 
-    private TimeMoment TimeMoment;
+    private TimeMomentAcao timeMomentAcao;
+    private TimeMomentMoeda timeMomentMoeda;
 
-    public TimeMoment getTimeMoment() {
-        return TimeMoment;
+    public TimeMomentAcao getTimeMomentAcao() {
+        return timeMomentAcao;
     }
 
-    public void setTimeMoment(TimeMoment timeMoment) {
-        TimeMoment = timeMoment;
+    public void setTimeMomentAcao(TimeMomentAcao timeMomentAcao) {
+        this.timeMomentAcao = timeMomentAcao;
     }
+
+    public TimeMomentMoeda getTimeMomentMoeda() {
+        return timeMomentMoeda;
+    }
+
+    public void setTimeMomentMoeda(TimeMomentMoeda timeMomentMoeda) {
+            this.timeMomentMoeda = timeMomentMoeda;
+    }
+
 }

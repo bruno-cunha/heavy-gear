@@ -43,7 +43,7 @@ import java.util.List;
 
 import br.com.bcunha.heavygear.R;
 import br.com.bcunha.heavygear.model.db.HeavyGearAssetsHelper;
-import br.com.bcunha.heavygear.model.pojo.Acao;
+import br.com.bcunha.heavygear.model.pojo.Ativo;
 import br.com.bcunha.heavygear.model.pojo.ordem.OrdemAlfabetica;
 import br.com.bcunha.heavygear.model.pojo.ordem.OrdemAlta;
 import br.com.bcunha.heavygear.model.pojo.ordem.OrdemBaixa;
@@ -100,7 +100,7 @@ public class HeavyGearActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if (ACTION_HEAVYSERVICE.equals(intent.getAction())) {
 
-                heavyGearRecycleViewAdapter.updateItem((Acao) intent.getParcelableExtra("acao"),
+                heavyGearRecycleViewAdapter.updateItem((Ativo) intent.getParcelableExtra("ativo"),
                                                        intent.getExtras().getInt("index"));
                 atualizaUltimaSincronizacao();
             }
@@ -219,15 +219,15 @@ public class HeavyGearActivity extends AppCompatActivity {
 
     private void iniciaRecycleView() {
         // Carrega watchListService
-        List<Acao> watchList = new ArrayList<Acao>();
+        List<Ativo> watchList = new ArrayList<Ativo>();
         initPrefs();
 
         String json = sharedPreferences.getString("watchListService", "");
         if (!json.isEmpty()) {
-            Type type = new TypeToken<List<Acao>>(){}.getType();
+            Type type = new TypeToken<List<Ativo>>(){}.getType();
             watchList = new Gson().fromJson(json, type);
         } else if (watchList.size() == 0) {
-            watchList.add(new Acao("PETR3", "Petrobras", "", 00.00, true));
+            watchList.add(new Ativo("PETR3", "Petrobras", "", 00.00, true));
         }
 
         // RecyclerView
@@ -306,7 +306,7 @@ public class HeavyGearActivity extends AppCompatActivity {
 
     public void initPrefs(){
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
-        prefTodasAcoesInicio = sharedPreferences.getBoolean(ConfiguracaoActivity.PREF_TODAS_ACOES_INICIO, false);
+        prefTodasAcoesInicio = false;//sharedPreferences.getBoolean(ConfiguracaoActivity.PREF_TODAS_ACOES_INICIO, false);
         prefExibeVaricao = sharedPreferences.getBoolean(ConfiguracaoActivity.PREF_EXIBE_VARIACAO, false);
         prefIdOrdem = sharedPreferences.getInt(ConfiguracaoActivity.PREF_ID_ORDEM, 2);
     }
@@ -315,9 +315,9 @@ public class HeavyGearActivity extends AppCompatActivity {
         Boolean oldTodasAcoesInicio = prefTodasAcoesInicio;
         initPrefs();
         if (prefTodasAcoesInicio){
-            heavyGearRecycleViewAdapter.updateAll(heavyGearAssetsHelper.getAcoes());
+            heavyGearRecycleViewAdapter.updateAll(heavyGearAssetsHelper.getAtivos());
         } else if (prefTodasAcoesInicio != oldTodasAcoesInicio) {
-            heavyGearRecycleViewAdapter.updateAll(heavyGearAssetsHelper.pesquisaAcao("PETR3"));
+            heavyGearRecycleViewAdapter.updateAll(heavyGearAssetsHelper.pesquisaAtivo("PETR3"));
         }
         heavyGearRecycleViewAdapter.updateExibeVariacao(sharedPreferences.getBoolean(ConfiguracaoActivity.PREF_EXIBE_VARIACAO, false));
         if (isBound) {

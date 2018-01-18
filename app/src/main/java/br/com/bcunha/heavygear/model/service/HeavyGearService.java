@@ -13,12 +13,14 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import br.com.bcunha.heavygear.model.api.alphavantage.ApiAlphaVantage;
 import br.com.bcunha.heavygear.model.api.alphavantage.ApiAlphaVantageKey;
-import br.com.bcunha.heavygear.model.api.alphavantage.BuscaAcaoInterface;
-import br.com.bcunha.heavygear.model.pojo.Acao;
+import br.com.bcunha.heavygear.model.api.alphavantage.BuscaAtivoInterface;
+import br.com.bcunha.heavygear.model.pojo.Ativo;
 import br.com.bcunha.heavygear.model.pojo.alphavantage.RespostaAcao;
+import br.com.bcunha.heavygear.model.pojo.alphavantage.RespostaMoeda;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,11 +33,11 @@ public class HeavyGearService extends Service {
 
     private boolean ativo = false;
     private IBinder mBinder = new HeavyBinder();
-    private BuscaAcaoInterface apiAlphaVantageClient;
+    private BuscaAtivoInterface apiAlphaVantageClient;
 
     public Worker worker;
     public Handler handler = new Handler();
-    public List<Acao> watchListService;
+    public List<Ativo> watchListService;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -57,7 +59,7 @@ public class HeavyGearService extends Service {
         }
 
         // Buscar watchListService  do intent
-        watchListService = new ArrayList<Acao>();
+        watchListService = new ArrayList<Ativo>();
 
         Log.i(LOG_TAG, "onStartCommand");
         //return(START_STICKY);
@@ -68,7 +70,7 @@ public class HeavyGearService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        apiAlphaVantageClient = ApiAlphaVantage.getRetrofit().create(BuscaAcaoInterface.class);
+        apiAlphaVantageClient = ApiAlphaVantage.getRetrofit().create(BuscaAtivoInterface.class);
         worker = new Worker(this);
         atualizaTimer();
 
@@ -107,42 +109,73 @@ public class HeavyGearService extends Service {
                 return;
             }
             if(watchListService.size() >= 1) {
-                for (final Acao acao : watchListService) {
-                    final int index = watchListService.indexOf(acao);
+                for (final Ativo ativo : watchListService) {
+                    final int index = watchListService.indexOf(ativo);
 
-                    apiAlphaVantageClient.getStock(ApiAlphaVantage.TIME_SERIES_DAILY,
-                    acao.getCodigo() + ".SA",
-                    ApiAlphaVantage.INTERVAL,
-                    ApiAlphaVantageKey.ApiKey)
-                    .enqueue(new Callback<RespostaAcao>() {
-                        @Override
-                        public void onResponse(Call<RespostaAcao> call, Response<RespostaAcao> response) {
-                            if (response.body() == null) {
-                                handler.post(worker);
-                                return;
+                    if (watchListService.get(index).getTipo().equals("MOEDA")) {
+                        apiAlphaVantageClient.getCurrency(ApiAlphaVantage.DIGITAL_CURRENCY_INTRADAY,
+                        ativo.getCodigo(),
+                        ApiAlphaVantage.MARKET,
+                        ApiAlphaVantageKey.ApiKey)
+                        .enqueue(new Callback<RespostaMoeda>() {
+                            @Override
+                            public void onResponse(Call<RespostaMoeda> call, Response<RespostaMoeda> response) {
+                                if (response.body() == null) {
+                                    handler.post(worker);
+                                    return;
+                                }
+
+                                if (index >= 0) {
+                                    Double cotacao = parseDouble(response.body().getTimeSeries().getTimeMomentMoeda().get1aPriceBRL());
+                                    watchListService.get(index).setCotacao(cotacao);
+
+                                    Intent intent = new Intent(ACTION_HEAVYSERVICE);
+                                    intent.putExtra("ativo", watchListService.get(index));
+                                    intent.putExtra("index", index);
+                                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                                }
                             }
 
-                            if (index >= 0) {
-                                Double cotacao = parseDouble(response.body().getTimeSeries().getTimeMoment().get4Close());
-                                watchListService.get(index).setVariacao(calculaVariacao(parseDouble(response.body().getTimeSeries().getTimeMoment().get1Open()), cotacao));
-                                watchListService.get(index).setCotacao(cotacao);
-                                watchListService.get(index).setMinimaDia(parseDouble(response.body().getTimeSeries().getTimeMoment().get3Low()));
-                                watchListService.get(index).setMaximaDia(parseDouble(response.body().getTimeSeries().getTimeMoment().get2High()));
-                                watchListService.get(index).setAbertura(parseDouble(response.body().getTimeSeries().getTimeMoment().get1Open()));
-                                watchListService.get(index).setVolumeNegociacao(parseInteger(response.body().getTimeSeries().getTimeMoment().get5Volume()));
-
-                                Intent intent = new Intent(ACTION_HEAVYSERVICE);
-                                intent.putExtra("acao", watchListService.get(index));
-                                intent.putExtra("index", index);
-                                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                            @Override
+                            public void onFailure(Call<RespostaMoeda> call, Throwable t) {
+                                Toast.makeText(getApplicationContext(), "Serviço Sem Resposta", Toast.LENGTH_LONG).show();
                             }
-                        }
+                        });
+                    } else {
+                        apiAlphaVantageClient.getStock(ApiAlphaVantage.TIME_SERIES_DAILY,
+                        ativo.getCodigo() + ".SA",
+                        ApiAlphaVantage.INTERVAL,
+                        ApiAlphaVantageKey.ApiKey)
+                        .enqueue(new Callback<RespostaAcao>() {
+                            @Override
+                            public void onResponse(Call<RespostaAcao> call, Response<RespostaAcao> response) {
+                                if (response.body() == null) {
+                                    handler.post(worker);
+                                    return;
+                                }
 
-                        @Override
-                        public void onFailure(Call<RespostaAcao> call, Throwable t) {
-                            Toast.makeText(getApplicationContext(), "Serviço Sem Resposta", Toast.LENGTH_LONG).show();
-                        }
-                    });
+                                if (index >= 0) {
+                                    Double cotacao = parseDouble(response.body().getTimeSeries().getTimeMomentAcao().get4Close());
+                                    watchListService.get(index).setVariacao(calculaVariacao(parseDouble(response.body().getTimeSeries().getTimeMomentAcao().get1Open()), cotacao));
+                                    watchListService.get(index).setCotacao(cotacao);
+                                    watchListService.get(index).setMinimaDia(parseDouble(response.body().getTimeSeries().getTimeMomentAcao().get3Low()));
+                                    watchListService.get(index).setMaximaDia(parseDouble(response.body().getTimeSeries().getTimeMomentAcao().get2High()));
+                                    watchListService.get(index).setAbertura(parseDouble(response.body().getTimeSeries().getTimeMomentAcao().get1Open()));
+                                    watchListService.get(index).setVolumeNegociacao(parseInteger(response.body().getTimeSeries().getTimeMomentAcao().get5Volume()));
+
+                                    Intent intent = new Intent(ACTION_HEAVYSERVICE);
+                                    intent.putExtra("ativo", watchListService.get(index));
+                                    intent.putExtra("index", index);
+                                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<RespostaAcao> call, Throwable t) {
+                                Toast.makeText(getApplicationContext(), "Serviço Sem Resposta", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
                 }
             }
 
@@ -163,7 +196,7 @@ public class HeavyGearService extends Service {
         executar();
     }
 
-    public void atualizaWatchList(List<Acao> acoes){
+    public void atualizaWatchList(List<Ativo> acoes){
         this.watchListService = acoes;
         executar();
     }

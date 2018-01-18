@@ -10,7 +10,7 @@ import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.bcunha.heavygear.model.pojo.Acao;
+import br.com.bcunha.heavygear.model.pojo.Ativo;
 
 /**
  * Created by BRUNO on 12/09/2016.
@@ -30,6 +30,7 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
     public static final String CAMPO_EMPRESA = "empresa";
     public static final String CAMPO_TIPO = "tipo";
     public static final String CAMPO_COTACAO = "cotacao";
+    public static final String CAMPO_ENABLE = "enable";
 
     SQLiteDatabase heavyGearDB;
 
@@ -48,7 +49,7 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
         }
     }
 
-    public long insertAcoes(int id, String codigo, String empresa, String tipo) {
+    public long insertAtivo(int id, String codigo, String empresa, String tipo) {
         ContentValues contentValues = new ContentValues();
         if (id != -1) {
             contentValues.put(CAMPO_ID, id);
@@ -60,7 +61,7 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
         return heavyGearDB.insert(TABELA_ACOES, null, contentValues);
     }
 
-    public long updateAcoes(int id, String codigo, String empresa, String tipo) {
+    public long updateAtivos(int id, String codigo, String empresa, String tipo) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(CAMPO_CODIGO, codigo);
         contentValues.put(CAMPO_EMPRESA, empresa);
@@ -71,53 +72,54 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
         return heavyGearDB.update(TABELA_ACOES, contentValues, where, null);
     }
 
-    public long deleteAcoes(int id) {
+    public long deleteAtivo(int id) {
         String where = CAMPO_ID + " = " + id;
 
         return heavyGearDB.delete(TABELA_ACOES, where, null);
     }
 
-    public Acao getAcao(String codigo) {
+    public Ativo getAtivo(String codigo) {
         String query = "SELECT " +
         " * " +
         "FROM " +
         TABELA_ACOES +
         " WHERE " +
-        CAMPO_CODIGO + " = '" + codigo + "'";
+        CAMPO_CODIGO + " = '" + codigo + "' AND " +
+        CAMPO_ENABLE + " = 'S'";
         Cursor cursor = heavyGearDB.rawQuery(query, null);
         cursor.moveToFirst();
-        Acao acao = new Acao(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)),
+        Ativo ativo = new Ativo(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)),
                              cursor.getString(cursor.getColumnIndex(CAMPO_EMPRESA)),
                              cursor.getString(cursor.getColumnIndex(CAMPO_TIPO)),
                              0);
-        return acao;
+        return ativo;
     }
 
-    public List<Acao> getAcoes() {
-        String query = "SELECT * FROM " + TABELA_ACOES;
+    public List<Ativo> getAtivos() {
+        String query = "SELECT * FROM " + TABELA_ACOES + " WHERE " + CAMPO_ENABLE + " = 'S'";
 
-        List<Acao> acoes = new ArrayList<Acao>();
+        List<Ativo> ativos = new ArrayList<Ativo>();
 
         Cursor cursor = heavyGearDB.rawQuery(query, null);
 
         while (cursor.moveToNext()) {
-            acoes.add(new Acao(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)),
+            ativos.add(new Ativo(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)),
                                cursor.getString(cursor.getColumnIndex(CAMPO_EMPRESA)),
                                cursor.getString(cursor.getColumnIndex(CAMPO_TIPO)),
                                0));
         }
 
-        return acoes;
+        return ativos;
     }
 
     public Cursor execQuery(String query) {
         return heavyGearDB.rawQuery(query, null);
     }
 
-    public List<Acao> pesquisaAcao(String filtro) {
-        List<Acao> acoes = new ArrayList<Acao>();
+    public List<Ativo> pesquisaAtivo(String filtro) {
+        List<Ativo> ativos = new ArrayList<Ativo>();
         if (filtro.equals("")) {
-            return acoes;
+            return ativos;
         }
 
         String query = "SELECT " +
@@ -125,16 +127,18 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
         " FROM " +
         TABELA_ACOES +
         " WHERE " +
-        CAMPO_CODIGO + " LIKE '%" + filtro + "%'";
+        CAMPO_CODIGO + " LIKE '%" + filtro + "%' AND " +
+        CAMPO_ENABLE + " = 'S'" +
+        " ORDER BY _id DESC";
 
         Cursor cursor = heavyGearDB.rawQuery(query, null);
 
         while (cursor.moveToNext()) {
-            acoes.add(new Acao(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)),
+            ativos.add(new Ativo(cursor.getString(cursor.getColumnIndex(CAMPO_CODIGO)),
                                cursor.getString(cursor.getColumnIndex(CAMPO_EMPRESA)),
                                cursor.getString(cursor.getColumnIndex(CAMPO_TIPO)),
                                0));
         }
-        return acoes;
+        return ativos;
     }
 }
