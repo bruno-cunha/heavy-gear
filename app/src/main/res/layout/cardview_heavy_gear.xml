@@ -48,10 +48,11 @@
                     android:id="@+id/variacao"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignEnd="@id/cotacao"
                     android:layout_below="@+id/cotacao"
                     android:layout_centerHorizontal="true"
-                    android:layout_alignEnd="@id/cotacao"
-                    android:text="(+0.05)"/>
+                    android:text="(+0.05)"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
             </RelativeLayout>
 
             <ImageView

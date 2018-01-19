@@ -125,10 +125,11 @@ public class HeavyGearService extends Service {
                                     return;
                                 }
 
-                                if (index >= 0) {
+                                if (index <= watchListService.size()-1) {
                                     Double cotacao = parseDouble(response.body().getTimeSeries().getTimeMomentMoeda().get1aPriceBRL());
+                                    Double cotacaoDolar = parseDouble(response.body().getTimeSeries().getTimeMomentMoeda().get1bPriceUSD());
                                     watchListService.get(index).setCotacao(cotacao);
-
+                                    watchListService.get(index).setCotaocaoDolar(cotacaoDolar);
                                     Intent intent = new Intent(ACTION_HEAVYSERVICE);
                                     intent.putExtra("ativo", watchListService.get(index));
                                     intent.putExtra("index", index);
@@ -138,7 +139,7 @@ public class HeavyGearService extends Service {
 
                             @Override
                             public void onFailure(Call<RespostaMoeda> call, Throwable t) {
-                                Toast.makeText(getApplicationContext(), "Serviço Sem Resposta", Toast.LENGTH_LONG).show();
+                                //Toast.makeText(getApplicationContext(), "Serviço Sem Resposta", Toast.LENGTH_LONG).show();
                             }
                         });
                     } else {
@@ -154,7 +155,7 @@ public class HeavyGearService extends Service {
                                     return;
                                 }
 
-                                if (index >= 0) {
+                                if (index <= watchListService.size()-1) {
                                     Double cotacao = parseDouble(response.body().getTimeSeries().getTimeMomentAcao().get4Close());
                                     watchListService.get(index).setVariacao(calculaVariacao(parseDouble(response.body().getTimeSeries().getTimeMomentAcao().get1Open()), cotacao));
                                     watchListService.get(index).setCotacao(cotacao);
@@ -172,14 +173,14 @@ public class HeavyGearService extends Service {
 
                             @Override
                             public void onFailure(Call<RespostaAcao> call, Throwable t) {
-                                Toast.makeText(getApplicationContext(), "Serviço Sem Resposta", Toast.LENGTH_LONG).show();
+                                //Toast.makeText(getApplicationContext(), "Serviço Sem Resposta", Toast.LENGTH_LONG).show();
                             }
                         });
                     }
                 }
             }
 
-            Log.i(LOG_TAG, "Consulta Executada");
+           //Log.i(LOG_TAG, "Consulta Executada");
 
             handler.postDelayed(this, frequenciaAtualizacao);
         }

@@ -2,6 +2,7 @@ package br.com.bcunha.heavygear.model.pojo;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
@@ -22,11 +23,13 @@ public class Ativo implements Parcelable {
     private double minimaDia;
     private double maximaAno;
     private double minimaAno;
+    private double cotaocaoDolar;
     private int volumeNegociacao;
     private boolean inWatch;
     private boolean isViewExpanded = false;
     private int originalHeight;
     private int index;
+    private boolean refresh;
 
     public Ativo(String codigo){
         this.codigo = codigo;
@@ -103,6 +106,7 @@ public class Ativo implements Parcelable {
     }
 
     public void setCotacao(double cotacao) {
+        setRefresh(this.cotacao != cotacao ? true : false);
         this.cotacao = cotacao;
     }
 
@@ -161,6 +165,14 @@ public class Ativo implements Parcelable {
         this.minimaAno = minimaAno;
     }
 
+    public double getCotaocaoDolar() {
+        return cotaocaoDolar;
+    }
+
+    public void setCotaocaoDolar(double cotaocaoDolar) {
+        this.cotaocaoDolar = cotaocaoDolar;
+    }
+
     public int getVolumeNegociacao() {
         return volumeNegociacao;
     }
@@ -201,6 +213,14 @@ public class Ativo implements Parcelable {
         this.index = index;
     }
 
+    public boolean isRefresh() {
+        return refresh;
+    }
+
+    public void setRefresh(boolean refresh) {
+        this.refresh = refresh;
+    }
+
     public int getImgId(Context context) {
         int imgId = context.getResources().getIdentifier(getCodigo().replaceAll("\\d", "").toLowerCase(),
                                                          "drawable",
@@ -214,12 +234,16 @@ public class Ativo implements Parcelable {
     }
 
     public ColorStateList getCor(Context context){
-        if (getVariacao() > 0) {
-            return ColorStateList.valueOf(ContextCompat.getColor(context, R.color.verde));
-        } else if (getVariacao() < 0) {
-            return ColorStateList.valueOf(ContextCompat.getColor(context, R.color.vermelho));
+        if (!getTipo().equals("MOEDA")) {
+            if (getVariacao() > 0) {
+                return ColorStateList.valueOf(ContextCompat.getColor(context, R.color.verde));
+            } else if (getVariacao() < 0) {
+                return ColorStateList.valueOf(ContextCompat.getColor(context, R.color.vermelho));
+            } else {
+                return ColorStateList.valueOf(ContextCompat.getColor(context, R.color.textoSecundario));
+            }
         } else {
-            return ColorStateList.valueOf(ContextCompat.getColor(context, R.color.textoSecundario));
+            return ColorStateList.valueOf(ContextCompat.getColor(context, R.color.preto));
         }
     }
 
@@ -250,6 +274,7 @@ public class Ativo implements Parcelable {
         parcel.writeString(empresa);
         parcel.writeString(tipo);
         parcel.writeDouble(cotacao);
+        parcel.writeDouble(cotaocaoDolar);
         parcel.writeDouble(variacao);
         parcel.writeDouble(maximaDia);
         parcel.writeDouble(minimaDia);
@@ -260,6 +285,7 @@ public class Ativo implements Parcelable {
         parcel.writeInt(isViewExpanded ? 1 : 0);
         parcel.writeInt(originalHeight);
         parcel.writeInt(index);
+        parcel.writeInt(refresh ? 1 : 0);
     }
 
     // Creator
@@ -279,6 +305,7 @@ public class Ativo implements Parcelable {
         this.empresa = in.readString();
         this.tipo = in.readString();
         this.cotacao = in.readDouble();
+        this.cotaocaoDolar = in.readDouble();
         this.variacao = in.readDouble();
         this.maximaDia = in.readDouble();
         this.minimaDia = in.readDouble();
@@ -289,5 +316,6 @@ public class Ativo implements Parcelable {
         this.isViewExpanded = (in.readInt() == 0) ? false : true;
         this.originalHeight = in.readInt();
         this.index = in.readInt();
+        this.refresh = (in.readInt() == 0) ? false : true;
     }
 }

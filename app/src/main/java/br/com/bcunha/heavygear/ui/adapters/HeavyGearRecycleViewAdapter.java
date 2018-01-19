@@ -142,14 +142,18 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
         heavyGearRecycleViewHolder.moeda.setTextColor(heavyGearRecycleViewHolder.ativo.getCor(context));
         heavyGearRecycleViewHolder.cotacao.setText(String.format("%.2f", heavyGearRecycleViewHolder.ativo.getCotacao()));
         heavyGearRecycleViewHolder.cotacao.setTextColor(heavyGearRecycleViewHolder.ativo.getCor(context));
-        heavyGearRecycleViewHolder.variacao.setText(heavyGearRecycleViewHolder.ativo.getVariacaoFormat());
+        if(!heavyGearRecycleViewHolder.ativo.getTipo().equals("MOEDA")) {
+            heavyGearRecycleViewHolder.variacao.setText(heavyGearRecycleViewHolder.ativo.getVariacaoFormat());
+        } else {
+            heavyGearRecycleViewHolder.variacao.setText("$ " + String.format("%.2f", heavyGearRecycleViewHolder.ativo.getCotaocaoDolar()));
+        }
         heavyGearRecycleViewHolder.variacao.setTextColor(heavyGearRecycleViewHolder.ativo.getCor(context));
         heavyGearRecycleViewHolder.minimaDia.setText(String.format("%.2f", heavyGearRecycleViewHolder.ativo.getMinimaDia()));
         heavyGearRecycleViewHolder.maximaDia.setText(String.format("%.2f", heavyGearRecycleViewHolder.ativo.getMaximaDia()));
         heavyGearRecycleViewHolder.abertura.setText(String.format("%.2f", heavyGearRecycleViewHolder.ativo.getAbertura()));
         heavyGearRecycleViewHolder.volume.setText(String.format("%d", heavyGearRecycleViewHolder.ativo.getVolumeNegociacao()));
 
-        if (prefExibeVaricao && !heavyGearRecycleViewHolder.ativo.getTipo().equals("MOEDA")) {
+        if (prefExibeVaricao) {
             heavyGearRecycleViewHolder.variacao.setVisibility(View.VISIBLE);
         } else {
             heavyGearRecycleViewHolder.variacao.setVisibility(View.GONE);
@@ -165,9 +169,11 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
                 heavyGearRecycleViewHolder.cardView.getLayoutParams().height = heavyGearRecycleViewHolder.ativo.getOriginalHeight();
             }
         }*/
-        heavyGearRecycleViewHolder.moeda.startAnimation(animation);
-        heavyGearRecycleViewHolder.cotacao.startAnimation(animation);
-        heavyGearRecycleViewHolder.variacao.startAnimation(animation);
+        if (heavyGearRecycleViewHolder.ativo.isRefresh()) {
+            heavyGearRecycleViewHolder.moeda.startAnimation(animation);
+            heavyGearRecycleViewHolder.cotacao.startAnimation(animation);
+            heavyGearRecycleViewHolder.variacao.startAnimation(animation);
+        }
         heavyGearRecycleViewHolder.cardView.requestLayout();
     }
 
@@ -213,7 +219,7 @@ public class HeavyGearRecycleViewAdapter extends RecyclerView.Adapter<HeavyGearR
     }
 
     public void updateItem(Ativo ativo, Integer index){
-        if(ativo != null) {
+        if(ativo != null && index <= watchList.size()-1) {
             watchList.set(index, ativo);
             notifyItemChanged(index);
         }

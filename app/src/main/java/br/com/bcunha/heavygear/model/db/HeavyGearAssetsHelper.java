@@ -96,7 +96,7 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
     }
 
     public List<Ativo> getAtivos() {
-        String query = "SELECT * FROM " + TABELA_ACOES + " WHERE " + CAMPO_ENABLE + " = 'S'";
+        String query = "SELECT * FROM " + TABELA_ACOES + " WHERE " + CAMPO_ENABLE + " = 'S' ORDER BY " + CAMPO_TIPO + " DESC";
 
         List<Ativo> ativos = new ArrayList<Ativo>();
 
@@ -129,7 +129,7 @@ public class HeavyGearAssetsHelper extends SQLiteAssetHelper {
         " WHERE " +
         CAMPO_CODIGO + " LIKE '%" + filtro + "%' AND " +
         CAMPO_ENABLE + " = 'S'" +
-        " ORDER BY _id DESC";
+        " ORDER BY _id ASC";
 
         Cursor cursor = heavyGearDB.rawQuery(query, null);
 

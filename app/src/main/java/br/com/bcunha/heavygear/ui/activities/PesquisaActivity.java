@@ -128,9 +128,9 @@ public class PesquisaActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    private void iniciaRecycleView() {
-        todasAcoesPesquisa = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext())
-                                              .getBoolean(PREF_TODOS_ATIVOS_PESQUISA, false);
+    private void  iniciaRecycleView() {
+        todasAcoesPesquisa = true; //PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext())
+                                   //                 .getBoolean(PREF_TODOS_ATIVOS_PESQUISA, false);
 
         List<Ativo> resultados = new ArrayList<Ativo>();
         List<Ativo> watchList = new ArrayList<Ativo>();

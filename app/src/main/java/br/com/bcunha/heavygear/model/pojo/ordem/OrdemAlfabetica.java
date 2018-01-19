@@ -12,6 +12,10 @@ public class OrdemAlfabetica implements Comparator<Ativo> {
 
     @Override
     public int compare(Ativo o1, Ativo o2) {
-        return o1.getCodigo().compareToIgnoreCase(o2.getCodigo());
+        //if(o2.getTipo().equals("MOEDA")) {
+        //    return 0;
+        //} else {
+            return o1.getCodigo().compareToIgnoreCase(o2.getCodigo());
+        //}
     }
 }

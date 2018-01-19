@@ -9,11 +9,8 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 
-import br.com.bcunha.heavygear.model.pojo.alphavantage.MetaDataAcao;
 import br.com.bcunha.heavygear.model.pojo.alphavantage.MetaDataMoeda;
-import br.com.bcunha.heavygear.model.pojo.alphavantage.RespostaAcao;
 import br.com.bcunha.heavygear.model.pojo.alphavantage.RespostaMoeda;
-import br.com.bcunha.heavygear.model.pojo.alphavantage.TimeMomentAcao;
 import br.com.bcunha.heavygear.model.pojo.alphavantage.TimeMomentMoeda;
 import br.com.bcunha.heavygear.model.pojo.alphavantage.TimeSeries;
 
@@ -30,7 +27,7 @@ public class RespostaMoedaDeserializer implements JsonDeserializer<RespostaMoeda
         final JsonObject jsonObject = json.getAsJsonObject();
 
         MetaDataMoeda metaDataMoeda = gson.fromJson(jsonObject.get("Meta Data"), MetaDataMoeda.class);
-        respostaMoeda.setMetaDataAcao(metaDataMoeda);
+        respostaMoeda.setMetaDataMoeda(metaDataMoeda);
         TimeMomentMoeda timeMomentMoeda = new TimeMomentMoeda();
 
         timeMomentMoeda.set1aPriceBRL(jsonObject.getAsJsonObject("Time Series (Digital Currency Intraday)").getAsJsonObject(metaDataMoeda.get7LastRefreshed()).get("1a. price (BRL)").getAsString());

@@ -12,6 +12,9 @@ public class OrdemBaixa implements Comparator<Ativo> {
 
     @Override
     public int compare(Ativo o1, Ativo o2) {
+        //if (o2.getTipo().equals("MOEDA")) {
+        //    return 0;
+        //} else
         if (o1.getVariacao() == o2.getVariacao()) {
             return 0;
         } else if (o1.getVariacao() < o2.getVariacao()) {

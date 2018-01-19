@@ -8,17 +8,17 @@ public class RespostaMoeda {
 
     @SerializedName("Meta Data")
     @Expose
-    private MetaDataMoeda metaDataAcaoMoeda;
+    private MetaDataMoeda metaDataMoeda;
     @SerializedName("Time Series (Digital Currency Intraday)")
     @Expose
     private TimeSeries timeSeries;
 
     public MetaDataMoeda getMetaDataAcao() {
-        return metaDataAcaoMoeda;
+        return metaDataMoeda;
     }
 
-    public void setMetaDataAcao(MetaDataMoeda metaDataAcaoMoeda) {
-        this.metaDataAcaoMoeda = metaDataAcaoMoeda;
+    public void setMetaDataMoeda(MetaDataMoeda metaDataMoeda) {
+        this.metaDataMoeda = metaDataMoeda;
     }
 
     public TimeSeries getTimeSeries() {
