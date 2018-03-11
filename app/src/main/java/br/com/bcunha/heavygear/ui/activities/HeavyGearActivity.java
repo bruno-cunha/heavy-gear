@@ -24,11 +24,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -42,6 +49,7 @@ import java.util.Collections;
 import java.util.List;
 
 import br.com.bcunha.heavygear.R;
+import br.com.bcunha.heavygear.model.api.alphavantage.ApiAlphaVantageKey;
 import br.com.bcunha.heavygear.model.db.HeavyGearAssetsHelper;
 import br.com.bcunha.heavygear.model.pojo.Ativo;
 import br.com.bcunha.heavygear.model.pojo.ordem.OrdemAlfabetica;
@@ -77,6 +85,8 @@ public class HeavyGearActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private HeavyGearRecycleViewAdapter heavyGearRecycleViewAdapter;
     private SharedPreferences sharedPreferences;
+    private LinearLayout container;
+    private AdView adView;
     private HeavyGearService heavyGearServiceBound;
     private Boolean isBound = false;
 
@@ -133,6 +143,18 @@ public class HeavyGearActivity extends AppCompatActivity {
         toolbarTitle.setTypeface(typeFace);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+        //Ads
+        MobileAds.initialize(this, ApiAlphaVantageKey.AppId);
+        container = (LinearLayout) findViewById(R.id.container);
+        adView = new AdView(this);
+        adView.setAdSize(AdSize.SMART_BANNER);
+        adView.setLayoutParams(new AdView.LayoutParams(AdView.LayoutParams.MATCH_PARENT, AdView.LayoutParams.WRAP_CONTENT));
+        adView.setAdUnitId(ApiAlphaVantageKey.AdUnitId);
+        container.addView(adView);
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
 
         iniciaRecycleView();
         iniciatNavigationDrawer();
