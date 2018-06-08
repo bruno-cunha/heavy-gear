@@ -16,7 +16,7 @@ Funcionalidades:
 <img src="https://play.google.com/intl/en_us/badges/images/generic/pt-br_badge_web_generic.png" alt="Disponível no Google Play" height="90"/></a>
 
 # License
-Copyright 2017 Heavy Gear
+Copyright 2018 Heavy Gear
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
